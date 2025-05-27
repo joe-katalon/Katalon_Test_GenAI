@@ -1,0 +1,175 @@
+{
+  "summary": {
+    "total_evaluated": 20,
+    "evaluation_errors": 0,
+    "start_time": "2025-05-27T19:56:31.140576",
+    "end_time": "2025-05-27T19:58:04.556608"
+  },
+  "diversity_analysis": {
+    "total_inputs": 20,
+    "unique_patterns": 20,
+    "prompt_length_stats": {
+      "min": 25,
+      "max": 506,
+      "mean": 143.3,
+      "median": 116.0,
+      "std_dev": 109.85258064189576
+    },
+    "pattern_categories": {
+      "testing": 12,
+      "web_automation": 14,
+      "mobile_testing": 3,
+      "custom_keywords": 1,
+      "data_driven": 2
+    },
+    "complexity_distribution": {
+      "low": 12,
+      "medium": 8,
+      "high": 0
+    }
+  },
+  "quality_analysis": {
+    "total_outputs": 20,
+    "output_length_stats": {
+      "min": 128,
+      "max": 794,
+      "mean": 317.5,
+      "median": 290.5,
+      "std_dev": 138.5323446936339
+    },
+    "keyword_usage": {
+      "TestObject": 1,
+      "Mobile": 1
+    },
+    "error_patterns": {
+      "error_handling": 1,
+      "exception_handling": 1
+    },
+    "response_time_analysis": {
+      "min": 1.6099259853363037,
+      "max": 4.292760133743286,
+      "mean": 2.251698923110962,
+      "median": 2.078108072280884,
+      "percentile_95": 4.292760133743286
+    }
+  },
+  "score_analysis": {
+    "criteria_analysis": {
+      "completeness": {
+        "description": "Does the explanation cover all aspects of the code?",
+        "count": 20,
+        "mean": 8.05,
+        "median": 8.0,
+        "std_dev": 0.998683343734455,
+        "min": 5,
+        "max": 9,
+        "distribution": {
+          "excellent (8-10)": 16,
+          "good (6-8)": 3,
+          "fair (4-6)": 1,
+          "poor (0-4)": 0
+        }
+      },
+      "accuracy": {
+        "description": "Is the explanation technically correct?",
+        "count": 20,
+        "mean": 9.9,
+        "median": 10.0,
+        "std_dev": 0.30779350562554625,
+        "min": 9,
+        "max": 10,
+        "distribution": {
+          "excellent (8-10)": 20,
+          "good (6-8)": 0,
+          "fair (4-6)": 0,
+          "poor (0-4)": 0
+        }
+      },
+      "clarity": {
+        "description": "Is the explanation easy to understand?",
+        "count": 20,
+        "mean": 9.15,
+        "median": 9.0,
+        "std_dev": 0.6708203932499369,
+        "min": 8,
+        "max": 10,
+        "distribution": {
+          "excellent (8-10)": 20,
+          "good (6-8)": 0,
+          "fair (4-6)": 0,
+          "poor (0-4)": 0
+        }
+      },
+      "context": {
+        "description": "Does it properly explain Katalon-specific elements?",
+        "count": 20,
+        "mean": 7.55,
+        "median": 8.0,
+        "std_dev": 1.145931016569864,
+        "min": 4,
+        "max": 9,
+        "distribution": {
+          "excellent (8-10)": 12,
+          "good (6-8)": 7,
+          "fair (4-6)": 1,
+          "poor (0-4)": 0
+        }
+      }
+    },
+    "overall_statistics": {
+      "mean": 8.425,
+      "median": 9.0,
+      "std_dev": 0.8472090402579147,
+      "min": 6,
+      "max": 9.5,
+      "meets_requirements_percentage": 95.0
+    },
+    "score_distribution": {
+      "0-2": 0,
+      "2-4": 0,
+      "4-6": 0,
+      "6-8": 2,
+      "8-10": 18
+    },
+    "correlation_analysis": {
+      "completeness_vs_accuracy": 0.18834401554375516,
+      "completeness_vs_clarity": 0.7738353515983201,
+      "completeness_vs_context": 0.8025194173350525,
+      "accuracy_vs_clarity": 0.33137828225747823,
+      "accuracy_vs_context": 0.3133630367250917,
+      "clarity_vs_context": 0.6401669935305909
+    },
+    "improvement_areas": []
+  },
+  "feedback_analysis": {
+    "common_feedback_themes": {
+      "completeness": 3,
+      "accuracy": 35,
+      "clarity": 17,
+      "best_practices": 3,
+      "error_handling": 7
+    },
+    "suggestion_frequency": {
+      "Add a brief explanation of what `findTestObject` does in Katalon Studio, such as 'Finds and retrieves a pre-defined test object representing an element on the web page.'": 1,
+      "Consider adding a general purpose note stating that each step makes a call to WebUI built-in keywords from Katalon Studio to perform automated testing actions": 1,
+      "Add a description of `findTestObject` and its purpose within Katalon Studio.": 1,
+      "Explain the meaning of the '10' parameter in the `Mobile.tap` and `Mobile.verifyElementVisible` commands (i.e., timeout in seconds).": 1,
+      "Explicitly state that the `Mobile.*` commands are part of Katalon's mobile testing library.": 1,
+      "Briefly explain what a Test Object is in the context of Katalon Studio.": 1,
+      "Add a sentence or two explaining how this keyword could be used within a Katalon Test Case.": 1,
+      "Mention `KeywordUtil` and its relevance for error handling within custom keywords if applicable": 1,
+      "Add a note about potential issues with the script failing if the table structure deviates from the expected structure (e.g., missing rows/columns).": 1,
+      "Explain the implications of dynamically modifying the TestObject's XPath property and how this approach affects the original TestObject. It is also advisable to mention that in most test automation practices, it's preferable to avoid directly modifying the original object for maintainability.": 1
+    },
+    "feedback_sentiment": {
+      "positive": 18,
+      "neutral": 2,
+      "negative": 0
+    }
+  },
+  "insights": [
+    "Excellent overall performance: The current configuration is producing high-quality outputs.",
+    "Strong correlation between completeness_vs_clarity (0.77): These criteria are closely related.",
+    "Strong correlation between completeness_vs_context (0.80): These criteria are closely related."
+  ]
+}

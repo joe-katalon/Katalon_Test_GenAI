@@ -1,0 +1,18 @@
+{
+  "phase": "baseline_creation",
+  "feature": "generate_code",
+  "baseline_info": {
+    "filename": "poc_data/generate_code/studioassist_generate_code_baseline_evaluated_ll1_20250527_151723_5a298b8b.json",
+    "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250527_151554_c3194bc9.json",
+    "num_inputs": 10,
+    "created_at": "2025-05-27T15:17:23.433206",
+    "state": "evaluated",
+    "llm_version": "LL1",
+    "baseline_id": "baseline_20250527_151723_10"
+  },
+  "next_steps": [
+    "1. Reconfigure product to use LL2",
+    "2. Run Phase 2 to create target dataset",
+    "3. Use 'python main.py --feature generate_code --phase target' to continue"
+  ]
+}

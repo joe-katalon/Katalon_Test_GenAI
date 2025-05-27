@@ -1,0 +1,180 @@
+{
+  "summary": {
+    "total_evaluated": 10,
+    "evaluation_errors": 0,
+    "start_time": "2025-05-27T18:08:15.431085",
+    "end_time": "2025-05-27T18:09:10.135634"
+  },
+  "diversity_analysis": {
+    "total_inputs": 10,
+    "unique_patterns": 10,
+    "prompt_length_stats": {
+      "min": 69,
+      "max": 208,
+      "mean": 139.7,
+      "median": 146.0,
+      "std_dev": 46.1351878239978
+    },
+    "pattern_categories": {
+      "testing": 8,
+      "custom_keywords": 1,
+      "mobile_testing": 1,
+      "api_testing": 1,
+      "data_driven": 1,
+      "web_automation": 2
+    },
+    "complexity_distribution": {
+      "low": 6,
+      "medium": 3,
+      "high": 1
+    }
+  },
+  "quality_analysis": {
+    "total_outputs": 10,
+    "output_length_stats": {
+      "min": 251,
+      "max": 1304,
+      "mean": 584.5,
+      "median": 576.5,
+      "std_dev": 304.8814888152808
+    },
+    "keyword_usage": {
+      "WebUI": 35,
+      "TestObject": 19,
+      "@Keyword": 1,
+      "Mobile": 6,
+      "WS": 2,
+      "GlobalVariable": 1
+    },
+    "error_patterns": {
+      "error_handling": 1
+    },
+    "response_time_analysis": {
+      "min": 1.3809988498687744,
+      "max": 5.195512771606445,
+      "mean": 2.9247117757797243,
+      "median": 3.061537027359009,
+      "percentile_95": 5.195512771606445
+    }
+  },
+  "score_analysis": {
+    "criteria_analysis": {
+      "completeness": {
+        "description": "Does the code address all requirements from the prompt?",
+        "count": 10,
+        "mean": 8.2,
+        "median": 8.5,
+        "std_dev": 1.1352924243950935,
+        "min": 7,
+        "max": 10,
+        "distribution": {
+          "excellent (8-10)": 6,
+          "good (6-8)": 4,
+          "fair (4-6)": 0,
+          "poor (0-4)": 0
+        }
+      },
+      "correctness": {
+        "description": "Is the syntax valid and does it use proper Katalon keywords?",
+        "count": 10,
+        "mean": 9.2,
+        "median": 9.0,
+        "std_dev": 0.9189365834726815,
+        "min": 7,
+        "max": 10,
+        "distribution": {
+          "excellent (8-10)": 9,
+          "good (6-8)": 1,
+          "fair (4-6)": 0,
+          "poor (0-4)": 0
+        }
+      },
+      "readability": {
+        "description": "Is the code well-structured with proper indentation and comments?",
+        "count": 10,
+        "mean": 9.3,
+        "median": 9.5,
+        "std_dev": 0.8232726023485646,
+        "min": 8,
+        "max": 10,
+        "distribution": {
+          "excellent (8-10)": 10,
+          "good (6-8)": 0,
+          "fair (4-6)": 0,
+          "poor (0-4)": 0
+        }
+      },
+      "functionality": {
+        "description": "Would this code execute successfully in Katalon Studio?",
+        "count": 10,
+        "mean": 8.1,
+        "median": 8.0,
+        "std_dev": 1.1972189997378648,
+        "min": 6,
+        "max": 10,
+        "distribution": {
+          "excellent (8-10)": 7,
+          "good (6-8)": 3,
+          "fair (4-6)": 0,
+          "poor (0-4)": 0
+        }
+      }
+    },
+    "overall_statistics": {
+      "mean": 8.2,
+      "median": 8.5,
+      "std_dev": 1.2292725943057183,
+      "min": 6,
+      "max": 10,
+      "meets_requirements_percentage": 80.0
+    },
+    "score_distribution": {
+      "0-2": 0,
+      "2-4": 0,
+      "4-6": 0,
+      "6-8": 3,
+      "8-10": 7
+    },
+    "correlation_analysis": {
+      "completeness_vs_correctness": 0.7029236326898034,
+      "completeness_vs_readability": 0.4041894792106529,
+      "completeness_vs_functionality": 0.8011285811122998,
+      "correctness_vs_readability": 0.6462208449906512,
+      "correctness_vs_functionality": 0.8887528795714544,
+      "readability_vs_functionality": 0.5298318788061097
+    },
+    "improvement_areas": []
+  },
+  "feedback_analysis": {
+    "common_feedback_themes": {
+      "completeness": 3,
+      "accuracy": 22,
+      "clarity": 6,
+      "best_practices": 2,
+      "error_handling": 12
+    },
+    "suggestion_frequency": {
+      "Use `WebUI.waitForPageLoad(10)` instead of `WebUI.delay(3)` for more reliable page loading.": 1,
+      "Instead of directly clicking a presumed search button, consider pressing the 'ENTER' key after typing the search term using `WebUI.sendKeys(findTestObject('Page_Google/input_Search'), Keys.chord(Keys.ENTER))`": 1,
+      "Use more specific locators for the search input and button to avoid ambiguity and improve test stability. Consider using XPath with more attributes or CSS selectors.": 1,
+      "Use explicit waits (e.g., `WebUI.waitForElementVisible(findTestObject(...), 10)`) before interacting with elements to ensure they are present and ready.": 1,
+      "Add error handling (e.g., try-catch blocks) to gracefully handle potential exceptions, such as elements not being found.": 1,
+      "Consider using a more robust assertion than `verifyTitleContains`. If possible, retrieve the actual title and compare it more precisely using `WebUI.getText` or `WebUI.getAttribute` if the title is dynamically set by javascript.": 1,
+      "Provide a placeholder URL in `WebUI.navigateToUrl()` instead of an empty string. For example: `WebUI.navigateToUrl('https://example.com/login')`": 1,
+      "Add error handling or logging for debugging purposes.  For instance, log a message if the dashboard header is not found.": 1,
+      "Consider adding a step to maximize the browser window using `WebUI.maximizeWindow()` before navigating to the URL to ensure the application renders correctly across different screen sizes.": 1,
+      "Add a delay using `WebUI.delay()` after the login button is clicked to allow time for the dashboard to load, especially if the application is slow.": 1
+    },
+    "feedback_sentiment": {
+      "positive": 9,
+      "neutral": 1,
+      "negative": 0
+    }
+  },
+  "insights": [
+    "Excellent overall performance: The current configuration is producing high-quality outputs.",
+    "Strong correlation between completeness_vs_correctness (0.70): These criteria are closely related.",
+    "Strong correlation between completeness_vs_functionality (0.80): These criteria are closely related.",
+    "Strong correlation between correctness_vs_functionality (0.89): These criteria are closely related."
+  ]
+}

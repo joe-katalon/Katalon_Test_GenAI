@@ -1,0 +1,21 @@
+{
+  "feature": "explain_code",
+  "current_phase": "baseline_created",
+  "llm_config_state": "ll1_active",
+  "baselines": {
+    "baseline_20250527_195804_20": {
+      "filename": "poc_data/explain_code/studioassist_explain_code_baseline_evaluated_ll1_20250527_195804_f7aebe7e.json",
+      "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250527_195526_ea946b5f.json",
+      "num_inputs": 20,
+      "created_at": "2025-05-27T19:58:04.582497",
+      "state": "evaluated",
+      "llm_version": "LL1",
+      "baseline_id": "baseline_20250527_195804_20"
+    }
+  },
+  "target_dataset": null,
+  "selected_baseline_id": null,
+  "inputs_file": null,
+  "created_at": "2025-05-27T19:58:04.582668",
+  "updated_at": "2025-05-27T19:58:04.582673"
+}

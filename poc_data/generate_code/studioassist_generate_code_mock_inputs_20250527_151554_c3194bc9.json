@@ -1,0 +1,102 @@
+[
+  {
+    "input_id": "gen_code_001",
+    "feature": "generate_code",
+    "prompt": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify the title contains 'Google'",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_002",
+    "feature": "generate_code",
+    "prompt": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and password 'password123', then verify successful login using Test Object 'Dashboard_Page' */",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_003",
+    "feature": "generate_code",
+    "prompt": "// Generate code to create a custom keyword that takes a string as input and prints it to the console.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_004",
+    "feature": "generate_code",
+    "prompt": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify the result is '4' using Test Objects for UI elements. */",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_005",
+    "feature": "generate_code",
+    "prompt": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/1' and verify the status code is 200.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_006",
+    "feature": "generate_code",
+    "prompt": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each row, and perform a login using the username and password from each row. Verify login success for each row. */",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_007",
+    "feature": "generate_code",
+    "prompt": "// Generate code to take a screenshot on failure and save it with a timestamp.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_008",
+    "feature": "generate_code",
+    "prompt": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, switch back to the original tab, and verify the original tab's title. */",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_009",
+    "feature": "generate_code",
+    "prompt": "// Generate code to use a global variable 'globalVar' in a test case.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_010",
+    "feature": "generate_code",
+    "prompt": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and verify the page title after accepting the alert using Test Objects. */",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  }
+]

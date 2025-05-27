@@ -1,0 +1,768 @@
+{
+  "metadata": {
+    "feature": "generate_code",
+    "llm_version": "LL2",
+    "creation_timestamp": "2025-05-27T18:24:37.945281",
+    "total_results": 10,
+    "dataset_type": "target",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-27T18:25:26.152857",
+      "original_baseline_file": "poc_data/generate_code/studioassist_generate_code_target_raw_ll2_20250527_182437_1f101722.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "prompt": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify the title contains 'Google'",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "prompt": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and password 'password123', then verify successful login using Test Object 'Dashboard_Page' */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "prompt": "// Generate code to create a custom keyword that takes a string as input and prints it to the console.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "prompt": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify the result is '4' using Test Objects for UI elements. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "prompt": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/1' and verify the status code is 200.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_006",
+      "feature": "generate_code",
+      "prompt": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each row, and perform a login using the username and password from each row. Verify login success for each row. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_007",
+      "feature": "generate_code",
+      "prompt": "// Generate code to take a screenshot on failure and save it with a timestamp.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_008",
+      "feature": "generate_code",
+      "prompt": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, switch back to the original tab, and verify the original tab's title. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_009",
+      "feature": "generate_code",
+      "prompt": "// Generate code to use a global variable 'globalVar' in a test case.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_010",
+      "feature": "generate_code",
+      "prompt": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and verify the page title after accepting the alert using Test Objects. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    }
+  ],
+  "results": {
+    "gen_code_001": {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "user_input": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify the title contains 'Google'",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify th...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Navigate to the specified URL\nWebUI.openBrowser('https://www.google.com')\n\n// Input the search term into the search box and press Enter\nWebUI.setText(findTestObject('Page_Google/input_search'), 'Katalon Studio')\nWebUI.sendKeys(findTestObject('Page_Google/input_search'), Keys.chord(Keys.ENTER))\n\n// Wait for the search results to load\nWebUI.waitForPageLoad(10)\n\n// Verify that the title of the page contains 'Google'\nWebUI.verifyMatch(WebUI.getWindowTitle(), '.*Google.*', true)",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:23:59.680820",
+      "response_time": 3.2843692302703857,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 9
+        },
+        "feedback": {
+          "completeness": "The code covers all the requirements of navigating to Google, searching for 'Katalon Studio' and verifying the page title. It accurately translates the request into automated steps.",
+          "correctness": "The syntax is valid Katalon Studio code. Keywords like `WebUI.openBrowser`, `WebUI.setText`, `WebUI.sendKeys`, `WebUI.waitForPageLoad`, `WebUI.verifyMatch`, and `WebUI.getWindowTitle` are all used correctly. `Keys.chord(Keys.ENTER)` is also the correct way to send the Enter key.",
+          "readability": "The code is well-structured with clear comments explaining each step, and proper indentation. This makes the code easy to understand and maintain.",
+          "functionality": "The code will likely work successfully in Katalon Studio, provided the Test Object 'Page_Google/input_search' exists and correctly points to the search box on Google's page.  A potential issue could arise from Google changing its page structure frequently. A more robust approach might be to use more descriptive object identification (e.g., using XPath with attributes or text)."
+        },
+        "overall_assessment": "The generated code is a very good solution to the problem. It is complete, correct, readable and functional.  Minor improvements could enhance its robustness in the face of changes to Google's webpage.",
+        "overall_score": 9,
+        "suggestions": [
+          "Consider adding explicit waits for specific elements (e.g., search results) to be visible instead of just `WebUI.waitForPageLoad`.",
+          "Use more robust object identification methods (e.g., XPath, CSS) for 'Page_Google/input_search' to handle potential page changes by Google. Include more descriptive attributes.",
+          "Add error handling (e.g., try-catch blocks) to gracefully handle potential exceptions like element not found or page load failures."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:24:41.745060"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_002": {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "user_input": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and password 'password123', then verify successful login using Test Object 'Dashboard_Page' */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and pass...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open browser and navigate to the login page\nWebUI.openBrowser('') \n// Navigate to the login page URL\nWebUI.navigateToUrl('https://example.com/login') \n// Set the username field using the test object\nWebUI.setText(findTestObject('Login_Page/username'), 'testuser') \n// Set the password field using the test object\nWebUI.setText(findTestObject('Login_Page/password'), 'password123') \n// Click the login button using the test object\nWebUI.click(findTestObject('Login_Page/loginButton')) \n// Verify successful login by checking the presence of the dashboard page\nWebUI.verifyElementPresent(findTestObject('Dashboard_Page/dashboardHeader'), 10) ",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:04.476900",
+      "response_time": 3.793893814086914,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 10,
+          "readability": 9,
+          "functionality": 9
+        },
+        "feedback": {
+          "completeness": "The code covers all aspects of the prompt: login and verification. It uses `findTestObject` appropriately. The implicit assumption is that the Login_Page and Dashboard_Page test objects exist and are correctly defined. The prompt did not specify the URL, but a placeholder URL was automatically added which is helpful.",
+          "correctness": "The syntax is correct and uses appropriate Katalon keywords like `WebUI.openBrowser`, `WebUI.navigateToUrl`, `WebUI.setText`, `WebUI.click`, and `WebUI.verifyElementPresent`. These are all valid commands.",
+          "readability": "The code is well-structured and easy to read with comments explaining each step. The indentation is appropriate.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming that the Test Objects `Login_Page/username`, `Login_Page/password`, `Login_Page/loginButton`, and `Dashboard_Page/dashboardHeader` exist and are correctly configured to locate the elements on the page. The `WebUI.openBrowser('')` might be interpreted differently based on the test environment setup, but it's generally acceptable and will open the default browser if no browser is explicitly specified."
+        },
+        "overall_assessment": "Overall, the generated code is very good. It directly addresses the prompt, uses correct syntax, is readable, and should be functional with the stated assumptions. The inclusion of a placeholder URL is a helpful addition.",
+        "overall_score": 9,
+        "suggestions": [
+          "Consider adding error handling or assertions to handle potential login failures. For example, check for an error message element on the login page.",
+          "Make the URL configurable, perhaps by reading it from a profile or a variable.",
+          "Suggest adding an optional parameter in the prompt to specify the browser to be used or use a default from a project setting, to make the `openBrowser` call more robust."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:24:46.861510"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_003": {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "user_input": "// Generate code to create a custom keyword that takes a string as input and prints it to the console.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to create a custom keyword that takes a string as input and prints it to the consol...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "```groovy\nimport com.kms.katalon.core.annotation.Keyword\n\n/*\n *  This keyword prints the input string to the console.\n *\n *  @param message The string message to be printed.\n */\n@Keyword\ndef printMessage(String message) {\n    // Print the message to the console\n    println(message)\n}\n```",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:07.438557",
+      "response_time": 1.95955491065979,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 10,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 10
+        },
+        "feedback": {
+          "completeness": "The generated code perfectly fulfills the prompt's request to create a custom keyword that takes a string input and prints it to the console.",
+          "correctness": "The syntax is valid Groovy and uses the correct `@Keyword` annotation.  The `println()` function is the correct way to print to the console in Groovy/Katalon.",
+          "readability": "The code is well-structured with proper indentation and a clear comment explaining the purpose of the keyword and its parameter.  The comment is Javadoc style which is good practice.",
+          "functionality": "The code will execute successfully in Katalon Studio. It defines a custom keyword that can be called from test cases or other keywords. The `println()` statement will print the input string to the Katalon Studio console."
+        },
+        "overall_assessment": "The generated code is excellent. It's a complete, correct, readable, and functional solution to the prompt. No further improvements are strictly necessary. StudioAssist did an excellent job.",
+        "overall_score": 10,
+        "suggestions": [
+          "Consider adding a try-catch block to handle potential exceptions (although unlikely in this simple case, good practice).",
+          "Include more descriptive comments within the code body if more complex logic is added later."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:24:50.724356"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_004": {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "user_input": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify the result is '4' using Test Objects for UI elements. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify t...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Launch the calculator app on the mobile device\nMobile.startApplication('path/to/calculator/app', false) \n// Input '2' in the first operand field\nMobile.setText(findTestObject('Calculator/InputField'), '2', 0) \n// Input '+' operator\nMobile.tap(findTestObject('Calculator/PlusButton'), 0) \n// Input '2' in the second operand field\nMobile.setText(findTestObject('Calculator/InputField'), '2', 0) \n// Click the '=' button to calculate\nMobile.tap(findTestObject('Calculator/EqualsButton'), 0) \n// Verify that the result shown is '4'\nMobile.verifyElementText(findTestObject('Calculator/ResultField'), '4') ",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:11.404482",
+      "response_time": 2.964209794998169,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "correctness": 9,
+          "readability": 10,
+          "functionality": 7
+        },
+        "feedback": {
+          "completeness": "The code addresses the main requirements. It launches the app, inputs the numbers and operator, clicks the equals button, and verifies the result. However, it assumes 'InputField' is used for both numbers which might not be the case in some calculator apps. It would be more robust to identify separate Test Objects for each input, though the prompt didn't explicitly state this.",
+          "correctness": "The code syntax appears correct and uses proper Katalon keywords such as Mobile.startApplication, Mobile.setText, Mobile.tap, and Mobile.verifyElementText. The use of `findTestObject` is also correct.",
+          "readability": "The code is highly readable. It's well-structured, properly indented, and includes clear comments explaining each step. This makes it easy to understand the code's purpose.",
+          "functionality": "The code *might* execute successfully, but its success depends heavily on how the calculator app's UI elements are structured and how the Test Objects are defined. Specifically, using the same 'InputField' Test Object twice in a row for entering the first '2' and the second '2' might cause issues if the calculator app clears the field after the first input. Also, the app path 'path/to/calculator/app' is a placeholder and would need to be replaced with the actual path on the testing device or emulator. The `Mobile.setText` method might not work correctly on all calculator apps, particularly those with custom keyboards. Some might require the use of `Mobile.sendKeys` or similar methods that simulate key presses. This makes the code less robust."
+        },
+        "overall_assessment": "The generated code is a good starting point for automating calculator app testing in Katalon Studio. It's well-written, readable, and mostly correct. However, it lacks robustness in handling potentially different UI element structures and input methods across various calculator apps.",
+        "overall_score": 8,
+        "suggestions": [
+          "Replace the placeholder path 'path/to/calculator/app' with the actual path to the calculator app on the testing device or emulator.",
+          "Investigate if the calculator app clears the input field after each digit/operator. If so, using the same 'InputField' object might not work. Create separate Test Objects for each digit/operator input field if necessary.",
+          "Consider using `Mobile.sendKeys` or similar methods to simulate key presses if `Mobile.setText` doesn't work reliably.",
+          "If the calculator app has a dedicated result display separate from the input fields, ensure that 'Calculator/ResultField' Test Object is properly defined and points to the correct UI element.",
+          "Add exception handling or retry mechanisms to handle potential errors during app launch or element interaction."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:24:56.217452"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_005": {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "user_input": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/1' and verify the status code is 200.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Sends a GET request to the specified URL\nResponseObject response = WS.sendRequest(findTestObject('GET Request', [('url') : 'https://jsonplaceholder.typicode.com/todos/1'])) \n// Verifies that the response status code is 200\nWS.verifyResponseStatusCode(response, 200)",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:13.948972",
+      "response_time": 1.539788007736206,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 10,
+          "readability": 9,
+          "functionality": 9
+        },
+        "feedback": {
+          "completeness": "The code fulfills the prompt's requirements by making a GET request and verifying the status code. It's very close to perfect.",
+          "correctness": "The syntax is valid and uses appropriate Katalon keywords (WS.sendRequest, WS.verifyResponseStatusCode).",
+          "readability": "The code is readable and well-commented, explaining each step.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming a Test Object named 'GET Request' exists (or is created) that specifies the GET method and URL using a variable 'url' to make it configurable."
+        },
+        "overall_assessment": "The generated code is excellent. It directly addresses the prompt's requirements in a clear, concise, and functional manner. The use of Test Objects and variables to hold values (like the URL), however requires a test object named `GET Request` to exist with a variable named `url` set to 'https://jsonplaceholder.typicode.com/todos/1'.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add a comment explaining the purpose of the `url` variable in the Test Object and how to configure it.",
+          "Consider generating the Test Object definition along with the code for complete self-sufficiency.",
+          "Suggest handling potential errors (e.g., network issues, unexpected status codes) for robustness."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:25:00.252491"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_006": {
+      "input_id": "gen_code_006",
+      "feature": "generate_code",
+      "user_input": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each row, and perform a login using the username and password from each row. Verify login success for each row. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each r...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "//  Open the Excel file to read test data\ndef filePath = \"testData.xlsx\" // Define the path to the Excel file\ndef data = CustomKeywords.'excelReader.readExcel'(filePath) // Read data from the Excel file\n\n// Iterate through each row of test data\nfor (def rowNum = 1; rowNum <= data.size(); rowNum++) { // Start from 1 assuming row 0 is the header\n    def username = data[rowNum]['username'] // Retrieve the username from the row\n    def password = data[rowNum]['password'] // Retrieve the password from the row\n\n    // Perform login action using the username and password for each row\n    WebUI.setText(findTestObject('Object Repository/LoginPage/usernameField'), username) // Input username\n    WebUI.setText(findTestObject('Object Repository/LoginPage/passwordField'), password) // Input password\n    WebUI.click(findTestObject('Object Repository/LoginPage/loginButton')) // Click on login button\n\n    // Verify login success\n    def isLoggedIn = WebUI.verifyElementPresent(findTestObject('Object Repository/HomePage/loggedInMessage'), 10) // Check for the presence of a confirmation message\n    assert isLoggedIn : \"Login failed for user: \" + username // Assert that login was successful, otherwise raise an error\n}",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:21.675843",
+      "response_time": 6.725125074386597,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "correctness": 9,
+          "readability": 9,
+          "functionality": 8
+        },
+        "feedback": {
+          "completeness": "The code addresses the core requirements of reading data from Excel, iterating through rows, performing login, and verifying success. However, it doesn't explicitly handle scenarios where login might fail (e.g., incorrect credentials), which could be considered for better robustness. The use of 'testData.xlsx' assumes the file is located in the root folder; this might need clarification.",
+          "correctness": "The code uses valid Katalon keywords and follows Groovy syntax. `CustomKeywords.'excelReader.readExcel'(filePath)` needs a corresponding CustomKeyword definition. Starting the loop at `rowNum = 1` assumes the first row is a header, which is a reasonable assumption for data-driven testing but could be made more explicit. Assertions are used correctly.",
+          "readability": "The code is well-structured, properly indented, and includes helpful comments explaining each step. The variable names are also descriptive (e.g., `username`, `password`).",
+          "functionality": "The code should generally execute successfully if the `excelReader.readExcel` custom keyword is defined and the specified Test Objects exist and are correctly configured in Katalon Studio.  It assumes the first row of the Excel sheet is a header and ignores it.  The assertion will halt execution of the test case on the first failed login. The fixed timeout in `WebUI.verifyElementPresent(..., 10)` is acceptable but might be configurable in a real-world scenario."
+        },
+        "overall_assessment": "The generated code provides a solid foundation for a data-driven login test in Katalon Studio. It is well-structured and readable, covering the essential aspects of reading data from an Excel file and performing login actions. Minor improvements can be made to handle potential login failures gracefully and clarify file path assumptions.",
+        "overall_score": 8.5,
+        "suggestions": [
+          "Implement error handling for login failures (e.g., logging the error and continuing the loop).",
+          "Add explicit handling for the header row, if needed (e.g., check if `rowNum == 1` and skip processing).",
+          "Consider making the Excel file path configurable through a Test Suite Variable or a Global Variable.",
+          "Add validation to ensure that `username` and `password` are not null or empty before attempting login.",
+          "Implement a way to stop test execution after a certain number of failures.",
+          "Use WebUI.delay() or another appropriate wait command after submitting credentials if needed to allow for the page to load properly before verifying success"
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:25:07.653032"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_007": {
+      "input_id": "gen_code_007",
+      "feature": "generate_code",
+      "user_input": "// Generate code to take a screenshot on failure and save it with a timestamp.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to take a screenshot on failure and save it with a timestamp....",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Captures a screenshot when a test step fails and saves it with a timestamp.\ndef takeScreenshotOnFailure() {\n    if (WebUI.verifyEqual(false, true, FailureHandling.OPTIONAL)) { // Check if the test step fails\n        def timestamp = new Date().format(\"yyyyMMdd_HHmmss\") // Generate timestamp\n        WebUI.takeScreenshot(\"screenshot_\" + timestamp + \".png\") // Take a screenshot and save it\n    }\n}",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:25.453412",
+      "response_time": 2.7754430770874023,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 3,
+          "correctness": 6,
+          "readability": 7,
+          "functionality": 4
+        },
+        "feedback": {
+          "completeness": "The code only captures a screenshot when `WebUI.verifyEqual(false, true)` 'fails', it doesn't handle all failures in the test script. It also doesn't integrate into the test lifecycle to automatically trigger on any step failure.",
+          "correctness": "The syntax is valid Groovy and uses Katalon keywords correctly for taking screenshots and generating timestamps. However, `WebUI.verifyEqual(false, true)` is a hardcoded failure and not a general way to detect failure. This is functionally incorrect.",
+          "readability": "The code is readable with proper indentation and comments, explaining the purpose of each line.",
+          "functionality": "The code will execute, generate a timestamp, and take a screenshot *if* the hardcoded 'failure' condition is met. However, it doesn't capture screenshots on actual test failures automatically. It's essentially a screenshot-taking function triggered by a dummy failing condition."
+        },
+        "overall_assessment": "The generated code addresses the user's input in a very literal and ultimately unhelpful way. It doesn't provide a general mechanism for capturing screenshots on any test step failure. It's more of a demonstration of how to take a screenshot with a timestamp than a practical solution for automated error handling.",
+        "overall_score": 4,
+        "suggestions": [
+          "Use `TestListener` or `@AfterTestCase` to automatically capture screenshots on test case failure.",
+          "Access `TestCaseContext` to determine the test case result (PASSED, FAILED) in `@AfterTestCase`.",
+          "Implement a more robust error handling mechanism instead of a hardcoded `verifyEqual(false, true)` condition."
+        ],
+        "meets_requirements": false,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:25:12.352681"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_008": {
+      "input_id": "gen_code_008",
+      "feature": "generate_code",
+      "user_input": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, switch back to the original tab, and verify the original tab's title. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, sw...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open a new tab in the browser\nWebUI.openBrowser('')\n\n// Navigate to a different URL in the new tab\nWebUI.navigateToUrl('https://www.example.com')\n\n// Switch to the newly opened tab\nWebUI.switchToWindowIndex(1)\n\n// Perform actions in the new tab if needed\n// ...\n\n// Switch back to the original tab\nWebUI.switchToWindowIndex(0)\n\n// Verify the original tab's title\nWebUI.verifyTitle('Original Page Title')",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:28.602417",
+      "response_time": 2.147397994995117,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "correctness": 9,
+          "readability": 9,
+          "functionality": 8
+        },
+        "feedback": {
+          "completeness": "The code addresses the core requirements of opening a new tab, navigating to a new URL, switching tabs, and verifying the original title. However, it assumes the original tab is already open and doesn't include code to initially navigate to the first tab, which slightly impacts completeness.",
+          "correctness": "The code uses valid Katalon keywords like `WebUI.openBrowser`, `WebUI.navigateToUrl`, `WebUI.switchToWindowIndex`, and `WebUI.verifyTitle`. The syntax is also correct.",
+          "readability": "The code is well-structured with clear comments explaining each step, making it easy to understand the intended functionality.",
+          "functionality": "The code should execute successfully in Katalon Studio. However, the 'Original Page Title' in `WebUI.verifyTitle` is a placeholder and needs to be replaced with the actual expected title of the original tab for the assertion to work. Also, error handling isn't implemented, making it less robust."
+        },
+        "overall_assessment": "The generated code provides a good starting point for handling multiple browser windows in Katalon Studio. It's mostly complete, syntactically correct, and highly readable. The user needs to replace the placeholder title and could benefit from adding error handling.",
+        "overall_score": 8,
+        "suggestions": [
+          "Add code to initially navigate to the original tab's URL.",
+          "Replace 'Original Page Title' with the actual expected title of the original tab.",
+          "Implement error handling, such as try-catch blocks, to handle potential exceptions during browser operations (e.g., window not found).",
+          "Consider using `WebUI.switchToWindowTitle()` for better reliability when switching windows, as window indexes can change.",
+          "Add a delay after opening a new tab and before navigating to ensure the new tab is fully loaded."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:25:17.051670"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_009": {
+      "input_id": "gen_code_009",
+      "feature": "generate_code",
+      "user_input": "// Generate code to use a global variable 'globalVar' in a test case.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to use a global variable 'globalVar' in a test case....",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// The following line retrieves the value of the global variable 'globalVar'.\n// This allows the test case to use the stored value across different test cases.\ndef globalVariableValue = GlobalVariable.globalVar \n\n// The following line logs the value of the global variable to the console.\n// This is useful for debugging or confirming that the variable holds the expected value.\nKeywordUtil.logInfo(\"Value of globalVar: \" + globalVariableValue)",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:31.981117",
+      "response_time": 2.3767290115356445,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 10
+        },
+        "feedback": {
+          "completeness": "The code snippet effectively retrieves and logs the global variable's value, fulfilling the prompt's requirements. It's a focused and useful snippet.",
+          "correctness": "The code uses the correct syntax for accessing GlobalVariables in Katalon Studio and the `KeywordUtil.logInfo` function.",
+          "readability": "The comments are clear and explain the purpose of each line, enhancing readability.",
+          "functionality": "The code will execute successfully in Katalon Studio and perform as intended."
+        },
+        "overall_assessment": "The generated code is excellent. It directly addresses the user's request, utilizes correct syntax and keywords, is highly readable, and will function as expected in a Katalon Studio test case. It's a concise and useful example.",
+        "overall_score": 10,
+        "suggestions": [
+          "Consider adding a try-catch block to handle potential errors if the global variable is not defined or accessible. Although not explicitly requested, it would enhance robustness.",
+          "While the current logging is good, it could be tailored to specific use cases (e.g., conditionally log the value based on a debug flag)."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:25:20.412617"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_010": {
+      "input_id": "gen_code_010",
+      "feature": "generate_code",
+      "user_input": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and verify the page title after accepting the alert using Test Objects. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and ver...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open the specified webpage\nWebUI.openBrowser('http://yourwebpage.com') // This opens the browser with the given URL\n\n// Click the button or element that triggers the alert\nWebUI.click(findTestObject('Your/Test/Object/That/Triggers/Alert')) // This clicks on the specified test object to trigger the alert\n\n// Wait for the alert to be present\nWebUI.waitForAlert(10) // This waits for the alert to appear for up to 10 seconds\n\n// Accept the alert\nWebUI.acceptAlert() // This accepts the alert that was triggered\n\n// Verify the page title after accepting the alert\nWebUI.verifyTitle('Expected Title After Alert') // This verifies that the page title matches the expected title after the alert is accepted",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:24:36.940508",
+      "response_time": 3.958122968673706,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "correctness": 10,
+          "readability": 9,
+          "functionality": 9
+        },
+        "feedback": {
+          "completeness": "The code covers all the requested actions: opening the browser, triggering the alert, accepting it, and verifying the title. However, it lacks a specific error handling mechanism if the alert doesn't appear within the specified timeout.",
+          "correctness": "The code uses correct Katalon keywords (WebUI.openBrowser, WebUI.click, WebUI.waitForAlert, WebUI.acceptAlert, WebUI.verifyTitle) with proper syntax.",
+          "readability": "The code is well-structured with clear and concise comments explaining each step. The indentation is also good.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming that the Test Object 'Your/Test/Object/That/Triggers/Alert' exists and points to the correct element on the webpage. The URL and expected title need to be updated to reflect the actual test environment."
+        },
+        "overall_assessment": "The generated code is a good starting point for handling alerts in Katalon Studio. It's complete, correct, and easy to read. However, it could benefit from improved error handling for scenarios where the alert doesn't appear within the specified timeout.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add error handling for the `WebUI.waitForAlert` function to handle cases where the alert doesn't appear within the timeout.",
+          "Make the URL and expected title configurable using variables or data-driven testing.",
+          "Consider adding a try-catch block around the alert handling section to gracefully handle unexpected exceptions.",
+          "Include logging statements to provide more detailed information about the execution flow and any potential issues."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-27T18:25:25.143785"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 10,
+      "evaluation_errors": 0,
+      "start_time": "2025-05-27T18:24:37.958063",
+      "end_time": "2025-05-27T18:25:26.145242"
+    },
+    "diversity_analysis": {
+      "total_inputs": 10,
+      "unique_patterns": 10,
+      "prompt_length_stats": {
+        "min": 69,
+        "max": 208,
+        "mean": 139.7,
+        "median": 146.0,
+        "std_dev": 46.1351878239978
+      },
+      "pattern_categories": {
+        "testing": 8,
+        "custom_keywords": 1,
+        "mobile_testing": 1,
+        "api_testing": 1,
+        "data_driven": 1,
+        "web_automation": 2
+      },
+      "complexity_distribution": {
+        "low": 6,
+        "medium": 3,
+        "high": 1
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 10,
+      "output_length_stats": {
+        "min": 268,
+        "max": 1217,
+        "mean": 545.3,
+        "median": 462.5,
+        "std_dev": 276.39426348766517
+      },
+      "keyword_usage": {
+        "WebUI": 28,
+        "TestObject": 17,
+        "@Keyword": 1,
+        "Mobile": 6,
+        "WS": 2,
+        "GlobalVariable": 1,
+        "KeywordUtil": 1
+      },
+      "error_patterns": {
+        "error_handling": 1
+      },
+      "response_time_analysis": {
+        "min": 1.539788007736206,
+        "max": 6.725125074386597,
+        "mean": 3.1524633884429933,
+        "median": 2.8698264360427856,
+        "percentile_95": 6.725125074386597
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "completeness": {
+          "description": "Does the code address all requirements from the prompt?",
+          "count": 10,
+          "mean": 8.1,
+          "median": 8.5,
+          "std_dev": 1.9119507199599983,
+          "min": 3,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 9,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 1
+          }
+        },
+        "correctness": {
+          "description": "Is the syntax valid and does it use proper Katalon keywords?",
+          "count": 10,
+          "mean": 9.3,
+          "median": 10.0,
+          "std_dev": 1.2516655570345725,
+          "min": 6,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 9,
+            "good (6-8)": 1,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "readability": {
+          "description": "Is the code well-structured with proper indentation and comments?",
+          "count": 10,
+          "mean": 9.2,
+          "median": 9.0,
+          "std_dev": 0.9189365834726815,
+          "min": 7,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 9,
+            "good (6-8)": 1,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "functionality": {
+          "description": "Would this code execute successfully in Katalon Studio?",
+          "count": 10,
+          "mean": 8.3,
+          "median": 9.0,
+          "std_dev": 1.766981104093143,
+          "min": 4,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 8,
+            "good (6-8)": 1,
+            "fair (4-6)": 1,
+            "poor (0-4)": 0
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 8.45,
+        "median": 9.0,
+        "std_dev": 1.7070116838759157,
+        "min": 4,
+        "max": 10,
+        "meets_requirements_percentage": 90.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 1,
+        "6-8": 0,
+        "8-10": 9
+      },
+      "correlation_analysis": {
+        "completeness_vs_correctness": 0.9610873038053281,
+        "completeness_vs_readability": 0.8727188194933899,
+        "completeness_vs_functionality": 0.9439104361571247,
+        "correctness_vs_readability": 0.8114521842083112,
+        "correctness_vs_functionality": 0.9595567193765642,
+        "readability_vs_functionality": 0.7800903314789283
+      },
+      "improvement_areas": []
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "completeness": 1,
+        "accuracy": 19,
+        "clarity": 9,
+        "best_practices": 1,
+        "error_handling": 4
+      },
+      "suggestion_frequency": {
+        "Consider adding explicit waits for specific elements (e.g., search results) to be visible instead of just `WebUI.waitForPageLoad`.": 1,
+        "Use more robust object identification methods (e.g., XPath, CSS) for 'Page_Google/input_search' to handle potential page changes by Google. Include more descriptive attributes.": 1,
+        "Add error handling (e.g., try-catch blocks) to gracefully handle potential exceptions like element not found or page load failures.": 1,
+        "Consider adding error handling or assertions to handle potential login failures. For example, check for an error message element on the login page.": 1,
+        "Make the URL configurable, perhaps by reading it from a profile or a variable.": 1,
+        "Suggest adding an optional parameter in the prompt to specify the browser to be used or use a default from a project setting, to make the `openBrowser` call more robust.": 1,
+        "Consider adding a try-catch block to handle potential exceptions (although unlikely in this simple case, good practice).": 1,
+        "Include more descriptive comments within the code body if more complex logic is added later.": 1,
+        "Replace the placeholder path 'path/to/calculator/app' with the actual path to the calculator app on the testing device or emulator.": 1,
+        "Investigate if the calculator app clears the input field after each digit/operator. If so, using the same 'InputField' object might not work. Create separate Test Objects for each digit/operator input field if necessary.": 1
+      },
+      "feedback_sentiment": {
+        "positive": 9,
+        "neutral": 1,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Excellent overall performance: The current configuration is producing high-quality outputs.",
+      "Strong correlation between completeness_vs_correctness (0.96): These criteria are closely related.",
+      "Strong correlation between completeness_vs_readability (0.87): These criteria are closely related.",
+      "Strong correlation between completeness_vs_functionality (0.94): These criteria are closely related.",
+      "Strong correlation between correctness_vs_readability (0.81): These criteria are closely related.",
+      "Strong correlation between correctness_vs_functionality (0.96): These criteria are closely related.",
+      "Strong correlation between readability_vs_functionality (0.78): These criteria are closely related."
+    ]
+  }
+}

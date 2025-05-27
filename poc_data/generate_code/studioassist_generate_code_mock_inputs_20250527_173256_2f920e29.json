@@ -1,0 +1,102 @@
+[
+  {
+    "input_id": "gen_code_001",
+    "feature": "generate_code",
+    "prompt": "// Verify the title of the webpage, then click the 'Login' button, enter username 'demo' and password 'password123', finally click the 'Submit' button.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_002",
+    "feature": "generate_code",
+    "prompt": "/*\n* Open URL: https://example.com\n* Verify if Test Object 'Page_Home/div_Welcome' contains text 'Welcome to our site!'\n* Click on Test Object 'Page_Home/a_Products'\n*/",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_003",
+    "feature": "generate_code",
+    "prompt": "// Given a CSV file 'users.csv' with columns 'username' and 'password', loop through each row and:\n// - Open URL: https://example.com/login\n// - Enter username from 'username' column into Test Object 'Page_Login/input_username'\n// - Enter password from 'password' column into Test Object 'Page_Login/input_password'\n// - Click Test Object 'Page_Login/button_login'\n// - Verify if Test Object 'Page_Dashboard/div_success_message' is present",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_004",
+    "feature": "generate_code",
+    "prompt": "// Send a GET request to 'https://api.example.com/users' with header 'Content-Type: application/json'.\n// Verify the response status code is 200 and the response body contains an array of users.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_005",
+    "feature": "generate_code",
+    "prompt": "// Create a custom keyword named 'calculateSum' that takes two integers as input and returns their sum.\n// The keyword should be placed in the 'com.example.keywords' package.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_006",
+    "feature": "generate_code",
+    "prompt": "// Mobile test: Tap on element with XPath '//android.widget.Button[@text=\"OK\"]' on a device with name 'Pixel 7'.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_007",
+    "feature": "generate_code",
+    "prompt": "// Verify if variable 'orderId' is an integer and its value is greater than 100.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_008",
+    "feature": "generate_code",
+    "prompt": "// Drag and drop Test Object 'Page_Home/div_Source' to Test Object 'Page_Home/div_Target' using dragAndDrop keyword.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_009",
+    "feature": "generate_code",
+    "prompt": "// Take a screenshot and save it as 'screenshot_homepage.png' in the default screenshot folder.",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  },
+  {
+    "input_id": "gen_code_010",
+    "feature": "generate_code",
+    "prompt": "/*\n* Open URL: https://example.com\n* Select value 'Option 2' from Test Object 'Page_Home/select_dropdown'\n* Verify that the selected value in Test Object 'Page_Home/select_dropdown' is 'Option 2'\n*/",
+    "config": {
+      "mode": "script",
+      "katalon_version": "10.2.0"
+    },
+    "prompt_id": "generate-code"
+  }
+]

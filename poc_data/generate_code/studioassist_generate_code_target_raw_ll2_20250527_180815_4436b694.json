@@ -1,0 +1,343 @@
+{
+  "metadata": {
+    "feature": "generate_code",
+    "llm_version": "LL2",
+    "creation_timestamp": "2025-05-27T18:08:15.420867",
+    "total_results": 10,
+    "dataset_type": "target"
+  },
+  "inputs": [
+    {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "prompt": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify the title contains 'Google'",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "prompt": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and password 'password123', then verify successful login using Test Object 'Dashboard_Page' */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "prompt": "// Generate code to create a custom keyword that takes a string as input and prints it to the console.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "prompt": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify the result is '4' using Test Objects for UI elements. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "prompt": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/1' and verify the status code is 200.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_006",
+      "feature": "generate_code",
+      "prompt": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each row, and perform a login using the username and password from each row. Verify login success for each row. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_007",
+      "feature": "generate_code",
+      "prompt": "// Generate code to take a screenshot on failure and save it with a timestamp.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_008",
+      "feature": "generate_code",
+      "prompt": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, switch back to the original tab, and verify the original tab's title. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_009",
+      "feature": "generate_code",
+      "prompt": "// Generate code to use a global variable 'globalVar' in a test case.",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_010",
+      "feature": "generate_code",
+      "prompt": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and verify the page title after accepting the alert using Test Objects. */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    }
+  ],
+  "results": {
+    "gen_code_001": {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "user_input": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify the title contains 'Google'",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to navigate to 'https://www.google.com', search for 'Katalon Studio', and verify th...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open the specified URL in a web browser\nWebUI.openBrowser('https://www.google.com')  \n// Type the search term into the search bar identified by the specified test object\nWebUI.setText(findTestObject('Page_Google/input_Search'), 'Katalon Studio')  \n// Click on the search button identified by the specified test object\nWebUI.click(findTestObject('Page_Google/button_Search'))  \n// Wait for a few seconds to allow search results to load\nWebUI.delay(3)  \n// Verify that the title of the current page contains the word 'Google'\nWebUI.verifyTitleContains('Google')  \n// Close the browser after the operation\nWebUI.closeBrowser()",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:07:39.277652",
+      "response_time": 3.1210670471191406,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_002": {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "user_input": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and password 'password123', then verify successful login using Test Object 'Dashboard_Page' */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code to perform a login using Test Object 'Login_Page' with username 'testuser' and pass...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open the application\nWebUI.openBrowser('')\n\n// Navigate to the login page\nWebUI.navigateToUrl('http://yourapplicationurl.com')\n\n// Input username\nWebUI.setText(findTestObject('Login_Page/usernameField'), 'testuser')\n\n// Input password\nWebUI.setText(findTestObject('Login_Page/passwordField'), 'password123')\n\n// Click the login button\nWebUI.click(findTestObject('Login_Page/loginButton'))\n\n// Verify successful login by checking the presence of the dashboard page\nWebUI.verifyElementPresent(findTestObject('Dashboard_Page/dashboardHeader'), 10)",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:07:43.474905",
+      "response_time": 3.1961171627044678,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_003": {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "user_input": "// Generate code to create a custom keyword that takes a string as input and prints it to the console.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to create a custom keyword that takes a string as input and prints it to the consol...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "```groovy\n@Keyword\n/*\n *  This keyword prints a given string to the console.\n *\n *  @param message The string message to be printed to the console.\n */\ndef printToConsole(String message) {\n    println message // Prints the message to the console\n}\n```",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:07:46.102001",
+      "response_time": 1.6251211166381836,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_004": {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "user_input": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify the result is '4' using Test Objects for UI elements. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code for mobile testing: Launch the calculator app, input '2+2', click '=', and verify t...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Launch the calculator app\nMobile.startApplication('path/to/calculator.apk', false)\n\n// Input '2'\nMobile.tap(findTestObject('Calculator/btn_2'), 0) // Clicks on the button '2'\n\n// Input '+'\nMobile.tap(findTestObject('Calculator/btn_plus'), 0) // Clicks on the '+' button\n\n// Input '2'\nMobile.tap(findTestObject('Calculator/btn_2'), 0) // Clicks on the button '2' again\n\n// Click '='\nMobile.tap(findTestObject('Calculator/btn_equals'), 0) // Clicks on the '=' button\n\n// Verify the result is '4'\nMobile.verifyElementText(findTestObject('Calculator/txt_result'), '4') // Checks if the displayed text is '4'",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:07:50.738341",
+      "response_time": 3.634598970413208,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_005": {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "user_input": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/1' and verify the status code is 200.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code for API testing: Make a GET request to 'https://jsonplaceholder.typicode.com/todos/...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// This code performs a GET request to a specified URL and verifies the status code.\nResponseObject response = WS.sendRequest(findTestObject('API Requests/Get Todo')) // Sends GET request to the API endpoint\nWS.verifyResponseStatusCode(response, 200) // Verifies that the response status code is 200",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:07:53.120417",
+      "response_time": 1.3809988498687744,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_006": {
+      "input_id": "gen_code_006",
+      "feature": "generate_code",
+      "user_input": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each row, and perform a login using the username and password from each row. Verify login success for each row. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate data-driven test: Read data from an Excel file ('testData.xlsx'), iterate through each r...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "```groovy\n// Read the Excel file for test data\ndef data = CustomKeywords.'com.katalon.keyword.excel.ExcelKeywords.getExcelData'('testData.xlsx')\n\n// Iterate through each row of data\nfor (def row : data) {\n    // Retrieve username and password from the current row\n    def username = row['username'] // Column name should match the header of the Excel sheet\n    def password = row['password'] // Column name should match the header of the Excel sheet\n\n    // Open the login page\n    WebUI.openBrowser('') // Open a browser\n\n    // Navigate to the login URL\n    WebUI.navigateToUrl('http://example.com/login') // Navigate to login page\n\n    // Input username\n    WebUI.setText(findTestObject('Object Repository/LoginPage/usernameField'), username) // Set username in the field\n\n    // Input password\n    WebUI.setText(findTestObject('Object Repository/LoginPage/passwordField'), password) // Set password in the field\n\n    // Click the login button\n    WebUI.click(findTestObject('Object Repository/LoginPage/loginButton')) // Click on login button\n\n    // Verify login success\n    WebUI.verifyElementPresent(findTestObject('Object Repository/HomePage/welcomeMessage'), 5) // Verify welcome message is present\n\n    // Close the browser after verification\n    WebUI.closeBrowser() // Close the browser\n}\n```",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:07:59.318061",
+      "response_time": 5.195512771606445,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_007": {
+      "input_id": "gen_code_007",
+      "feature": "generate_code",
+      "user_input": "// Generate code to take a screenshot on failure and save it with a timestamp.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to take a screenshot on failure and save it with a timestamp....",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Take a screenshot when a test step fails\nErrorResult = WebUI.takeScreenshot() // Captures the screenshot and saves it to the default location\n\n// Get current timestamp and format it for the screenshot file name\ntimestamp = new Date().format('yyyyMMddHHmmss') // Creates a timestamp string based on the current date and time\n\n// Define the screenshot file name with timestamp\nscreenshotFileName = \"FailureScreenshot_\" + timestamp + \".png\" // Appends the timestamp to the filename\n\n// Move the screenshot to the desired location with the new file name\nFileUtils.moveFile(new File(ErrorResult), new File(\"desired/path/\" + screenshotFileName)) // Moves the screenshot to the specified path",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:08:03.742144",
+      "response_time": 3.4226670265197754,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_008": {
+      "input_id": "gen_code_008",
+      "feature": "generate_code",
+      "user_input": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, switch back to the original tab, and verify the original tab's title. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code to handle multiple browser windows: Open a new tab, navigate to a different URL, sw...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open a new browser tab\nWebUI.openBrowser('')\n\n// Navigate to the original URL\nWebUI.navigateToUrl('https://www.original-url.com')\n\n// Store the current window handle (original tab)\ndef originalTab = WebUI.getWindowHandle()\n\n// Open a new tab using JavaScript\nWebUI.executeJavaScript('window.open(\"https://www.new-url.com\", \"_blank\");', [])\n\n// Switch to the new tab\nWebUI.switchToWindowIndex(1)\n\n// Verify we are on the new URL (Optional - can be removed if not needed)\nWebUI.verifyEqual(WebUI.getUrl(), 'https://www.new-url.com')\n\n// Switch back to the original tab\nWebUI.switchToWindow(originalTab)\n\n// Verify the original tab's title\nWebUI.verifyEqual(WebUI.getWindowTitle(), 'Original Tab Title')",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:08:07.737749",
+      "response_time": 2.9935617446899414,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_009": {
+      "input_id": "gen_code_009",
+      "feature": "generate_code",
+      "user_input": "// Generate code to use a global variable 'globalVar' in a test case.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Generate code to use a global variable 'globalVar' in a test case....",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// This line will read the value of the global variable 'globalVar' into a local variable\ndef myVariable = GlobalVariable.globalVar\n\n// This line will log the value of the local variable to the console for verification\nprintln(myVariable)\n\n// This line will indicate that Katalon should find the specified test object by its path\nWebUI.click(findTestObject('Object Repository/YourTestObject'))\n\n// This line will set the value of an input field using the local variable\nWebUI.setText(findTestObject('Object Repository/YourInputField'), myVariable)",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:08:11.741742",
+      "response_time": 3.002007007598877,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_010": {
+      "input_id": "gen_code_010",
+      "feature": "generate_code",
+      "user_input": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and verify the page title after accepting the alert using Test Objects. */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Generate code to handle alerts:  Open a webpage that triggers an alert, accept the alert, and ver...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open the specified webpage that triggers an alert\nWebUI.openBrowser('http://example.com/alert') \n\n// Accept the alert that appears\nWebUI.acceptAlert() \n\n// Verify that the title of the page is as expected after accepting the alert\nWebUI.verifyTitle('Expected Page Title')",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-27T18:08:14.418577",
+      "response_time": 1.6754660606384277,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    }
+  }
+}

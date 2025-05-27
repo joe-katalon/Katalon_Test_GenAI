@@ -1,0 +1,712 @@
+{
+  "metadata": {
+    "feature": "explain_code",
+    "llm_version": "LL1",
+    "creation_timestamp": "2025-05-27T19:56:31.123979",
+    "total_results": 20
+  },
+  "inputs": [
+    {
+      "input_id": "explain_001",
+      "feature": "explain_code",
+      "prompt": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Page_MyPage/input_Username'), 'JohnDoe')\nWebUI.setEncryptedText(findTestObject('Page_MyPage/input_Password'), 'someencryptedvalue')\nWebUI.click(findTestObject('Page_MyPage/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Page_MyPage/div_WelcomeMessage'))",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_002",
+      "feature": "explain_code",
+      "prompt": "Mobile.startExistingApplication('com.example.myapp')\nMobile.tap(findTestObject('Mobile_Page_Home/button_Menu'), 10)\nMobile.swipe(startX, startY, endX, endY)\nMobile.verifyElementVisible(findTestObject('Mobile_Page_Settings/text_Version'), 10)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_003",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.annotation.Keyword\n\n@Keyword\ndef myCustomKeyword(String input){\n  println 'Input received: ' + input\n  return input.toUpperCase()\n}",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_004",
+      "feature": "explain_code",
+      "prompt": "def getTableData(TestObject tableObject) {\n List<List<String>> tableData = new ArrayList<>()\n int rowCount = WebUI.getNumberOfRows(tableObject)\n int colCount = WebUI.getNumberOfColumns(tableObject)\n for (int row = 1; row <= rowCount; row++) {\n  List<String> rowData = new ArrayList<>()\n  for (int col = 1; col <= colCount; col++) {\n   rowData.add(WebUI.getText(tableObject.addProperty('xpath', 'equals', '//table/tbody/tr[' + row + ']/td[' + col + ']')))\n  }\n  tableData.add(rowData)\n }\n return tableData\n}",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_005",
+      "feature": "explain_code",
+      "prompt": "WebUI.navigateToUrl('https://www.example.com')\nWebElement element = DriverFactory.getWebDriver().findElement(By.id('myElement'))\nWebUI.scrollToElement(element, 10)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_006",
+      "feature": "explain_code",
+      "prompt": "WebUI.verifyMatch(WebUI.getText(findTestObject('Page_MyPage/span_Price')), '\\$\\d+(\\.\\d{2})?', false)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_007",
+      "feature": "explain_code",
+      "prompt": "WebUI.delay(2)\nWebUI.takeScreenshot('screenshot.png')",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_008",
+      "feature": "explain_code",
+      "prompt": "try {\n WebUI.click(findTestObject('Page_MyPage/button_Submit'))\n} catch (Exception e) {\n println 'Element not found: ' + e.getMessage()\n}",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_009",
+      "feature": "explain_code",
+      "prompt": "WebUI.waitForElementPresent(findTestObject('Page_MyPage/div_Loading'), 10)\nWebUI.waitForElementNotPresent(findTestObject('Page_MyPage/div_Loading'), 20)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_010",
+      "feature": "explain_code",
+      "prompt": "ExecutionContext.getTestCaseVariables().put('myVariable', 'someValue')",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_011",
+      "feature": "explain_code",
+      "prompt": "Mobile.verifyElementNotExist(findTestObject('Mobile_Page_Home/button_Delete'), 5)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_012",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.webui.driver.DriverFactory\n\nDriverFactory.getWebDriver().manage().window().maximize()",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_013",
+      "feature": "explain_code",
+      "prompt": "def data = findTestData('Data Files/TestData1')\nWebUI.setText(findTestObject('Page_MyPage/input_Username'), data.getValue('username', 1))",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_014",
+      "feature": "explain_code",
+      "prompt": "WebUI.executeJavaScript('window.scrollTo(0, document.body.scrollHeight)', null)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_015",
+      "feature": "explain_code",
+      "prompt": "Mobile.closeApplication()",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_016",
+      "feature": "explain_code",
+      "prompt": "if(WebUI.verifyElementVisible(findTestObject('Page_MyPage/div_SuccessMessage'))){ \nprintln 'Success!'\n} else {\nprintln 'Failure!'\n}",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_017",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.configuration.RunConfiguration\n\nprintln RunConfiguration.getReportFolder()",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_018",
+      "feature": "explain_code",
+      "prompt": "String browserType = System.getProperty('browser')\nWebUI.openBrowser('')\nWebUI.navigateToUrl('https://www.example.com')",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_019",
+      "feature": "explain_code",
+      "prompt": "WebUI.switchToFrame(findTestObject('Page_MyPage/iframe_MyIframe'), 10)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_020",
+      "feature": "explain_code",
+      "prompt": "WebUI.sendKeys(findTestObject('Page_MyPage/input_Search'), Keys.chord(Keys.CONTROL, 'a'))",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    }
+  ],
+  "results": {
+    "explain_001": {
+      "input_id": "explain_001",
+      "feature": "explain_code",
+      "user_input": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Page_MyPage/input_Username'), 'JohnDoe')\nWebUI.setEncryptedText(findTestObject('Page_MyPage/input_Password'), 'someencryptedvalue')\nWebUI.click(findTestObject('Page_MyPage/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Page_MyPage/div_WelcomeMessage'))",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Page_MyPage/input_Username'), 'JohnDoe')\nWebUI.setEncryptedText(findTestObject('Page_MyPage/input_Password'), 'someencryptedvalue')\nWebUI.click(findTestObject('Page_MyPage/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Page_MyPage/div_WelcomeMessage'))"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Automate the login process on a web page and verify successful login.\n *\n * 1. Open a browser and navigate to the specified URL.\n * 2. Enter the username into the username input field.\n * 3. Enter the encrypted password into the password input field.\n * 4. Click the login button to submit the login form.\n * 5. Verify that the welcome message element is visible, indicating a successful login.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:29.604297",
+      "response_time": 3.5518031120300293,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_002": {
+      "input_id": "explain_002",
+      "feature": "explain_code",
+      "user_input": "Mobile.startExistingApplication('com.example.myapp')\nMobile.tap(findTestObject('Mobile_Page_Home/button_Menu'), 10)\nMobile.swipe(startX, startY, endX, endY)\nMobile.verifyElementVisible(findTestObject('Mobile_Page_Settings/text_Version'), 10)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "Mobile.startExistingApplication('com.example.myapp')\nMobile.tap(findTestObject('Mobile_Page_Home/button_Menu'), 10)\nMobile.swipe(startX, startY, endX, endY)\nMobile.verifyElementVisible(findTestObject('Mobile_Page_Settings/text_Version'), 10)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Automate a mobile application to open it, navigate through the interface, perform a swipe gesture, and verify the visibility of a specific element.\n *\n * 1. Start an existing mobile application identified by its package name.\n * 2. Tap on a menu button located on the home page.\n * 3. Perform a swipe gesture from specified start coordinates to end coordinates.\n * 4. Verify that the version text element is visible on the settings page within a timeout period.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:33.018852",
+      "response_time": 2.4124979972839355,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_003": {
+      "input_id": "explain_003",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.annotation.Keyword\n\n@Keyword\ndef myCustomKeyword(String input){\n  println 'Input received: ' + input\n  return input.toUpperCase()\n}",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "import com.kms.katalon.core.annotation.Keyword\n\n@Keyword\ndef myCustomKeyword(String input){\n  println 'Input received: ' + input\n  return input.toUpperCase()\n}"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/ *\n * Define a custom keyword function that processes a string input and returns its uppercase version.\n *\n *  - Parameters:\n *    - String input: The input string to be processed.\n *  - Steps:\n *    1. Print the received input string to the console.\n *    2. Convert the input string to uppercase.\n *    3. Return the uppercase string.\n * /",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:36.332973",
+      "response_time": 2.312359094619751,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_004": {
+      "input_id": "explain_004",
+      "feature": "explain_code",
+      "user_input": "def getTableData(TestObject tableObject) {\n List<List<String>> tableData = new ArrayList<>()\n int rowCount = WebUI.getNumberOfRows(tableObject)\n int colCount = WebUI.getNumberOfColumns(tableObject)\n for (int row = 1; row <= rowCount; row++) {\n  List<String> rowData = new ArrayList<>()\n  for (int col = 1; col <= colCount; col++) {\n   rowData.add(WebUI.getText(tableObject.addProperty('xpath', 'equals', '//table/tbody/tr[' + row + ']/td[' + col + ']')))\n  }\n  tableData.add(rowData)\n }\n return tableData\n}",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "def getTableData(TestObject tableObject) {\n List<List<String>> tableData = new ArrayList<>()\n int rowCount = WebUI.getNumberOfRows(tableObject)\n int colCount = WebUI.getNumberOfColumns(tableObject)\n for (int row = 1; row <= rowCount; row++) {\n  List<String> rowData = new ArrayList<>()\n  for (int col = 1; col <= colCount; col++) {\n   rowData.add(WebUI.getText(tableObject.addProperty('xpath', 'equals', '//table/tbody/tr[' + row + ']/td[' + col + ']')))\n  }\n  tableData.add(rowData)\n }\n return tableData\n}"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Extract the text content from each cell of a web table and return it as a two-dimensional list.\n *\n *  - Parameters:\n *    - TestObject tableObject: Represents the web table from which to extract data.\n *  - Steps:\n *    1. Initialize an empty list to hold the table data.\n *    2. Retrieve the number of rows and columns in the table.\n *    3. Iterate over each row.\n *    4. For each row, initialize a list to hold the row's cell data.\n *    5. Iterate over each column in the current row.\n *    6. Extract the text from the cell at the current row and column using an XPath property.\n *    7. Add the extracted text to the current row's list.\n *    8. Add the completed row list to the main table data list.\n *    9. Return the two-dimensional list containing all table cell texts.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:41.627826",
+      "response_time": 4.292760133743286,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_005": {
+      "input_id": "explain_005",
+      "feature": "explain_code",
+      "user_input": "WebUI.navigateToUrl('https://www.example.com')\nWebElement element = DriverFactory.getWebDriver().findElement(By.id('myElement'))\nWebUI.scrollToElement(element, 10)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.navigateToUrl('https://www.example.com')\nWebElement element = DriverFactory.getWebDriver().findElement(By.id('myElement'))\nWebUI.scrollToElement(element, 10)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Automate navigation to a specified URL and scroll to a specific web element on the page.\n *\n * 1. Navigate to the URL 'https://www.example.com'.\n * 2. Locate the web element with the ID 'myElement' using the web driver.\n * 3. Scroll to the located web element with a timeout of 10 seconds.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:44.998509",
+      "response_time": 2.3688042163848877,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_006": {
+      "input_id": "explain_006",
+      "feature": "explain_code",
+      "user_input": "WebUI.verifyMatch(WebUI.getText(findTestObject('Page_MyPage/span_Price')), '\\$\\d+(\\.\\d{2})?', false)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.verifyMatch(WebUI.getText(findTestObject('Page_MyPage/span_Price')), '\\$\\d+(\\.\\d{2})?', false)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Verify that the text of a specific web element matches a price pattern.\n *\n * 1. Retrieve the text content from the web element identified by 'Page_MyPage/span_Price'.\n * 2. Check if the retrieved text matches the regular expression pattern for a price format (a dollar sign followed by digits, optionally with two decimal places).\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:47.991939",
+      "response_time": 1.9914047718048096,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_007": {
+      "input_id": "explain_007",
+      "feature": "explain_code",
+      "user_input": "WebUI.delay(2)\nWebUI.takeScreenshot('screenshot.png')",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.delay(2)\nWebUI.takeScreenshot('screenshot.png')"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Perform a delay and capture a screenshot.\n *\n * 1. Delay the execution for 2 seconds.\n * 2. Take a screenshot and save it as 'screenshot.png'.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:50.815117",
+      "response_time": 1.8212871551513672,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_008": {
+      "input_id": "explain_008",
+      "feature": "explain_code",
+      "user_input": "try {\n WebUI.click(findTestObject('Page_MyPage/button_Submit'))\n} catch (Exception e) {\n println 'Element not found: ' + e.getMessage()\n}",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "try {\n WebUI.click(findTestObject('Page_MyPage/button_Submit'))\n} catch (Exception e) {\n println 'Element not found: ' + e.getMessage()\n}"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Attempt to click a submit button on a webpage and handle the case where the element is not found.\n *\n * 1. Try to perform a click action on the 'Submit' button identified by a test object.\n * 2. Catch any exceptions that occur if the element is not found or the click fails.\n * 3. Print an error message indicating the element was not found along with the exception message.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:54.728556",
+      "response_time": 2.9116921424865723,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_009": {
+      "input_id": "explain_009",
+      "feature": "explain_code",
+      "user_input": "WebUI.waitForElementPresent(findTestObject('Page_MyPage/div_Loading'), 10)\nWebUI.waitForElementNotPresent(findTestObject('Page_MyPage/div_Loading'), 20)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.waitForElementPresent(findTestObject('Page_MyPage/div_Loading'), 10)\nWebUI.waitForElementNotPresent(findTestObject('Page_MyPage/div_Loading'), 20)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Wait for a loading element to appear and then disappear on a web page.\n *\n * 1. Wait for the 'div_Loading' element on 'Page_MyPage' to be present within 10 seconds.\n * 2. Wait for the same 'div_Loading' element to no longer be present within 20 seconds.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:55:57.829495",
+      "response_time": 2.09889817237854,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_010": {
+      "input_id": "explain_010",
+      "feature": "explain_code",
+      "user_input": "ExecutionContext.getTestCaseVariables().put('myVariable', 'someValue')",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "ExecutionContext.getTestCaseVariables().put('myVariable', 'someValue')"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Set a test case variable with a specified name and value in the execution context.\n *\n * 1. Retrieve the current test case variables map from the execution context.\n * 2. Insert or update the variable 'myVariable' with the value 'someValue' in the variables map.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:00.706383",
+      "response_time": 1.8752739429473877,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_011": {
+      "input_id": "explain_011",
+      "feature": "explain_code",
+      "user_input": "Mobile.verifyElementNotExist(findTestObject('Mobile_Page_Home/button_Delete'), 5)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "Mobile.verifyElementNotExist(findTestObject('Mobile_Page_Home/button_Delete'), 5)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Verify that a specific mobile UI element does not exist within a given timeout period.\n *\n * 1. Locate the mobile test object identified as 'Mobile_Page_Home/button_Delete'.\n * 2. Check that the element is not present on the current mobile screen within 5 seconds.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:03.584376",
+      "response_time": 1.8756589889526367,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_012": {
+      "input_id": "explain_012",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.webui.driver.DriverFactory\n\nDriverFactory.getWebDriver().manage().window().maximize()",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "import com.kms.katalon.core.webui.driver.DriverFactory\n\nDriverFactory.getWebDriver().manage().window().maximize()"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Maximize the browser window of the current WebDriver instance.\n *\n * 1. Retrieve the current WebDriver instance using the driver factory.\n * 2. Access the browser window management interface.\n * 3. Maximize the browser window.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:06.763079",
+      "response_time": 2.176827907562256,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_013": {
+      "input_id": "explain_013",
+      "feature": "explain_code",
+      "user_input": "def data = findTestData('Data Files/TestData1')\nWebUI.setText(findTestObject('Page_MyPage/input_Username'), data.getValue('username', 1))",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "def data = findTestData('Data Files/TestData1')\nWebUI.setText(findTestObject('Page_MyPage/input_Username'), data.getValue('username', 1))"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Set the username input field on a web page using test data from an external data file.\n *\n * 1. Retrieve test data from the specified data file 'Data Files/TestData1'.\n * 2. Extract the 'username' value from the first row of the test data.\n * 3. Set the extracted username value into the username input field identified by 'Page_MyPage/input_Username'.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:10.296890",
+      "response_time": 2.5328190326690674,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_014": {
+      "input_id": "explain_014",
+      "feature": "explain_code",
+      "user_input": "WebUI.executeJavaScript('window.scrollTo(0, document.body.scrollHeight)', null)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.executeJavaScript('window.scrollTo(0, document.body.scrollHeight)', null)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Scroll the web page to the bottom using JavaScript execution.\n *\n * 1. Execute a JavaScript command to scroll the window to the vertical position equal to the total height of the document body.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:12.956653",
+      "response_time": 1.6576220989227295,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_015": {
+      "input_id": "explain_015",
+      "feature": "explain_code",
+      "user_input": "Mobile.closeApplication()",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "Mobile.closeApplication()"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Close the currently running mobile application.\n *\n * 1. Invoke the method to terminate the active mobile app session.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:15.568404",
+      "response_time": 1.6099259853363037,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_016": {
+      "input_id": "explain_016",
+      "feature": "explain_code",
+      "user_input": "if(WebUI.verifyElementVisible(findTestObject('Page_MyPage/div_SuccessMessage'))){ \nprintln 'Success!'\n} else {\nprintln 'Failure!'\n}",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "if(WebUI.verifyElementVisible(findTestObject('Page_MyPage/div_SuccessMessage'))){ \nprintln 'Success!'\n} else {\nprintln 'Failure!'\n}"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Verify the visibility of a specific UI element and print a corresponding message.\n *\n * 1. Check if the element identified by 'Page_MyPage/div_SuccessMessage' is visible on the page.\n * 2. Print \"Success!\" if the element is visible.\n * 3. Print \"Failure!\" if the element is not visible.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:18.626894",
+      "response_time": 2.0573179721832275,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_017": {
+      "input_id": "explain_017",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.configuration.RunConfiguration\n\nprintln RunConfiguration.getReportFolder()",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "import com.kms.katalon.core.configuration.RunConfiguration\n\nprintln RunConfiguration.getReportFolder()"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Print the current report folder path used in the test execution configuration.\n *\n * 1. Import the RunConfiguration class to access runtime configuration settings.\n * 2. Retrieve the path of the report folder where test execution reports are stored.\n * 3. Print the retrieved report folder path to the console.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:21.377111",
+      "response_time": 1.7480418682098389,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_018": {
+      "input_id": "explain_018",
+      "feature": "explain_code",
+      "user_input": "String browserType = System.getProperty('browser')\nWebUI.openBrowser('')\nWebUI.navigateToUrl('https://www.example.com')",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "String browserType = System.getProperty('browser')\nWebUI.openBrowser('')\nWebUI.navigateToUrl('https://www.example.com')"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Automate browser interaction to open a browser and navigate to a specified URL.\n *\n * 1. Retrieve the browser type from system properties.\n * 2. Open a new browser instance.\n * 3. Navigate the browser to \"https://www.example.com\".\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:24.053940",
+      "response_time": 1.674597978591919,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_019": {
+      "input_id": "explain_019",
+      "feature": "explain_code",
+      "user_input": "WebUI.switchToFrame(findTestObject('Page_MyPage/iframe_MyIframe'), 10)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.switchToFrame(findTestObject('Page_MyPage/iframe_MyIframe'), 10)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Switch to a specified iframe within a web page with a timeout.\n *\n * 1. Locate the iframe test object identified by 'Page_MyPage/iframe_MyIframe'.\n * 2. Switch the web context to the located iframe.\n * 3. Wait up to 10 seconds for the iframe to be available before switching.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:26.968224",
+      "response_time": 1.9123749732971191,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "explain_020": {
+      "input_id": "explain_020",
+      "feature": "explain_code",
+      "user_input": "WebUI.sendKeys(findTestObject('Page_MyPage/input_Search'), Keys.chord(Keys.CONTROL, 'a'))",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.sendKeys(findTestObject('Page_MyPage/input_Search'), Keys.chord(Keys.CONTROL, 'a'))"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Perform a keyboard shortcut to select all text in a specified input field on a web page.\n *\n * 1. Locate the input field test object identified by 'Page_MyPage/input_Search'.\n * 2. Send the keyboard chord for Control + A to the located input field to select all its content.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-27T19:56:30.122147",
+      "response_time": 2.152010917663574,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    }
+  }
+}
