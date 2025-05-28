@@ -73,7 +73,9 @@
         // Load and display reports
         async function loadReports() {
             try {
-                const response = await fetch('../reports_data.json');
+                // Get the current path and construct the correct URL
+                const basePath = window.location.pathname.split('/').slice(0, -2).join('/');
+                const response = await fetch(`${basePath}/reports_data.json`);
                 if (!response.ok) throw new Error('Failed to load reports data');
                 const reports = await response.json();
                 
@@ -84,7 +86,8 @@
                 document.getElementById('reportsTable').innerHTML = `
                     <tr>
                         <td colspan="4" class="px-6 py-4 text-center text-red-500">
-                            Error loading reports. Please try again later.
+                            Error loading reports. Please try again later.<br>
+                            <small class="text-gray-500">Details: ${error.message}</small>
                         </td>
                     </tr>
                 `;
