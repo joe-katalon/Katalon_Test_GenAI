@@ -73,7 +73,7 @@
         // Load and display reports
         async function loadReports() {
             try {
-                const response = await fetch('reports_data.json');
+                const response = await fetch('../reports_data.json');
                 if (!response.ok) throw new Error('Failed to load reports data');
                 const reports = await response.json();
                 
