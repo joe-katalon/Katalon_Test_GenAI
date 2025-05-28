@@ -1,0 +1,57 @@
+name: Deploy Reports to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Create reports directory structure
+        run: |
+          mkdir -p _site/reports
+          cp -r reports/* _site/reports/
+          
+          # Create reports index
+          echo "# StudioAssist Comparison Reports" > _site/index.md
+          echo "" >> _site/index.md
+          echo "## Latest Reports" >> _site/index.md
+          echo "" >> _site/index.md
+          
+          # List reports with links
+          for file in reports/comparison_report_*.html; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              feature=$(echo $filename | sed -E 's/comparison_report_(.+)_[0-9]+\.html/\1/')
+              date=$(echo $filename | grep -o '[0-9]\{8\}' | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\1-\2-\3/')
+              echo "- [$feature Report ($date)]($file)" >> _site/index.md
+            fi
+          done
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 
