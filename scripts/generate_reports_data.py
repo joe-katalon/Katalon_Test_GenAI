@@ -14,31 +14,44 @@ def extract_metrics_from_report(html_file):
         
         # Extract metrics from the report
         metrics = {
-            'completeness': 0.0,
+            'consistency': 0.0,
             'accuracy': 0.0,
-            'clarity': 0.0,
-            'context': 0.0,
             'overall': 0.0
         }
         
         try:
-            # Find metrics in the HTML using the metric-value class and data-metric attribute
-            metric_elements = soup.find_all(class_='metric-value')
-            valid_metrics = 0
+            # Find metrics columns
+            metrics_columns = soup.select('.metrics-column')
             
-            for element in metric_elements:
-                metric_name = element.get('data-metric', '').lower()
-                if metric_name in metrics:
+            for column in metrics_columns:
+                header = column.select_one('h3')
+                if not header:
+                    continue
+                
+                content = column.select_one('.insights-content')
+                if not content:
+                    continue
+                
+                # Extract all numbers from the content
+                scores = []
+                for line in content.text.split('\n'):
+                    # Extract number from strings like "🟢 Output Stability: 0.85"
                     try:
-                        value = float(element.text.strip())
-                        metrics[metric_name] = value
-                        valid_metrics += 1
-                    except (ValueError, TypeError):
-                        print(f"Warning: Invalid metric value in {html_file} for {metric_name}")
+                        score = float(line.split(':')[-1].strip())
+                        scores.append(score)
+                    except (ValueError, IndexError):
+                        continue
+                
+                # Calculate average if we found any scores
+                if scores:
+                    if '🎯 Consistency Metrics' in header.text:
+                        metrics['consistency'] = sum(scores) / len(scores)
+                    elif '✅ Accuracy Metrics' in header.text:
+                        metrics['accuracy'] = sum(scores) / len(scores)
             
-            # Calculate overall score from valid metrics
-            if valid_metrics > 0:
-                metrics['overall'] = sum(v for v in metrics.values() if isinstance(v, (int, float))) / valid_metrics
+            # Calculate overall score if we have both metrics
+            if metrics['consistency'] > 0 and metrics['accuracy'] > 0:
+                metrics['overall'] = (metrics['consistency'] + metrics['accuracy']) / 2
             
         except Exception as e:
             print(f"Warning: No metrics found in {html_file}, using defaults")
@@ -111,11 +124,9 @@ def generate_reports_data():
                 }
             },
             'metrics': {
-                'completeness': 8.5,
-                'accuracy': 9.2,
-                'clarity': 8.8,
-                'context': 9.0,
-                'overall': 8.9
+                'consistency': 0.85,  # Average of Output Stability, Behavior Consistency, Style Consistency
+                'accuracy': 0.83,     # Average of Functional Correctness, Code Quality, Test Coverage
+                'overall': 0.84       # Average of consistency and accuracy
             }
         }]
     else:
