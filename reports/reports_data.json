@@ -1,0 +1,146 @@
+[
+  {
+    "feature": "explain",
+    "date": "2025-05-28 21:02",
+    "url": "reports/comparison_report_explain_code_20250528_210236.html",
+    "models": {
+      "ll1": {
+        "type": "katalon_ai",
+        "model": "gpt-4o-mini",
+        "description": "Baseline Model"
+      },
+      "ll2": {
+        "type": "personal_openai",
+        "model": "gpt-4o-mini",
+        "description": "Target Model"
+      }
+    },
+    "metrics": {
+      "completeness": 0.0,
+      "accuracy": 0.0,
+      "clarity": 0.0,
+      "context": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "feature": "explain",
+    "date": "2025-05-28 17:23",
+    "url": "reports/comparison_report_explain_code_20250528_172303.html",
+    "models": {
+      "ll1": {
+        "type": "katalon_ai",
+        "model": "gpt-4o-mini",
+        "description": "Baseline Model"
+      },
+      "ll2": {
+        "type": "personal_openai",
+        "model": "gpt-4o-mini",
+        "description": "Target Model"
+      }
+    },
+    "metrics": {
+      "completeness": 0.0,
+      "accuracy": 0.0,
+      "clarity": 0.0,
+      "context": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "feature": "generate",
+    "date": "2025-05-28 14:44",
+    "url": "reports/comparison_report_generate_code_20250528_144407.html",
+    "models": {
+      "ll1": {
+        "type": "katalon_ai",
+        "model": "gpt-4o-mini",
+        "description": "Baseline Model"
+      },
+      "ll2": {
+        "type": "personal_openai",
+        "model": "gpt-4o-mini",
+        "description": "Target Model"
+      }
+    },
+    "metrics": {
+      "completeness": 0.0,
+      "accuracy": 0.0,
+      "clarity": 0.0,
+      "context": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "feature": "generate",
+    "date": "2025-05-28 14:12",
+    "url": "reports/comparison_report_generate_code_20250528_141214.html",
+    "models": {
+      "ll1": {
+        "type": "katalon_ai",
+        "model": "gpt-4o-mini",
+        "description": "Baseline Model"
+      },
+      "ll2": {
+        "type": "personal_openai",
+        "model": "gpt-4o-mini",
+        "description": "Target Model"
+      }
+    },
+    "metrics": {
+      "completeness": 0.0,
+      "accuracy": 0.0,
+      "clarity": 0.0,
+      "context": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "feature": "explain",
+    "date": "2025-05-28 11:47",
+    "url": "reports/comparison_report_explain_code_20250528_114756.html",
+    "models": {
+      "ll1": {
+        "type": "katalon_ai",
+        "model": "gpt-4o-mini",
+        "description": "Baseline Model"
+      },
+      "ll2": {
+        "type": "personal_openai",
+        "model": "gpt-4o-mini",
+        "description": "Target Model"
+      }
+    },
+    "metrics": {
+      "completeness": 0.0,
+      "accuracy": 0.0,
+      "clarity": 0.0,
+      "context": 0.0,
+      "overall": 0.0
+    }
+  },
+  {
+    "feature": "generate",
+    "date": "2024-03-28 14:44",
+    "url": "reports/comparison_report_generate_code_20240328_144407.html",
+    "models": {
+      "ll1": {
+        "type": "unknown",
+        "model": "unknown",
+        "description": "Baseline Model"
+      },
+      "ll2": {
+        "type": "unknown",
+        "model": "unknown",
+        "description": "Target Model"
+      }
+    },
+    "metrics": {
+      "completeness": 0.0,
+      "accuracy": 0.0,
+      "clarity": 0.0,
+      "context": 0.0,
+      "overall": 0.0
+    }
+  }
+]

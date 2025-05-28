@@ -99,33 +99,44 @@ def parse_report_filename(filename):
         base_name = filename.replace('.html', '')
         parts = base_name.split('_')
         
-        # Expected format: comparison_report_<feature>_<YYYYMMDD>_<HHMM>.html
+        # Expected format: comparison_report_<feature>_<YYYYMMDD>_<HHMMSS>.html
         if len(parts) >= 4:
             feature = parts[2]
             # Try to find a date part (8 digits for date)
             date_part = next((p for p in parts[3:] if p.isdigit() and len(p) == 8), None)
-            time_part = next((p for p in parts[4:] if p.isdigit() and len(p) == 4), None)
+            time_part = next((p for p in parts[4:] if p.isdigit() and len(p) == 6), None)
             
             if date_part:
                 if time_part:
-                    # If we have both date and time
-                    date = datetime.strptime(f"{date_part}_{time_part}", '%Y%m%d_%H%M').strftime('%Y-%m-%d %H:%M')
+                    # If we have both date and time, format as YYYY-MM-DD HH:MM
+                    date = datetime.strptime(f"{date_part}_{time_part}", '%Y%m%d_%H%M%S').strftime('%Y-%m-%d %H:%M')
                 else:
-                    # If we only have date
-                    date = datetime.strptime(date_part, '%Y%m%d').strftime('%Y-%m-%d %H:%M')
+                    # If we only have date, try to find time in the next part
+                    time_part = next((p for p in parts[4:] if p.isdigit() and len(p) >= 4), None)
+                    if time_part:
+                        # Handle both HHMM and HHMMSS formats
+                        time_format = '%H%M%S' if len(time_part) == 6 else '%H%M'
+                        date = datetime.strptime(f"{date_part}_{time_part}", f'%Y%m%d_{time_format}').strftime('%Y-%m-%d %H:%M')
+                    else:
+                        # If no time found, use file's modification time
+                        file_mtime = os.path.getmtime(filename)
+                        date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M')
             else:
-                # If no valid date found, use current date and time
-                date = datetime.now().strftime('%Y-%m-%d %H:%M')
-                print(f"Warning: No valid date found in {filename}, using current date")
+                # If no valid date found, use file's modification time
+                file_mtime = os.path.getmtime(filename)
+                date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M')
+                print(f"Warning: No valid date found in {filename}, using file modification time")
             
             return feature, date
         else:
             # Default values if filename doesn't match expected format
-            return "unknown", datetime.now().strftime('%Y-%m-%d %H:%M')
+            file_mtime = os.path.getmtime(filename)
+            return "unknown", datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M')
             
     except Exception as e:
         print(f"Error parsing filename {filename}: {e}")
-        return "unknown", datetime.now().strftime('%Y-%m-%d %H:%M')
+        file_mtime = os.path.getmtime(filename)
+        return "unknown", datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M')
 
 def generate_reports_data():
     """Generate reports_data.json from HTML reports."""
