@@ -14,26 +14,34 @@ def extract_metrics_from_report(html_file):
         
         # Extract metrics from the report
         metrics = {
-            'stability': 0.0,
-            'consistency': 0.0,
-            'quality': 0.0,
-            'performance': 0.0,
+            'completeness': 0.0,
+            'accuracy': 0.0,
+            'clarity': 0.0,
+            'context': 0.0,
             'overall': 0.0
         }
         
         try:
-            # Find metrics in the HTML
+            # Find metrics in the HTML using the metric-value class and data-metric attribute
             metric_elements = soup.find_all(class_='metric-value')
+            valid_metrics = 0
+            
             for element in metric_elements:
                 metric_name = element.get('data-metric', '').lower()
                 if metric_name in metrics:
-                    metrics[metric_name] = float(element.text.strip())
+                    try:
+                        value = float(element.text.strip())
+                        metrics[metric_name] = value
+                        valid_metrics += 1
+                    except (ValueError, TypeError):
+                        print(f"Warning: Invalid metric value in {html_file} for {metric_name}")
             
-            # Calculate overall score
-            metrics['overall'] = sum(metrics.values()) / len(metrics)
+            # Calculate overall score from valid metrics
+            if valid_metrics > 0:
+                metrics['overall'] = sum(v for v in metrics.values() if isinstance(v, (int, float))) / valid_metrics
             
         except Exception as e:
-            print(f"Error extracting metrics from {html_file}: {e}")
+            print(f"Warning: No metrics found in {html_file}, using defaults")
         
         return metrics
 
@@ -44,27 +52,33 @@ def parse_report_filename(filename):
         base_name = filename.replace('.html', '')
         parts = base_name.split('_')
         
-        # Expected format: comparison_report_<feature>_<YYYYMMDD>_<HHMMSS>.html
+        # Expected format: comparison_report_<feature>_<YYYYMMDD>_<HHMM>.html
         if len(parts) >= 4:
             feature = parts[2]
-            # Try to find a date part (8 digits)
+            # Try to find a date part (8 digits for date)
             date_part = next((p for p in parts[3:] if p.isdigit() and len(p) == 8), None)
+            time_part = next((p for p in parts[4:] if p.isdigit() and len(p) == 4), None)
             
             if date_part:
-                date = datetime.strptime(date_part, '%Y%m%d').strftime('%Y-%m-%d')
+                if time_part:
+                    # If we have both date and time
+                    date = datetime.strptime(f"{date_part}_{time_part}", '%Y%m%d_%H%M').strftime('%Y-%m-%d %H:%M')
+                else:
+                    # If we only have date
+                    date = datetime.strptime(date_part, '%Y%m%d').strftime('%Y-%m-%d %H:%M')
             else:
-                # If no valid date found, use current date
-                date = datetime.now().strftime('%Y-%m-%d')
+                # If no valid date found, use current date and time
+                date = datetime.now().strftime('%Y-%m-%d %H:%M')
                 print(f"Warning: No valid date found in {filename}, using current date")
             
             return feature, date
         else:
             # Default values if filename doesn't match expected format
-            return "unknown", datetime.now().strftime('%Y-%m-%d')
+            return "unknown", datetime.now().strftime('%Y-%m-%d %H:%M')
             
     except Exception as e:
         print(f"Error parsing filename {filename}: {e}")
-        return "unknown", datetime.now().strftime('%Y-%m-%d')
+        return "unknown", datetime.now().strftime('%Y-%m-%d %H:%M')
 
 def generate_reports_data():
     """Generate reports_data.json from HTML reports."""
@@ -82,14 +96,26 @@ def generate_reports_data():
         print("No reports found, creating sample data")
         reports_data = [{
             'feature': 'sample',
-            'date': datetime.now().strftime('%Y-%m-%d'),
+            'date': datetime.now().strftime('%Y-%m-%d %H:%M'),
             'url': '#',
+            'models': {
+                'll1': {
+                    'type': 'gpt-3.5-turbo',
+                    'model': 'baseline',
+                    'description': 'Baseline Model'
+                },
+                'll2': {
+                    'type': 'gpt-4',
+                    'model': 'target',
+                    'description': 'Target Model'
+                }
+            },
             'metrics': {
-                'stability': 0.85,
-                'consistency': 0.92,
-                'quality': 0.88,
-                'performance': 0.90,
-                'overall': 0.89
+                'completeness': 8.5,
+                'accuracy': 9.2,
+                'clarity': 8.8,
+                'context': 9.0,
+                'overall': 8.9
             }
         }]
     else:
@@ -97,14 +123,95 @@ def generate_reports_data():
             filename = os.path.basename(report_file)
             feature, date = parse_report_filename(filename)
             
-            # Extract metrics from report
-            metrics = extract_metrics_from_report(report_file)
+            # Read the HTML file
+            with open(report_file, 'r') as f:
+                soup = BeautifulSoup(f.read(), 'html.parser')
+            
+            # Extract LLM configurations
+            models = {
+                'll1': {'type': 'unknown', 'model': 'unknown', 'description': 'Baseline Model'},
+                'll2': {'type': 'unknown', 'model': 'unknown', 'description': 'Target Model'}
+            }
+            
+            try:
+                # Find the config items
+                config_items = soup.select('.config-item')
+                for item in config_items:
+                    title = item.select_one('h3')
+                    if not title:
+                        continue
+                        
+                    if 'Baseline (LL1)' in title.text:
+                        metrics = item.select('.metric')
+                        for metric in metrics:
+                            label = metric.select_one('.metric-label')
+                            value = metric.select_one('span:last-child')
+                            if label and value:
+                                label_text = label.text.strip().lower().replace(':', '')
+                                if label_text in ['type', 'model', 'description']:
+                                    models['ll1'][label_text] = value.text.strip()
+                                    
+                    elif 'Target (LL2)' in title.text:
+                        metrics = item.select('.metric')
+                        for metric in metrics:
+                            label = metric.select_one('.metric-label')
+                            value = metric.select_one('span:last-child')
+                            if label and value:
+                                label_text = label.text.strip().lower().replace(':', '')
+                                if label_text in ['type', 'model', 'description']:
+                                    models['ll2'][label_text] = value.text.strip()
+            
+            except Exception as e:
+                print(f"Warning: Error extracting model configurations from {filename}: {e}")
+            
+            # Extract metrics from the comparison table
+            metrics = {
+                'completeness': 0.0,
+                'accuracy': 0.0,
+                'clarity': 0.0,
+                'context': 0.0,
+                'overall': 0.0
+            }
+            
+            try:
+                # Find all rows in the comparison table
+                rows = soup.select('.comparison-table tbody tr')
+                valid_metrics = 0
+                
+                for row in rows:
+                    # Get criterion name from first column
+                    criterion_cell = row.select_one('td:first-child .tooltip-trigger')
+                    if not criterion_cell:
+                        continue
+                        
+                    criterion = criterion_cell.text.strip().lower()
+                    
+                    # Get LL2 score from third column (index 2)
+                    score_cell = row.select_one('td:nth-child(3)')
+                    if not score_cell:
+                        continue
+                        
+                    try:
+                        score = float(score_cell.text.strip())
+                        if criterion in metrics:
+                            metrics[criterion] = score
+                            valid_metrics += 1
+                    except (ValueError, TypeError):
+                        print(f"Warning: Invalid score for {criterion} in {filename}")
+                
+                # Calculate overall score
+                if valid_metrics > 0:
+                    metrics['overall'] = sum(v for v in metrics.values() if isinstance(v, (int, float))) / valid_metrics
+                    
+            except Exception as e:
+                print(f"Warning: Error extracting metrics from {filename}: {e}")
             
             # Create report entry
             report_entry = {
                 'feature': feature,
                 'date': date,
                 'url': f'reports/{filename}',
+                'models': models,
                 'metrics': metrics
             }
             
