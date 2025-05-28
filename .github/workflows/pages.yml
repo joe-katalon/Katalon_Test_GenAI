@@ -47,19 +47,36 @@ jobs:
           python -m pip install --upgrade pip
           pip install beautifulsoup4
       
-      - name: Generate reports data
-        run: python scripts/generate_reports_data.py
+      - name: List reports directory
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "\nContents of current directory:"
+          ls -la
+          echo "\nContents of reports directory:"
+          ls -la reports/ || echo "Reports directory not found"
       
       - name: Build Pages
         run: |
-          # Copy all report files to _site
+          # Create _site directory
           mkdir -p _site
-          cp -r reports/* _site/
           
-          # Ensure index.html exists and is the main entry point
-          if [ ! -f "_site/index.html" ]; then
-            mv _site/reports_index.html _site/index.html 2>/dev/null || true
+          # Copy index.html to root of _site if it exists
+          if [ -f "reports/index.html" ]; then
+            cp reports/index.html _site/
+          elif [ -f "reports/reports_index.html" ]; then
+            cp reports/reports_index.html _site/index.html
           fi
+          
+          # Create reports directory in _site and copy all reports
+          mkdir -p _site/reports
+          cp -r reports/* _site/reports/ || echo "No reports to copy"
+          
+          # List contents for debugging
+          echo "Contents of _site directory:"
+          ls -la _site/
+          echo "\nContents of _site/reports directory:"
+          ls -la _site/reports/
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
