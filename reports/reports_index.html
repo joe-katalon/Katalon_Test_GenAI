@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudioAssist Comparison Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8 text-center">StudioAssist Comparison Reports</h1>
+        
+        <!-- Summary Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-2">Latest Results</h3>
+                <canvas id="latestMetricsChart"></canvas>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-2">Trend Analysis</h3>
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-2">Feature Distribution</h3>
+                <canvas id="featureChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Reports List -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-2xl font-bold mb-4">Available Reports</h2>
+            
+            <!-- Search and Filter -->
+            <div class="mb-4 flex gap-4">
+                <input type="text" id="searchInput" 
+                       placeholder="Search reports..." 
+                       class="p-2 border rounded-lg flex-grow">
+                <select id="featureFilter" class="p-2 border rounded-lg">
+                    <option value="">All Features</option>
+                    <option value="generate_code">Generate Code</option>
+                    <option value="explain_code">Explain Code</option>
+                </select>
+            </div>
+
+            <!-- Reports Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feature</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metrics</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTable" class="bg-white divide-y divide-gray-200">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to load and display reports
+        async function loadReports() {
+            const response = await fetch('reports_data.json');
+            const reports = await response.json();
+            
+            const tableBody = document.getElementById('reportsTable');
+            tableBody.innerHTML = '';
+            
+            reports.forEach(report => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${report.feature}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${report.date}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center space-x-2">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                ${report.metrics.stability}
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                ${report.metrics.consistency}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="${report.url}" class="text-indigo-600 hover:text-indigo-900">View Report</a>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update charts
+            updateCharts(reports);
+        }
+
+        // Function to update dashboard charts
+        function updateCharts(reports) {
+            // Latest Metrics Chart
+            const latestReport = reports[0];
+            new Chart(document.getElementById('latestMetricsChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Stability', 'Consistency', 'Quality', 'Performance'],
+                    datasets: [{
+                        label: 'Latest Metrics',
+                        data: [
+                            latestReport.metrics.stability,
+                            latestReport.metrics.consistency,
+                            latestReport.metrics.quality,
+                            latestReport.metrics.performance
+                        ],
+                        fill: true,
+                        backgroundColor: 'rgba(66, 153, 225, 0.2)',
+                        borderColor: 'rgb(66, 153, 225)',
+                        pointBackgroundColor: 'rgb(66, 153, 225)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(66, 153, 225)'
+                    }]
+                },
+                options: {
+                    elements: {
+                        line: { borderWidth: 3 }
+                    }
+                }
+            });
+
+            // Trend Chart
+            new Chart(document.getElementById('trendChart'), {
+                type: 'line',
+                data: {
+                    labels: reports.map(r => r.date),
+                    datasets: [{
+                        label: 'Overall Score',
+                        data: reports.map(r => r.metrics.overall),
+                        fill: false,
+                        borderColor: 'rgb(72, 187, 120)',
+                        tension: 0.1
+                    }]
+                }
+            });
+
+            // Feature Distribution Chart
+            const features = [...new Set(reports.map(r => r.feature))];
+            new Chart(document.getElementById('featureChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: features,
+                    datasets: [{
+                        data: features.map(f => 
+                            reports.filter(r => r.feature === f).length
+                        ),
+                        backgroundColor: [
+                            'rgba(66, 153, 225, 0.5)',
+                            'rgba(72, 187, 120, 0.5)',
+                            'rgba(237, 100, 166, 0.5)'
+                        ]
+                    }]
+                }
+            });
+        }
+
+        // Search and filter functionality
+        document.getElementById('searchInput').addEventListener('input', filterReports);
+        document.getElementById('featureFilter').addEventListener('change', filterReports);
+
+        function filterReports() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const featureFilter = document.getElementById('featureFilter').value;
+            
+            const rows = document.getElementById('reportsTable').getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const feature = row.cells[0].textContent.toLowerCase();
+                const date = row.cells[1].textContent.toLowerCase();
+                
+                const matchesSearch = feature.includes(searchTerm) || date.includes(searchTerm);
+                const matchesFeature = !featureFilter || feature === featureFilter;
+                
+                row.style.display = matchesSearch && matchesFeature ? '' : 'none';
+            }
+        }
+
+        // Initial load
+        loadReports();
+    </script>
+</body>
+</html> 

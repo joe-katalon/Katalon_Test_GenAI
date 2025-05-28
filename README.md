@@ -12,6 +12,22 @@ This framework implements a phased testing approach to evaluate and compare diff
 
 ## Reports
 
+### Online Reports Dashboard
+
+The test reports are automatically deployed to GitHub Pages and can be accessed at:
+```
+https://<your-github-username>.github.io/<repository-name>/
+```
+
+For example, if your GitHub username is "johndoe" and the repository is "katalon-test-genai", the URL would be:
+```
+https://johndoe.github.io/katalon-test-genai/
+```
+
+The dashboard is automatically updated whenever:
+- New test reports are generated and pushed to the main branch
+- The GitHub Actions workflow is manually triggered
+
 ### Interactive Dashboard
 
 The framework now includes an interactive web dashboard for viewing and analyzing test reports. The dashboard provides:
