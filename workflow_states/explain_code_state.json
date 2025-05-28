@@ -3,33 +3,6 @@
   "current_phase": "target_created",
   "llm_config_state": "ll1_active",
   "baselines": {
-    "baseline_20250527_195804_20": {
-      "filename": "poc_data/explain_code/studioassist_explain_code_baseline_evaluated_ll1_20250527_195804_f7aebe7e.json",
-      "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250527_195526_ea946b5f.json",
-      "num_inputs": 20,
-      "created_at": "2025-05-27T19:58:04.582497",
-      "state": "evaluated",
-      "llm_version": "LL1",
-      "baseline_id": "baseline_20250527_195804_20"
-    },
-    "baseline_20250527_205054_10": {
-      "filename": "poc_data/explain_code/studioassist_explain_code_baseline_evaluated_ll1_20250527_205054_763832ba.json",
-      "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250527_204934_ad0ab0ee.json",
-      "num_inputs": 10,
-      "created_at": "2025-05-27T20:50:54.769781",
-      "state": "evaluated",
-      "llm_version": "LL1",
-      "baseline_id": "baseline_20250527_205054_10"
-    },
-    "baseline_20250527_212849_5": {
-      "filename": "poc_data/explain_code/studioassist_explain_code_baseline_evaluated_ll1_20250527_212849_98091115.json",
-      "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250527_212806_14d35ec4.json",
-      "num_inputs": 5,
-      "created_at": "2025-05-27T21:28:49.112357",
-      "state": "evaluated",
-      "llm_version": "LL1",
-      "baseline_id": "baseline_20250527_212849_5"
-    },
     "baseline_20250527_214316_5": {
       "filename": "poc_data/explain_code/studioassist_explain_code_baseline_evaluated_ll1_20250527_214316_4b8bdf4d.json",
       "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250527_214229_6d08c1b5.json",
@@ -38,25 +11,34 @@
       "state": "evaluated",
       "llm_version": "LL1",
       "baseline_id": "baseline_20250527_214316_5"
+    },
+    "baseline_20250528_172139_5": {
+      "filename": "poc_data/explain_code/studioassist_explain_code_baseline_evaluated_ll1_20250528_172139_9739f264.json",
+      "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250528_172057_eea70405.json",
+      "num_inputs": 5,
+      "created_at": "2025-05-28T17:21:39.506508",
+      "state": "evaluated",
+      "llm_version": "LL1",
+      "baseline_id": "baseline_20250528_172139_5"
     }
   },
   "target_dataset": {
-    "filename": "poc_data/explain_code/studioassist_explain_code_target_evaluated_ll2_20250527_221026_4920c8b6.json",
-    "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250527_214229_6d08c1b5.json",
+    "filename": "poc_data/explain_code/studioassist_explain_code_target_evaluated_ll2_20250528_172238_c684258a.json",
+    "inputs_file": "poc_data/explain_code/studioassist_explain_code_mock_inputs_20250528_172057_eea70405.json",
     "num_inputs": 5,
-    "created_at": "2025-05-27T22:10:26.872879",
+    "created_at": "2025-05-28T17:22:38.373581",
     "state": "evaluated",
     "llm_version": "LL2",
     "test_mode": "consistency",
-    "compared_with_baseline": "baseline_20250527_214316_5",
+    "compared_with_baseline": "baseline_20250528_172139_5",
     "llm_config": {
       "type": "personal_openai",
       "model": "gpt-4o-mini"
     },
-    "updated_at": "2025-05-27T22:10:26.873379"
+    "updated_at": "2025-05-28T17:22:38.374179"
   },
-  "selected_baseline_id": "baseline_20250527_214316_5",
+  "selected_baseline_id": "baseline_20250528_172139_5",
   "inputs_file": null,
   "created_at": "2025-05-27T19:58:04.582668",
-  "updated_at": "2025-05-27T22:10:26.873383"
+  "updated_at": "2025-05-28T17:22:38.374184"
 }

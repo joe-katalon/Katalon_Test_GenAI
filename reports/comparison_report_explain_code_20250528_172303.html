@@ -1,0 +1,1753 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="referrer" content="origin">
+            <title>StudioAssist Comparison Report - explain_code</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    margin: 0;
+                    padding: 0;
+                    background: #f5f5f5;
+                }
+                .header {
+                    background: #fff;
+                    padding: 20px;
+                    border-bottom: 1px solid #dee2e6;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    position: sticky;
+                    top: 0;
+                    z-index: 100;
+                }
+                .header-content {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    padding: 10px 20px;
+                }
+                .logo {
+                    height: 32px;
+                    width: auto;
+                    margin-right: 15px;
+                }
+                .header-title {
+                    font-size: 1.5em;
+                    color: #333;
+                    margin: 0;
+                    flex: 1;
+                }
+                .container {
+                    max-width: 1200px;
+                    margin: 20px auto;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                h1, h2 {
+                    color: #333;
+                    border-bottom: 2px solid #eee;
+                    padding-bottom: 10px;
+                }
+                .summary-box {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                    margin: 10px 0;
+                }
+                .metric {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 5px 0;
+                    padding: 5px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                .metric-label {
+                    font-weight: bold;
+                }
+                .score {
+                    padding: 3px 8px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                }
+                .good { background: #d4edda; color: #155724; }
+                .warning { background: #fff3cd; color: #856404; }
+                .poor { background: #f8d7da; color: #721c24; }
+                .comparison-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+                .comparison-table th, .comparison-table td {
+                    padding: 12px;
+                    border: 1px solid #dee2e6;
+                    text-align: left;
+                }
+                .comparison-table th {
+                    background: #f8f9fa;
+                }
+                .timestamp {
+                    color: #6c757d;
+                    font-size: 0.9em;
+                }
+                .decision {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 4px;
+                }
+                .decision.promote { background: #d4edda; color: #155724; }
+                .decision.keep { background: #f8d7da; color: #721c24; }
+                .decision.testing { background: #fff3cd; color: #856404; }
+                .insights li {
+                    margin-bottom: 8px;
+                }
+                .json-view {
+                    font-family: monospace;
+                    white-space: pre;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 4px;
+                    max-height: 400px;
+                    overflow: auto;
+                    display: none;
+                }
+                .json-container {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 0 0 4px 4px;
+                    padding: 15px;
+                    height: 400px; /* Increased height for better visibility */
+                    min-height: 400px; /* Ensure minimum height */
+                    max-height: 400px; /* Ensure maximum height */
+                    overflow: auto; /* Always show scrollbar when needed */
+                    position: relative;
+                }
+                .json-tree {
+                    height: 100%;
+                    overflow: auto;
+                    padding-right: 10px;
+                }
+                .json-tree .hidden {
+                    display: none;
+                }
+                .json-tree .expanded {
+                    display: block;
+                }
+                /* Ensure long content wraps and scrolls */
+                .json-tree .json-string,
+                .json-tree .json-key,
+                .json-tree .preview {
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                /* Make indent consistent */
+                .json-tree .indent {
+                    margin-left: 20px;
+                    padding-left: 10px;
+                    border-left: 1px dotted #ddd;
+                }
+                /* Custom scrollbar styling for JSON containers */
+                .json-container::-webkit-scrollbar,
+                .json-tree::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .json-container::-webkit-scrollbar-track,
+                .json-tree::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .json-container::-webkit-scrollbar-thumb,
+                .json-tree::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+                .json-container::-webkit-scrollbar-thumb:hover,
+                .json-tree::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+                .json-comparison {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                    overflow-x: auto;
+                }
+                .json-column {
+                    background: #ffffff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                    min-width: 400px;
+                }
+                .json-column h3 {
+                    margin-top: 0;
+                    color: #007bff;
+                    border-bottom: 2px solid #dee2e6;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                .json-preview {
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                    font-size: 13px;
+                    line-height: 1.5;
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 4px;
+                    overflow-x: auto;
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .summary-insights {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 20px;
+                    margin: 20px 0;
+                }
+                .summary-insights h3 {
+                    color: #007bff;
+                    margin-top: 0;
+                }
+                .insights-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+                .insight-card {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                }
+                .insight-card h4 {
+                    margin-top: 0;
+                    color: #495057;
+                    border-bottom: 2px solid #dee2e6;
+                    padding-bottom: 8px;
+                    margin-bottom: 12px;
+                }
+                .insight-list {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                .insight-list li {
+                    margin-bottom: 8px;
+                    padding-left: 20px;
+                    position: relative;
+                }
+                .insight-list li:before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: #007bff;
+                }
+                @media (max-width: 1200px) {
+                    .json-comparison {
+                        grid-template-columns: 1fr;
+                    }
+                    .json-column {
+                        min-width: 100%;
+                    }
+                }
+                .detailed-insights {
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                    white-space: pre-wrap;
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                    line-height: 1.5;
+                    overflow-x: auto;
+                    margin: 20px 0;
+                }
+                .insights-section {
+                    margin: 20px 0;
+                }
+                .insights-section h2 {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                    border-bottom: 2px solid #eee;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                .insights-content {
+                    font-family: Arial, sans-serif;
+                    white-space: pre-wrap;
+                    line-height: 1.5;
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                    overflow-x: auto;
+                }
+                .metrics-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+                .metrics-column {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    padding: 20px;
+                }
+                .metrics-column h3 {
+                    color: #007bff;
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #eee;
+                }
+                @media (max-width: 768px) {
+                    .metrics-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                /* JSON Tree View Styles */
+                .json-tree {
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    margin: 10px 0;
+                }
+                .json-tree .collapsible {
+                    cursor: pointer;
+                    user-select: none;
+                }
+                .json-tree .collapsible::before {
+                    content: '▶';
+                    display: inline-block;
+                    margin-right: 5px;
+                    font-size: 10px;
+                    transition: transform 0.2s;
+                }
+                .json-tree .expanded::before {
+                    transform: rotate(90deg);
+                }
+                .json-tree .json-key {
+                    color: #881391;
+                    font-weight: bold;
+                }
+                .json-tree .json-string {
+                    color: #268bd2;
+                }
+                .json-tree .json-number {
+                    color: #b58900;
+                }
+                .json-tree .json-boolean {
+                    color: #b58900;
+                }
+                .json-tree .json-null {
+                    color: #808080;
+                }
+                .json-tree .bracket {
+                    color: #333;
+                }
+                .json-tree .hidden {
+                    display: none;
+                }
+                .json-tree .indent {
+                    margin-left: 20px;
+                }
+                .json-tree .preview {
+                    color: #666;
+                    font-style: italic;
+                }
+                .json-container {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 0 0 4px 4px;
+                    padding: 15px;
+                    height: 400px; /* Increased height for better visibility */
+                    min-height: 400px; /* Ensure minimum height */
+                    max-height: 400px; /* Ensure maximum height */
+                    overflow: auto; /* Always show scrollbar when needed */
+                    position: relative;
+                }
+                .json-tree {
+                    height: 100%;
+                    overflow: auto;
+                    padding-right: 10px;
+                }
+                .json-comparison {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    max-width: 100%;
+                    overflow: hidden;
+                }
+                /* Ensure long content wraps and scrolls */
+                .json-tree .json-string,
+                .json-tree .json-key,
+                .json-tree .preview {
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                /* Make indent consistent */
+                .json-tree .indent {
+                    margin-left: 20px;
+                    padding-left: 10px;
+                    border-left: 1px dotted #ddd;
+                }
+                /* Custom scrollbar styling */
+                .json-tree::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .json-tree::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .json-tree::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+                .json-tree::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+                /* Ensure content doesn't overflow horizontally */
+                @media screen and (max-width: 1200px) {
+                    .json-comparison {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                .config-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+                .config-item {
+                    background: #fff;
+                    padding: 15px;
+                    border-radius: 4px;
+                    border: 1px solid #dee2e6;
+                }
+                .config-item h3 {
+                    margin: 0 0 10px 0;
+                    color: #007bff;
+                    font-size: 1.1em;
+                }
+                .footer {
+                    background: #333;
+                    color: #fff;
+                    padding: 20px;
+                    margin-top: 40px;
+                    text-align: center;
+                }
+                .footer p {
+                    margin: 5px 0;
+                    font-size: 0.9em;
+                }
+                @media (max-width: 768px) {
+                    .config-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                .dataset-header {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-bottom: none;
+                    border-radius: 4px 4px 0 0;
+                    padding: 12px 15px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1;
+                }
+                .dataset-header h3 {
+                    font-family: Arial, sans-serif;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #333;
+                    margin: 0;
+                }
+                .dataset-header .file-info {
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 4px;
+                    font-family: monospace;
+                }
+            </style>
+            <script>
+                function toggleJson(id) {
+                    const element = document.getElementById(id);
+                    if (element.style.display === 'none') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                }
+
+                function formatJSON(obj, level = 0) {
+                    const indent = '  '.repeat(level);
+                    
+                    if (obj === null) return '<span class="json-null">null</span>';
+                    if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
+                    if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+                    if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
+                    
+                    if (Array.isArray(obj)) {
+                        if (obj.length === 0) return '[]';
+                        
+                        const preview = obj.length > 3 
+                            ? `Array(${obj.length})` 
+                            : obj.slice(0, 3).map(item => {
+                                if (typeof item === 'object' && item !== null) return '{ ... }';
+                                return JSON.stringify(item);
+                              }).join(', ');
+                        
+                        const id = 'array_' + Math.random().toString(36).substr(2, 9);
+                        return `
+                            <div class="collapsible" onclick="toggleNode(this, '${id}')">
+                                <span class="bracket">[</span><span class="preview">${preview}</span><span class="bracket">]</span>
+                            </div>
+                            <div id="${id}" class="hidden indent">
+                                ${obj.map((item, index) => `${formatJSON(item, level + 1)}${index < obj.length - 1 ? ',' : ''}`).join('<br>')}
+                            </div>
+                        `;
+                    }
+                    
+                    if (typeof obj === 'object') {
+                        const keys = Object.keys(obj);
+                        if (keys.length === 0) return '{}';
+                        
+                        const preview = keys.length > 3 
+                            ? `Object {${keys.length} properties}` 
+                            : `{${keys.slice(0, 3).map(k => ` ${k}: ...`).join(',')} }`;
+                        
+                        const id = 'obj_' + Math.random().toString(36).substr(2, 9);
+                        return `
+                            <div class="collapsible" onclick="toggleNode(this, '${id}')">
+                                <span class="bracket">{</span><span class="preview">${preview}</span><span class="bracket">}</span>
+                            </div>
+                            <div id="${id}" class="hidden indent">
+                                ${Object.entries(obj).map(([key, value], index) => `
+                                    <span class="json-key">"${key}"</span>: ${formatJSON(value, level + 1)}${index < keys.length - 1 ? ',' : ''}
+                                `).join('<br>')}
+                            </div>
+                        `;
+                    }
+                    
+                    return String(obj);
+                }
+
+                function toggleNode(element, id) {
+                    element.classList.toggle('expanded');
+                    const content = document.getElementById(id);
+                    content.classList.toggle('hidden');
+                    
+                    // Find the closest json-container and adjust its height
+                    const container = element.closest('.json-container');
+                    if (container) {
+                        if (content.classList.contains('hidden')) {
+                            container.style.height = '50px'; // Collapsed height
+                        } else {
+                            container.style.height = Math.min(content.scrollHeight + 30, 200) + 'px'; // Expanded height
+                        }
+                    }
+                }
+
+                window.onload = function() {
+                    // Format baseline data
+                    const baselineData = JSON.parse(document.getElementById('baseline-data').textContent);
+                    document.getElementById('baseline-json').innerHTML = formatJSON(baselineData);
+                    
+                    // Format target data
+                    const targetData = JSON.parse(document.getElementById('target-data').textContent);
+                    document.getElementById('target-json').innerHTML = formatJSON(targetData);
+                    
+                    // Set initial collapsed state
+                    document.querySelectorAll('.json-container').forEach(container => {
+                        container.style.height = '50px';
+                    });
+                }
+            </script>
+        </head>
+        <body>
+            <header class="header">
+                <div class="header-content">
+                    <img 
+                        src="https://katalon.com/hubfs/katalon_logo%20(1).svg" 
+                        alt="Katalon Logo" 
+                        class="logo"
+                    >
+                    <h1 class="header-title">StudioAssist Comparison Report - explain_code</h1>
+                </div>
+            </header>
+            <div class="container">
+                <p class="timestamp">Generated on: 2025-05-28 17:23:03</p>
+                
+                <div class="summary-box">
+                    <h2>Test Information</h2>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <h3>Feature Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">Feature:</span>
+                                <span>explain_code</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Test Mode:</span>
+                                <span>consistency</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Katalon Version:</span>
+                                <span>10.2.0</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>User Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">User ID:</span>
+                                <span>chau.duong@katalon.com</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">User ID (Numeric):</span>
+                                <span>12539647</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Organization Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">Account ID:</span>
+                                <span>1410137</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Organization ID:</span>
+                                <span>1666289</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-box">
+                    <h2>Test Configuration</h2>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <h3>Baseline (LL1)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>katalon_ai</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gpt-4o-mini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Description:</span>
+                                <span>Baseline Model</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Target (LL2)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>personal_openai</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gpt-4o-mini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Description:</span>
+                                <span>Target Model</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Evaluation (LL3)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Provider:</span>
+                                <span>gemini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gemini-2.0-flash</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>evaluation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📑 Dataset Summary</h2>
+                    <div class="insights-content">📌 Baseline (LL1) results: 5
+🎯 Target (LL2) results: 5
+</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📊 Detailed Scores</h2>
+                    <div class="metrics-grid">
+                        <div class="metrics-column">
+                            <h3>🎯 Consistency Metrics</h3>
+                            <div class="insights-content">🔴 Output Stability: 0.20
+🔴 Behavior Consistency: 0.30
+🔴 Style Consistency: 0.20</div>
+                        </div>
+                        <div class="metrics-column">
+                            <h3>✅ Accuracy Metrics</h3>
+                            <div class="insights-content">🟢 Functional Correctness: 0.90
+🔴 Code Quality: 0.30
+🔴 Test Coverage: 0.10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚡ Performance Analysis</h2>
+                    <div class="insights-content">⏱️ Baseline Avg Time: 3.056s
+⏱️ Target Avg Time: 1.134s
+🟢 Time Difference: -1.922s</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>🔬 Detailed Analysis</h2>
+                    <div class="insights-content">• LL1 provides more detailed explanations, often in a multi-line format with numbered steps, while LL2 provides very concise, single-line explanations.
+• LL1's explanations include more context about Katalon-specific elements like `findTestObject`, `WebUI`, and custom keywords, while LL2 often omits this context.
+• LL2's explanations are significantly shorter in length compared to LL1's.
+• LL2 uses a different model (gpt-4o-mini) and API endpoint compared to LL1.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>✨ Improvements</h2>
+                    <div class="insights-content">✅ LL2 has significantly faster response times compared to LL1.
+✅ LL2's explanations are generally accurate, although less detailed.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚠️ Regressions</h2>
+                    <div class="insights-content">❌ LL2's explanations are significantly less complete and provide less context compared to LL1, especially regarding Katalon-specific elements.
+❌ LL2's explanations are often too high-level and lack the necessary detail to be truly helpful for users unfamiliar with the code.
+❌ The overall scores for completeness and context are significantly lower for LL2 compared to LL1.
+❌ LL2 fails to meet requirements in 3 out of 5 test cases, while LL1 meets requirements in all cases.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚠️ Concerns</h2>
+                    <div class="insights-content">⚠️ The lack of context in LL2's explanations could lead to confusion and frustration for users, especially those new to Katalon Studio.
+⚠️ The very brief explanations provided by LL2 may not be sufficient for users to understand the code's functionality fully.
+⚠️ The significant reduction in explanation detail in LL2 raises concerns about the overall usefulness of the 'explain_code' feature.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>💡 Recommendations</h2>
+                    <div class="insights-content">1. Re-evaluate the prompting strategy for LL2 to encourage more detailed and context-rich explanations.
+2. Ensure that LL2's explanations include sufficient information about Katalon-specific elements and their purpose.
+3. Consider using a hybrid approach, combining the speed of LL2 with the detail of LL1, perhaps by providing a concise summary followed by a more detailed explanation.
+4. Investigate the impact of the different LLM models (LL1 vs. LL2) on the quality of the explanations.
+5. Conduct user testing to gather feedback on the usefulness and clarity of the explanations provided by both LL1 and LL2.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>🎯 Final Assessment</h2>
+                    <div class="insights-content">🛡️ Decision: KEEP_LL1
+💪 Confidence Level: High</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📝 Detailed Explanation</h2>
+                    <div class="insights-content">LL1 consistently provides more complete, accurate, and context-rich explanations compared to LL2. While LL2 offers faster response times, the significant reduction in explanation quality makes it unsuitable for promotion at this time. The primary issue with LL2 is its lack of detail and context, particularly regarding Katalon-specific elements, which are crucial for users to understand the code's functionality within the Katalon Studio environment. The lower scores for completeness and context, along with the failure to meet requirements in several test cases, indicate a clear regression in performance compared to LL1. Therefore, it is recommended to keep LL1 and further investigate the prompting strategy and model selection for LL2 to improve its explanation quality.</div>
+                </div>
+
+                <div class="summary-box">
+                    <h2>Dataset Comparison</h2>
+                    <div class="json-comparison">
+                        <div class="dataset-section">
+                            <div class="dataset-header">
+                                <h3>Baseline Dataset</h3>
+                            </div>
+                            <div class="json-container">
+                                <script type="application/json" id="baseline-data">{
+  "metadata": {
+    "feature": "explain_code",
+    "llm_version": "LL1",
+    "creation_timestamp": "2025-05-28T17:21:17.867132",
+    "total_results": 5,
+    "dataset_type": "baseline",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-28T17:21:39.497956",
+      "original_baseline_file": "poc_data/explain_code/studioassist_explain_code_baseline_raw_ll1_20250528_172117_14fdc40d.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "explain_001",
+      "feature": "explain_code",
+      "prompt": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Object Repository/Page_Example/input_Username'), 'testuser')\nWebUI.setEncryptedText(findTestObject('Object Repository/Page_Example/input_Password'), 'encrypted_password')\nWebUI.click(findTestObject('Object Repository/Page_Example/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Object Repository/Page_Example/div_Welcome'))",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_002",
+      "feature": "explain_code",
+      "prompt": "Mobile.startExistingApplication('com.example.app')\nMobile.tap(findTestObject('Object Repository/Mobile_Objects/Button_OK'), 10)\nMobile.verifyElementVisible(findTestObject('Object Repository/Mobile_Objects/TextView_Welcome'), 10)\nMobile.closeApplication()",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_003",
+      "feature": "explain_code",
+      "prompt": "import static com.example.keywords.MyCustomKeywords.*\n\nprintln(MyCustomKeywords.calculateSum(5, 10))\nString result = MyCustomKeywords.formatString('Hello', 'World')\nprintln(result)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_004",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.configuration.RunConfiguration\n\nString browserType = RunConfiguration.getWebDriverType()\nprintln(\"Browser type: \" + browserType)\n\nif (browserType == 'Chrome') {\n  println('Running on Chrome')\n} else {\n  println('Running on a different browser')\n}",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_005",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\ndef verifyImageLoaded(String imagePath) {\n  WebUI.verifyImagePresent(imagePath, 10)\n  WebUI.verifyImageVisible(imagePath, 10)\n}\n\nverifyImageLoaded('https://www.example.com/image.jpg')",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    }
+  ],
+  "results": {
+    "explain_001": {
+      "input_id": "explain_001",
+      "feature": "explain_code",
+      "user_input": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Object Repository/Page_Example/input_Username'), 'testuser')\nWebUI.setEncryptedText(findTestObject('Object Repository/Page_Example/input_Password'), 'encrypted_password')\nWebUI.click(findTestObject('Object Repository/Page_Example/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Object Repository/Page_Example/div_Welcome'))",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Object Repository/Page_Example/input_Username'), 'testuser')\nWebUI.setEncryptedText(findTestObject('Object Repository/Page_Example/input_Password'), 'encrypted_password')\nWebUI.click(findTestObject('Object Repository/Page_Example/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Object Repository/Page_Example/div_Welcome'))"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Automate the login process on a web page and verify successful login.\n *\n * 1. Open a browser and navigate to the specified URL.\n * 2. Enter the username into the username input field.\n * 3. Enter the encrypted password into the password input field.\n * 4. Click the login button to submit the login form.\n * 5. Verify that the welcome element is visible, indicating a successful login.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T17:21:01.021556",
+      "response_time": 3.4456231594085693,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "accuracy": 10,
+          "clarity": 10,
+          "context": 8
+        },
+        "feedback": {
+          "completeness": "The explanation covers all the main steps of the code. It accurately describes the actions performed.",
+          "accuracy": "The explanation is technically correct and doesn't contain any misleading information.",
+          "clarity": "The explanation is very clear and easy to understand, even for someone unfamiliar with the code.",
+          "context": "The explanation mentions 'encrypted password' which is good, but could benefit from explicitly stating that `findTestObject` is a Katalon-specific function used to locate web elements defined in the Object Repository. It could also mention that `WebUI` is the Katalon built-in keyword class."
+        },
+        "overall_assessment": "The StudioAssist output is very good. It provides a clear, accurate, and complete explanation of the code's functionality. The explanation is well-structured and easy to follow. The only minor improvement would be to add more context regarding Katalon-specific elements.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add a sentence explaining that `findTestObject` is a Katalon-specific function used to locate web elements defined in the Object Repository.",
+          "Add a sentence explaining that `WebUI` is the Katalon built-in keyword class.",
+          "Consider adding a brief explanation of what an Object Repository is in Katalon Studio."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:21:21.758589"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_002": {
+      "input_id": "explain_002",
+      "feature": "explain_code",
+      "user_input": "Mobile.startExistingApplication('com.example.app')\nMobile.tap(findTestObject('Object Repository/Mobile_Objects/Button_OK'), 10)\nMobile.verifyElementVisible(findTestObject('Object Repository/Mobile_Objects/TextView_Welcome'), 10)\nMobile.closeApplication()",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "Mobile.startExistingApplication('com.example.app')\nMobile.tap(findTestObject('Object Repository/Mobile_Objects/Button_OK'), 10)\nMobile.verifyElementVisible(findTestObject('Object Repository/Mobile_Objects/TextView_Welcome'), 10)\nMobile.closeApplication()"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Automate the process of launching an existing mobile application, interacting with a button, verifying a welcome text, and closing the application.\n *\n * 1. Start an existing mobile application identified by its package name.\n * 2. Tap on the \"OK\" button within the application, waiting up to 10 seconds for it to be available.\n * 3. Verify that the welcome text view is visible on the screen, waiting up to 10 seconds for it to appear.\n * 4. Close the mobile application.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T17:21:04.392187",
+      "response_time": 2.3690402507781982,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "accuracy": 10,
+          "clarity": 10,
+          "context": 8
+        },
+        "feedback": {
+          "completeness": "The explanation covers all the actions performed by the code snippet.",
+          "accuracy": "The explanation accurately describes what each line of code does.",
+          "clarity": "The explanation is very clear and easy to understand, even for someone unfamiliar with the code.",
+          "context": "The explanation is good, but could benefit from explicitly mentioning that `findTestObject` is a Katalon Studio keyword used to locate UI elements based on properties defined in the Object Repository. It could also mention that the time parameter is a timeout in seconds."
+        },
+        "overall_assessment": "The StudioAssist output is excellent. It provides a clear, accurate, and complete explanation of the code snippet. The explanation is well-structured and easy to follow. The only minor improvement would be to add a bit more context regarding Katalon-specific elements like `findTestObject`.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add a sentence explaining that `findTestObject` is a Katalon Studio keyword used to locate UI elements based on properties defined in the Object Repository.",
+          "Clarify that the numerical parameter in `Mobile.tap` and `Mobile.verifyElementVisible` represents a timeout in seconds."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:21:26.539773"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_003": {
+      "input_id": "explain_003",
+      "feature": "explain_code",
+      "user_input": "import static com.example.keywords.MyCustomKeywords.*\n\nprintln(MyCustomKeywords.calculateSum(5, 10))\nString result = MyCustomKeywords.formatString('Hello', 'World')\nprintln(result)",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "import static com.example.keywords.MyCustomKeywords.*\n\nprintln(MyCustomKeywords.calculateSum(5, 10))\nString result = MyCustomKeywords.formatString('Hello', 'World')\nprintln(result)"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/ *\n * Demonstrate the usage of custom keyword methods for calculation and string formatting.\n *\n * 1. Import all static members from a custom keywords class.\n * 2. Call a method to calculate the sum of two numbers and print the result.\n * 3. Call a method to format two strings, store the result, and print it.\n * /",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T17:21:07.471023",
+      "response_time": 2.076486825942993,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "accuracy": 10,
+          "clarity": 9,
+          "context": 7
+        },
+        "feedback": {
+          "completeness": "The explanation covers the main actions of the code, but could benefit from mentioning the 'static import' and its implications in more detail.",
+          "accuracy": "The explanation is technically accurate and doesn't contain any factual errors.",
+          "clarity": "The explanation is easy to understand and uses clear language.",
+          "context": "The explanation lacks specific context related to Katalon Studio. It doesn't mention where custom keywords are typically defined or how they are used within a Katalon test case or test suite. It also doesn't mention the purpose of custom keywords in Katalon (e.g., extending functionality, reusability)."
+        },
+        "overall_assessment": "The explanation is good and accurately describes the code's functionality. However, it could be improved by adding more context specific to Katalon Studio and elaborating on the 'static import' statement.",
+        "overall_score": 8,
+        "suggestions": [
+          "Add a sentence explaining where custom keywords are typically defined in Katalon Studio (e.g., in the 'Keywords' folder).",
+          "Explain the purpose of custom keywords in Katalon Studio (e.g., extending functionality, reusability, simplifying test scripts).",
+          "Elaborate on the 'static import' statement, explaining that it allows direct access to the methods without needing to specify the class name each time.",
+          "Mention that custom keywords can be used in test cases, test suites, and other parts of a Katalon project."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:21:30.671174"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_004": {
+      "input_id": "explain_004",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.configuration.RunConfiguration\n\nString browserType = RunConfiguration.getWebDriverType()\nprintln(\"Browser type: \" + browserType)\n\nif (browserType == 'Chrome') {\n  println('Running on Chrome')\n} else {\n  println('Running on a different browser')\n}",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "import com.kms.katalon.core.configuration.RunConfiguration\n\nString browserType = RunConfiguration.getWebDriverType()\nprintln(\"Browser type: \" + browserType)\n\nif (browserType == 'Chrome') {\n  println('Running on Chrome')\n} else {\n  println('Running on a different browser')\n}"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/*\n * Determine the type of web browser used for the current test run and print corresponding messages.\n *\n * 1. Retrieve the current web driver type (browser type) from the run configuration.\n * 2. Print the detected browser type.\n * 3. Check if the browser type is 'Chrome'.\n * 4. Print a message indicating the test is running on Chrome if true.\n * 5. Otherwise, print a message indicating the test is running on a different browser.\n */",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T17:21:10.636696",
+      "response_time": 2.163872718811035,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "accuracy": 10,
+          "clarity": 10,
+          "context": 9
+        },
+        "feedback": {
+          "completeness": "The explanation covers all the essential aspects of the code, including retrieving the browser type, printing it, and the conditional check. It could slightly elaborate on the purpose of knowing the browser type in a testing context.",
+          "accuracy": "The explanation is technically accurate and doesn't contain any misleading information.",
+          "clarity": "The explanation is very clear and easy to understand, using simple language and a logical structure.",
+          "context": "The explanation correctly identifies `RunConfiguration.getWebDriverType()` as a Katalon-specific element. It could benefit from a brief mention of how this configuration is typically set within Katalon Studio (e.g., Project Settings -> Execution -> Default Execution)."
+        },
+        "overall_assessment": "Overall, the StudioAssist output is excellent. It provides a clear, accurate, and complete explanation of the code snippet. The explanation is well-structured and easy to follow, making it helpful for users of all skill levels. The context is good, but could be slightly improved by mentioning where the browser type is configured in Katalon Studio.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add a sentence or two explaining where the browser type is configured within Katalon Studio (Project Settings -> Execution -> Default Execution).",
+          "Briefly mention the purpose of identifying the browser type in a testing context (e.g., to run browser-specific tests or apply browser-specific configurations)."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:21:34.526702"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_005": {
+      "input_id": "explain_005",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\ndef verifyImageLoaded(String imagePath) {\n  WebUI.verifyImagePresent(imagePath, 10)\n  WebUI.verifyImageVisible(imagePath, 10)\n}\n\nverifyImageLoaded('https://www.example.com/image.jpg')",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\ndef verifyImageLoaded(String imagePath) {\n  WebUI.verifyImagePresent(imagePath, 10)\n  WebUI.verifyImageVisible(imagePath, 10)\n}\n\nverifyImageLoaded('https://www.example.com/image.jpg')"
+        },
+        "promptId": "multi-line-explain-code",
+        "feature": "explain_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/ *\n * Verify that a specified image is present and visible on a web page.\n *\n *  - Parameters:\n *    - String imagePath: The URL or path of the image to verify.\n *  - Steps:\n *    1. Verify that the image is present on the page within a 10-second timeout.\n *    2. Verify that the image is visible on the page within a 10-second timeout.\n *    3. Call the verification function with a specific image URL.\n * /",
+      "gui_output": "Explanation displayed below selected code",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T17:21:16.865060",
+      "response_time": 5.226380109786987,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "accuracy": 10,
+          "clarity": 9,
+          "context": 7
+        },
+        "feedback": {
+          "completeness": "The explanation covers the main functionality but could benefit from mentioning the purpose of the timeout value.",
+          "accuracy": "The explanation is technically accurate and doesn't contain any misleading information.",
+          "clarity": "The explanation is easy to understand and uses clear language.",
+          "context": "The explanation could be improved by explicitly mentioning that `WebUI.verifyImagePresent` and `WebUI.verifyImageVisible` are Katalon-specific keywords and briefly explaining their individual purposes beyond just 'present' and 'visible'."
+        },
+        "overall_assessment": "The StudioAssist output provides a good explanation of the code. It accurately describes the function's purpose and steps. However, it could be enhanced by providing more context regarding the Katalon-specific keywords and the timeout parameter.",
+        "overall_score": 8.5,
+        "suggestions": [
+          "Add a sentence explaining the purpose of the timeout parameter in `WebUI.verifyImagePresent` and `WebUI.verifyImageVisible`.",
+          "Explicitly state that `WebUI.verifyImagePresent` and `WebUI.verifyImageVisible` are Katalon-specific keywords.",
+          "Briefly explain the difference between `WebUI.verifyImagePresent` and `WebUI.verifyImageVisible`. For example, `verifyImagePresent` checks if the image element exists in the DOM, while `verifyImageVisible` checks if the image is actually displayed on the page."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:21:38.495045"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 5,
+      "evaluation_errors": 0,
+      "start_time": "2025-05-28T17:21:17.872535",
+      "end_time": "2025-05-28T17:21:39.495444"
+    },
+    "diversity_analysis": {
+      "total_inputs": 5,
+      "unique_patterns": 5,
+      "prompt_length_stats": {
+        "min": 180,
+        "max": 409,
+        "mean": 274.6,
+        "median": 256,
+        "std_dev": 83.34146626979873
+      },
+      "pattern_categories": {
+        "testing": 3,
+        "web_automation": 3,
+        "mobile_testing": 1,
+        "custom_keywords": 2
+      },
+      "complexity_distribution": {
+        "low": 1,
+        "medium": 4,
+        "high": 0
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 5,
+      "output_length_stats": {
+        "min": 316,
+        "max": 482,
+        "mean": 408.8,
+        "median": 410,
+        "std_dev": 61.45892937564077
+      },
+      "keyword_usage": {},
+      "error_patterns": {},
+      "response_time_analysis": {
+        "min": 2.076486825942993,
+        "max": 5.226380109786987,
+        "mean": 3.0562806129455566,
+        "median": 2.3690402507781982,
+        "percentile_95": 5.226380109786987
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "completeness": {
+          "description": "Does the explanation cover all aspects of the code?",
+          "count": 5,
+          "mean": 8.6,
+          "median": 9,
+          "std_dev": 0.5477225575051661,
+          "min": 8,
+          "max": 9,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "accuracy": {
+          "description": "Is the explanation technically correct?",
+          "count": 5,
+          "mean": 10,
+          "median": 10,
+          "std_dev": 0.0,
+          "min": 10,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "clarity": {
+          "description": "Is the explanation easy to understand?",
+          "count": 5,
+          "mean": 9.6,
+          "median": 10,
+          "std_dev": 0.5477225575051661,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "context": {
+          "description": "Does it properly explain Katalon-specific elements?",
+          "count": 5,
+          "mean": 7.8,
+          "median": 8,
+          "std_dev": 0.8366600265340756,
+          "min": 7,
+          "max": 9,
+          "distribution": {
+            "excellent (8-10)": 3,
+            "good (6-8)": 2,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 8.7,
+        "median": 9,
+        "std_dev": 0.4472135954999579,
+        "min": 8,
+        "max": 9,
+        "meets_requirements_percentage": 100.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 0,
+        "6-8": 0,
+        "8-10": 5
+      },
+      "correlation_analysis": {
+        "completeness_vs_accuracy": 0.0,
+        "completeness_vs_clarity": 1.0,
+        "completeness_vs_context": 0.8728715609439694,
+        "accuracy_vs_clarity": 0.0,
+        "accuracy_vs_context": 0.0,
+        "clarity_vs_context": 0.8728715609439694
+      },
+      "improvement_areas": []
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "accuracy": 7,
+        "clarity": 5,
+        "error_handling": 1
+      },
+      "suggestion_frequency": {
+        "Add a sentence explaining that `findTestObject` is a Katalon-specific function used to locate web elements defined in the Object Repository.": 1,
+        "Add a sentence explaining that `WebUI` is the Katalon built-in keyword class.": 1,
+        "Consider adding a brief explanation of what an Object Repository is in Katalon Studio.": 1,
+        "Add a sentence explaining that `findTestObject` is a Katalon Studio keyword used to locate UI elements based on properties defined in the Object Repository.": 1,
+        "Clarify that the numerical parameter in `Mobile.tap` and `Mobile.verifyElementVisible` represents a timeout in seconds.": 1,
+        "Add a sentence explaining where custom keywords are typically defined in Katalon Studio (e.g., in the 'Keywords' folder).": 1,
+        "Explain the purpose of custom keywords in Katalon Studio (e.g., extending functionality, reusability, simplifying test scripts).": 1,
+        "Elaborate on the 'static import' statement, explaining that it allows direct access to the methods without needing to specify the class name each time.": 1,
+        "Mention that custom keywords can be used in test cases, test suites, and other parts of a Katalon project.": 1,
+        "Add a sentence or two explaining where the browser type is configured within Katalon Studio (Project Settings -> Execution -> Default Execution).": 1
+      },
+      "feedback_sentiment": {
+        "positive": 5,
+        "neutral": 0,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Limited test coverage: Consider increasing the number of test patterns for more comprehensive evaluation.",
+      "Excellent overall performance: The current configuration is producing high-quality outputs.",
+      "Strong correlation between completeness_vs_clarity (1.00): These criteria are closely related.",
+      "Strong correlation between completeness_vs_context (0.87): These criteria are closely related.",
+      "Strong correlation between clarity_vs_context (0.87): These criteria are closely related."
+    ]
+  }
+}</script>
+                                <div id="baseline-json" class="json-tree"></div>
+                            </div>
+                        </div>
+                        <div class="dataset-section">
+                            <div class="dataset-header">
+                                <h3>Target Dataset</h3>
+                            </div>
+                            <div class="json-container">
+                                <script type="application/json" id="target-data">{
+  "metadata": {
+    "feature": "explain_code",
+    "llm_version": "LL2",
+    "creation_timestamp": "2025-05-28T17:22:14.618292",
+    "total_results": 5,
+    "dataset_type": "target",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-28T17:22:38.364453",
+      "original_baseline_file": "poc_data/explain_code/studioassist_explain_code_target_raw_ll2_20250528_172214_205104a6.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "explain_001",
+      "feature": "explain_code",
+      "prompt": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Object Repository/Page_Example/input_Username'), 'testuser')\nWebUI.setEncryptedText(findTestObject('Object Repository/Page_Example/input_Password'), 'encrypted_password')\nWebUI.click(findTestObject('Object Repository/Page_Example/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Object Repository/Page_Example/div_Welcome'))",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_002",
+      "feature": "explain_code",
+      "prompt": "Mobile.startExistingApplication('com.example.app')\nMobile.tap(findTestObject('Object Repository/Mobile_Objects/Button_OK'), 10)\nMobile.verifyElementVisible(findTestObject('Object Repository/Mobile_Objects/TextView_Welcome'), 10)\nMobile.closeApplication()",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_003",
+      "feature": "explain_code",
+      "prompt": "import static com.example.keywords.MyCustomKeywords.*\n\nprintln(MyCustomKeywords.calculateSum(5, 10))\nString result = MyCustomKeywords.formatString('Hello', 'World')\nprintln(result)",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_004",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.configuration.RunConfiguration\n\nString browserType = RunConfiguration.getWebDriverType()\nprintln(\"Browser type: \" + browserType)\n\nif (browserType == 'Chrome') {\n  println('Running on Chrome')\n} else {\n  println('Running on a different browser')\n}",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    },
+    {
+      "input_id": "explain_005",
+      "feature": "explain_code",
+      "prompt": "import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\ndef verifyImageLoaded(String imagePath) {\n  WebUI.verifyImagePresent(imagePath, 10)\n  WebUI.verifyImageVisible(imagePath, 10)\n}\n\nverifyImageLoaded('https://www.example.com/image.jpg')",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "multi-line-explain-code"
+    }
+  ],
+  "results": {
+    "explain_001": {
+      "input_id": "explain_001",
+      "feature": "explain_code",
+      "user_input": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Object Repository/Page_Example/input_Username'), 'testuser')\nWebUI.setEncryptedText(findTestObject('Object Repository/Page_Example/input_Password'), 'encrypted_password')\nWebUI.click(findTestObject('Object Repository/Page_Example/button_Login'))\nWebUI.verifyElementVisible(findTestObject('Object Repository/Page_Example/div_Welcome'))",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "WebUI.openBrowser('https://www.example.com')\nWebUI.setText(findTestObject('Object Repository/Page_Ex...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open a browser, set username and encrypted password, click login, and verify welcome message visibility.",
+      "gui_output": "Output displayed in Katalon Studio explain_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T17:22:05.270628",
+      "response_time": 1.3307299613952637,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 7,
+          "accuracy": 10,
+          "clarity": 8,
+          "context": 6
+        },
+        "feedback": {
+          "completeness": "The explanation covers the main actions but lacks detail about what each action *does*. It's a high-level summary, but doesn't explain the purpose of setting text or clicking a button.",
+          "accuracy": "The explanation is technically accurate. It correctly describes the sequence of actions.",
+          "clarity": "The explanation is easy to understand at a basic level. The language is simple and straightforward.",
+          "context": "The explanation doesn't explicitly mention that `findTestObject` is a Katalon-specific function used to locate web elements. It also doesn't explain the significance of using `setEncryptedText` versus `setText`."
+        },
+        "overall_assessment": "The StudioAssist output provides a decent high-level summary of the code. However, it could be improved by adding more detail about the purpose of each action and providing more context about Katalon-specific functions and their usage.",
+        "overall_score": 7,
+        "suggestions": [
+          "Add explanations of what each WebUI method *does* (e.g., 'Opens a browser window and navigates to the specified URL').",
+          "Explain the purpose of `findTestObject` and its role in locating web elements within Katalon Studio.",
+          "Clarify the difference between `setText` and `setEncryptedText` and why the latter is used for passwords.",
+          "Mention that the code is automating a login process.",
+          "Consider adding a brief explanation of what a Test Object is in Katalon Studio."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:22:18.474003"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_002": {
+      "input_id": "explain_002",
+      "feature": "explain_code",
+      "user_input": "Mobile.startExistingApplication('com.example.app')\nMobile.tap(findTestObject('Object Repository/Mobile_Objects/Button_OK'), 10)\nMobile.verifyElementVisible(findTestObject('Object Repository/Mobile_Objects/TextView_Welcome'), 10)\nMobile.closeApplication()",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "Mobile.startExistingApplication('com.example.app')\nMobile.tap(findTestObject('Object Repository/Mobi...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Start the existing mobile application, tap the OK button, verify the welcome text is visible, and then close the application.",
+      "gui_output": "Output displayed in Katalon Studio explain_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T17:22:07.261711",
+      "response_time": 0.9892499446868896,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "accuracy": 10,
+          "clarity": 9,
+          "context": 7
+        },
+        "feedback": {
+          "completeness": "The explanation covers the main actions but could benefit from mentioning the timeout values used in the tap and verifyElementVisible functions.",
+          "accuracy": "The explanation is technically accurate. It correctly describes the actions performed by each line of code.",
+          "clarity": "The explanation is easy to understand and uses simple language.",
+          "context": "While accurate, the explanation doesn't explicitly highlight the Katalon-specific aspects like 'findTestObject' and its role in locating UI elements. It assumes the user understands what a Test Object is in Katalon."
+        },
+        "overall_assessment": "The StudioAssist output provides a good, concise explanation of the code. It accurately describes the actions performed. However, it could be improved by adding more detail about the timeout values and explicitly mentioning the Katalon-specific elements like Test Objects.",
+        "overall_score": 8.5,
+        "suggestions": [
+          "Mention the timeout values used in the `tap` and `verifyElementVisible` functions.",
+          "Explicitly explain the role of `findTestObject` and what a Test Object represents in Katalon Studio.",
+          "Consider adding a brief explanation of why each step is being performed (e.g., 'Start the application to begin testing', 'Tap the OK button to proceed to the next screen')."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:22:23.475667"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_003": {
+      "input_id": "explain_003",
+      "feature": "explain_code",
+      "user_input": "import static com.example.keywords.MyCustomKeywords.*\n\nprintln(MyCustomKeywords.calculateSum(5, 10))\nString result = MyCustomKeywords.formatString('Hello', 'World')\nprintln(result)",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "import static com.example.keywords.MyCustomKeywords.*\n\nprintln(MyCustomKeywords.calculateSum(5, 10))...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Call a method to calculate the sum of two numbers and format a string with given inputs.",
+      "gui_output": "Output displayed in Katalon Studio explain_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T17:22:09.434336",
+      "response_time": 1.1711509227752686,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 4,
+          "accuracy": 10,
+          "clarity": 7,
+          "context": 2
+        },
+        "feedback": {
+          "completeness": "The explanation is very basic and doesn't provide much detail. It only mentions the general purpose of the code without explaining the individual steps or the significance of importing custom keywords.",
+          "accuracy": "The explanation is technically accurate in that it correctly states the code calculates a sum and formats a string.",
+          "clarity": "The explanation is easy to understand, but it's too simplistic to be truly helpful.",
+          "context": "The explanation fails to mention that `MyCustomKeywords` is a custom keyword class in Katalon Studio, which is a crucial piece of context for understanding the code's purpose within the Katalon environment. It also doesn't explain the significance of the `import static` statement."
+        },
+        "overall_assessment": "The explanation is a very high-level summary of the code's functionality. It's accurate but lacks depth and context, especially regarding Katalon Studio's custom keyword feature. It's not very helpful for someone trying to understand the code in a Katalon Studio project.",
+        "overall_score": 4,
+        "suggestions": [
+          "Explain that `MyCustomKeywords` is a custom keyword class in Katalon Studio.",
+          "Explain the purpose of the `import static` statement and how it allows direct access to the methods within the `MyCustomKeywords` class.",
+          "Describe the specific actions performed by `calculateSum` and `formatString` methods.",
+          "Mention that custom keywords are used to extend Katalon Studio's functionality and encapsulate reusable test logic.",
+          "Provide an example of how these custom keywords might be used in a test case.",
+          "Explain the data types of the arguments and return values of the methods."
+        ],
+        "meets_requirements": false,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:22:28.520900"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_004": {
+      "input_id": "explain_004",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.configuration.RunConfiguration\n\nString browserType = RunConfiguration.getWebDriverType()\nprintln(\"Browser type: \" + browserType)\n\nif (browserType == 'Chrome') {\n  println('Running on Chrome')\n} else {\n  println('Running on a different browser')\n}",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "import com.kms.katalon.core.configuration.RunConfiguration\n\nString browserType = RunConfiguration.ge...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Print browser type and indicate if it is Chrome or another browser",
+      "gui_output": "Output displayed in Katalon Studio explain_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T17:22:11.537472",
+      "response_time": 1.1010730266571045,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 6,
+          "accuracy": 10,
+          "clarity": 8,
+          "context": 5
+        },
+        "feedback": {
+          "completeness": "The explanation is very brief and doesn't fully explain what the code is doing. It only states the overall purpose but misses details about the specific function used and its role.",
+          "accuracy": "The explanation is technically correct in what it states.",
+          "clarity": "The explanation is easy to understand, but it's too simplistic.",
+          "context": "The explanation lacks context regarding Katalon Studio. It doesn't mention that `RunConfiguration` is a Katalon class or explain its purpose within the Katalon framework."
+        },
+        "overall_assessment": "The explanation is a very basic summary of the code's functionality. While accurate and clear, it lacks depth and context, especially regarding Katalon Studio specifics. It's more of a high-level overview than a detailed explanation.",
+        "overall_score": 6,
+        "suggestions": [
+          "Explain that `RunConfiguration` is a Katalon Studio class used to access runtime configuration settings.",
+          "Elaborate on what `RunConfiguration.getWebDriverType()` does - that it retrieves the configured browser type for the test execution.",
+          "Mention that the code uses a conditional statement (if/else) to determine which browser is being used.",
+          "Provide a more detailed explanation of the purpose of printing the browser type to the console.",
+          "Add a sentence about how this information can be used for conditional test execution or reporting."
+        ],
+        "meets_requirements": false,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:22:33.223142"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "explain_005": {
+      "input_id": "explain_005",
+      "feature": "explain_code",
+      "user_input": "import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\ndef verifyImageLoaded(String imagePath) {\n  WebUI.verifyImagePresent(imagePath, 10)\n  WebUI.verifyImageVisible(imagePath, 10)\n}\n\nverifyImageLoaded('https://www.example.com/image.jpg')",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\ndef verifyImageLoaded(Strin...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Verify that the specified image is present and visible on the web page.",
+      "gui_output": "Output displayed in Katalon Studio explain_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T17:22:13.616220",
+      "response_time": 1.0774049758911133,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 5,
+          "accuracy": 10,
+          "clarity": 8,
+          "context": 4
+        },
+        "feedback": {
+          "completeness": "The explanation is too brief. It only states the overall goal but doesn't explain the individual steps or the purpose of the timeout value.",
+          "accuracy": "The explanation is accurate as far as it goes. It correctly identifies the function's purpose.",
+          "clarity": "The explanation is easy to understand, but it's also very basic.",
+          "context": "The explanation lacks context regarding Katalon Studio and its keywords. It doesn't mention that `WebUI` is a built-in keyword class or explain what `verifyImagePresent` and `verifyImageVisible` do within the Katalon framework."
+        },
+        "overall_assessment": "The explanation is technically correct but lacks depth and context. It provides a high-level overview but doesn't offer sufficient detail for someone unfamiliar with Katalon Studio to understand the code fully.",
+        "overall_score": 6,
+        "suggestions": [
+          "Explain that `WebUI` is a built-in keyword class in Katalon Studio.",
+          "Describe what `verifyImagePresent` and `verifyImageVisible` keywords do specifically (e.g., `verifyImagePresent` checks if the image exists in the DOM, and `verifyImageVisible` checks if it's displayed on the page).",
+          "Explain the purpose of the timeout value (10 seconds) in the keywords.",
+          "Mention that the function takes an image path as input and verifies its presence and visibility.",
+          "Add a sentence about the example usage and what it does (e.g., 'This example calls the function with a sample image URL.')."
+        ],
+        "meets_requirements": false,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T17:22:37.359714"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 5,
+      "evaluation_errors": 0,
+      "start_time": "2025-05-28T17:22:14.627174",
+      "end_time": "2025-05-28T17:22:38.361027"
+    },
+    "diversity_analysis": {
+      "total_inputs": 5,
+      "unique_patterns": 5,
+      "prompt_length_stats": {
+        "min": 180,
+        "max": 409,
+        "mean": 274.6,
+        "median": 256,
+        "std_dev": 83.34146626979873
+      },
+      "pattern_categories": {
+        "testing": 3,
+        "web_automation": 3,
+        "mobile_testing": 1,
+        "custom_keywords": 2
+      },
+      "complexity_distribution": {
+        "low": 1,
+        "medium": 4,
+        "high": 0
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 5,
+      "output_length_stats": {
+        "min": 69,
+        "max": 128,
+        "mean": 93.8,
+        "median": 91,
+        "std_dev": 24.283739415501888
+      },
+      "keyword_usage": {},
+      "error_patterns": {},
+      "response_time_analysis": {
+        "min": 0.9892499446868896,
+        "max": 1.3307299613952637,
+        "mean": 1.1339217662811278,
+        "median": 1.1010730266571045,
+        "percentile_95": 1.3307299613952637
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "completeness": {
+          "description": "Does the explanation cover all aspects of the code?",
+          "count": 5,
+          "mean": 6,
+          "median": 6,
+          "std_dev": 1.5811388300841898,
+          "min": 4,
+          "max": 8,
+          "distribution": {
+            "excellent (8-10)": 1,
+            "good (6-8)": 2,
+            "fair (4-6)": 2,
+            "poor (0-4)": 0
+          }
+        },
+        "accuracy": {
+          "description": "Is the explanation technically correct?",
+          "count": 5,
+          "mean": 10,
+          "median": 10,
+          "std_dev": 0.0,
+          "min": 10,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "clarity": {
+          "description": "Is the explanation easy to understand?",
+          "count": 5,
+          "mean": 8,
+          "median": 8,
+          "std_dev": 0.7071067811865476,
+          "min": 7,
+          "max": 9,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 1,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "context": {
+          "description": "Does it properly explain Katalon-specific elements?",
+          "count": 5,
+          "mean": 4.8,
+          "median": 5,
+          "std_dev": 1.9235384061671346,
+          "min": 2,
+          "max": 7,
+          "distribution": {
+            "excellent (8-10)": 0,
+            "good (6-8)": 2,
+            "fair (4-6)": 2,
+            "poor (0-4)": 1
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 6.3,
+        "median": 6,
+        "std_dev": 1.6431676725154984,
+        "min": 4,
+        "max": 8.5,
+        "meets_requirements_percentage": 40.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 1,
+        "6-8": 3,
+        "8-10": 1
+      },
+      "correlation_analysis": {
+        "completeness_vs_accuracy": 0.0,
+        "completeness_vs_clarity": 0.8944271909999159,
+        "completeness_vs_context": 0.9863939238321437,
+        "accuracy_vs_clarity": 0.0,
+        "accuracy_vs_context": 0.0,
+        "clarity_vs_context": 0.9190182776172597
+      },
+      "improvement_areas": [
+        {
+          "criterion": "context",
+          "mean_score": 4.8,
+          "description": "Does it properly explain Katalon-specific elements?"
+        }
+      ]
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "accuracy": 6
+      },
+      "suggestion_frequency": {
+        "Add explanations of what each WebUI method *does* (e.g., 'Opens a browser window and navigates to the specified URL').": 1,
+        "Explain the purpose of `findTestObject` and its role in locating web elements within Katalon Studio.": 1,
+        "Clarify the difference between `setText` and `setEncryptedText` and why the latter is used for passwords.": 1,
+        "Mention that the code is automating a login process.": 1,
+        "Consider adding a brief explanation of what a Test Object is in Katalon Studio.": 1,
+        "Mention the timeout values used in the `tap` and `verifyElementVisible` functions.": 1,
+        "Explicitly explain the role of `findTestObject` and what a Test Object represents in Katalon Studio.": 1,
+        "Consider adding a brief explanation of why each step is being performed (e.g., 'Start the application to begin testing', 'Tap the OK button to proceed to the next screen').": 1,
+        "Explain that `MyCustomKeywords` is a custom keyword class in Katalon Studio.": 1,
+        "Explain the purpose of the `import static` statement and how it allows direct access to the methods within the `MyCustomKeywords` class.": 1
+      },
+      "feedback_sentiment": {
+        "positive": 1,
+        "neutral": 4,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Limited test coverage: Consider increasing the number of test patterns for more comprehensive evaluation.",
+      "Improvement needed in: context. Focus on enhancing these aspects of the output.",
+      "Strong correlation between completeness_vs_clarity (0.89): These criteria are closely related.",
+      "Strong correlation between completeness_vs_context (0.99): These criteria are closely related.",
+      "Strong correlation between clarity_vs_context (0.92): These criteria are closely related."
+    ]
+  }
+}</script>
+                                <div id="target-json" class="json-tree"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Generated by Katalon StudioAssist</p>
+                <p>2025-05-28 17:23:03</p>
+                <p>© 2025 Katalon LLC. All rights reserved.</p>
+            </footer>
+        </body>
+        </html>
+        
