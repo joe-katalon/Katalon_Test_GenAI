@@ -307,8 +307,8 @@ The framework evaluates LLM implementations based on:
 
 ## License
 
-[Your License Information]
+[N/A]
 
 ## Support
 
-For support, please contact [Your Contact Information]
+For support, please contact me Joe
