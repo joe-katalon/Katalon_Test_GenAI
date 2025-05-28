@@ -21,40 +21,74 @@ def extract_metrics_from_report(html_file):
         
         try:
             # Find metrics columns
-            metrics_columns = soup.select('.metrics-column')
+            metrics_columns = soup.select('.metrics-grid .metrics-column')
+            if not metrics_columns:
+                print(f"Warning: No metrics columns found in {html_file}")
+                # Try alternative selectors
+                metrics_columns = soup.select('.detailed-scores .metrics-column')
+                if not metrics_columns:
+                    print(f"Warning: No metrics found with alternative selector in {html_file}")
+                    return metrics
+            
+            found_consistency = False
+            found_accuracy = False
             
             for column in metrics_columns:
                 header = column.select_one('h3')
                 if not header:
+                    print(f"Warning: Found column but no header in {html_file}")
                     continue
                 
                 content = column.select_one('.insights-content')
                 if not content:
+                    print(f"Warning: Found header '{header.text}' but no content in {html_file}")
                     continue
                 
                 # Extract all numbers from the content
                 scores = []
-                for line in content.text.split('\n'):
+                content_text = content.text.strip()
+                print(f"Debug: Processing content for {header.text}:")
+                print(content_text)
+                
+                for line in content_text.split('\n'):
                     # Extract number from strings like "🟢 Output Stability: 0.85"
                     try:
-                        score = float(line.split(':')[-1].strip())
-                        scores.append(score)
-                    except (ValueError, IndexError):
+                        if ':' in line:
+                            score_text = line.split(':')[-1].strip()
+                            score = float(score_text)
+                            scores.append(score)
+                            print(f"Debug: Extracted score {score} from line: {line}")
+                    except (ValueError, IndexError) as e:
+                        print(f"Warning: Could not extract score from line '{line}': {e}")
                         continue
                 
                 # Calculate average if we found any scores
                 if scores:
-                    if '🎯 Consistency Metrics' in header.text:
+                    if '🎯 Consistency Metrics' in header.text or 'Consistency' in header.text:
                         metrics['consistency'] = sum(scores) / len(scores)
-                    elif '✅ Accuracy Metrics' in header.text:
+                        found_consistency = True
+                        print(f"Debug: Found consistency metrics, average: {metrics['consistency']}")
+                    elif '✅ Accuracy Metrics' in header.text or 'Accuracy' in header.text:
                         metrics['accuracy'] = sum(scores) / len(scores)
+                        found_accuracy = True
+                        print(f"Debug: Found accuracy metrics, average: {metrics['accuracy']}")
+                else:
+                    print(f"Warning: No scores found in content for {header.text}")
             
             # Calculate overall score if we have both metrics
-            if metrics['consistency'] > 0 and metrics['accuracy'] > 0:
+            if found_consistency and found_accuracy:
                 metrics['overall'] = (metrics['consistency'] + metrics['accuracy']) / 2
+                print(f"Debug: Calculated overall score: {metrics['overall']}")
+            else:
+                missing = []
+                if not found_consistency:
+                    missing.append("consistency")
+                if not found_accuracy:
+                    missing.append("accuracy")
+                print(f"Warning: Missing metrics in {html_file}: {', '.join(missing)}")
             
         except Exception as e:
-            print(f"Warning: No metrics found in {html_file}, using defaults")
+            print(f"Warning: Error processing {html_file}: {str(e)}")
         
         return metrics
 

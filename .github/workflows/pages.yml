@@ -59,40 +59,83 @@ jobs:
 
           def get_default_metrics():
               return {
-                  'stability': 0.85,
-                  'consistency': 0.92,
-                  'quality': 0.88,
-                  'performance': 0.90
+                  'consistency': 0.85,  # Average of Output Stability, Behavior Consistency, Style Consistency
+                  'accuracy': 0.83,     # Average of Functional Correctness, Code Quality, Test Coverage
+                  'overall': 0.84       # Average of consistency and accuracy
               }
           
           def extract_metrics(html_file):
               try:
                   with open(html_file, 'r') as f:
                       soup = BeautifulSoup(f.read(), 'html.parser')
-                      metrics = {}
-                      for metric in soup.find_all(class_='metric-value'):
-                          name = metric.get('data-metric', '').lower()
-                          try:
-                              value = float(metric.text.strip())
-                              metrics[name] = value
-                          except (ValueError, TypeError):
-                              print(f"Warning: Invalid metric value in {html_file} for {name}")
+                      metrics = {
+                          'consistency': 0.0,
+                          'accuracy': 0.0,
+                          'overall': 0.0
+                      }
                       
-                      # If no valid metrics found, use defaults
-                      if not metrics:
-                          print(f"Warning: No metrics found in {html_file}, using defaults")
-                          metrics = get_default_metrics()
+                      # Find metrics columns
+                      metrics_columns = soup.select('.metrics-grid .metrics-column')
+                      if not metrics_columns:
+                          print(f"Warning: No metrics columns found in {html_file}")
+                          # Try alternative selectors
+                          metrics_columns = soup.select('.detailed-scores .metrics-column')
+                          if not metrics_columns:
+                              print(f"Warning: No metrics found with alternative selector in {html_file}")
+                              return get_default_metrics()
+                      
+                      found_consistency = False
+                      found_accuracy = False
+                      
+                      for column in metrics_columns:
+                          header = column.select_one('h3')
+                          if not header:
+                              continue
+                          
+                          content = column.select_one('.insights-content')
+                          if not content:
+                              continue
+                          
+                          # Extract all numbers from the content
+                          scores = []
+                          content_text = content.text.strip()
+                          
+                          for line in content_text.split('\n'):
+                              # Extract number from strings like "🟢 Output Stability: 0.85"
+                              try:
+                                  if ':' in line:
+                                      score_text = line.split(':')[-1].strip()
+                                      score = float(score_text)
+                                      scores.append(score)
+                              except (ValueError, IndexError):
+                                  continue
+                          
+                          # Calculate average if we found any scores
+                          if scores:
+                              if '🎯 Consistency Metrics' in header.text or 'Consistency' in header.text:
+                                  metrics['consistency'] = sum(scores) / len(scores)
+                                  found_consistency = True
+                              elif '✅ Accuracy Metrics' in header.text or 'Accuracy' in header.text:
+                                  metrics['accuracy'] = sum(scores) / len(scores)
+                                  found_accuracy = True
+                      
+                      # Calculate overall score if we have both metrics
+                      if found_consistency and found_accuracy:
+                          metrics['overall'] = (metrics['consistency'] + metrics['accuracy']) / 2
+                      else:
+                          print(f"Warning: Missing metrics in {html_file}, using defaults")
+                          return get_default_metrics()
                       
                       return metrics
+                      
               except Exception as e:
                   print(f"Error extracting metrics from {html_file}: {e}")
                   return get_default_metrics()
           
           def calculate_overall(metrics):
               try:
-                  valid_values = [v for v in metrics.values() if isinstance(v, (int, float))]
-                  if valid_values:
-                      return sum(valid_values) / len(valid_values)
+                  if 'consistency' in metrics and 'accuracy' in metrics:
+                      return (metrics['consistency'] + metrics['accuracy']) / 2
                   return 0.0
               except Exception as e:
                   print(f"Error calculating overall score: {e}")
