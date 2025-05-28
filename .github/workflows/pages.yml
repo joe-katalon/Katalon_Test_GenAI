@@ -6,11 +6,15 @@ on:
       - main
   workflow_dispatch:
 
+# These permissions are needed for GitHub Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write    # Added for Pages configuration
+  deployments: write  # Added for Pages deployment
 
+# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -24,6 +28,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAGES_TOKEN }}
       
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -34,6 +40,7 @@ jobs:
         uses: actions/configure-pages@v4
         with:
           enablement: true
+          token: ${{ secrets.PAGES_TOKEN }}
       
       - name: Install dependencies
         run: |
@@ -59,4 +66,6 @@ jobs:
       
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.PAGES_TOKEN }} 
