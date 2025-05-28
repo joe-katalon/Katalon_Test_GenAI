@@ -152,22 +152,16 @@
                 type: 'radar',
                 data: {
                     labels: [
-                        'Output Stability',
-                        'Behavior Consistency',
-                        'Style Consistency',
-                        'Functional Correctness',
-                        'Code Quality',
-                        'Test Coverage'
+                        'Consistency',
+                        'Accuracy',
+                        'Overall'
                     ],
                     datasets: [{
                         label: 'Latest Metrics',
                         data: [
-                            latestReport.metrics.output_stability || 0,
-                            latestReport.metrics.behavior_consistency || 0,
-                            latestReport.metrics.style_consistency || 0,
-                            latestReport.metrics.functional_correctness || 0,
-                            latestReport.metrics.code_quality || 0,
-                            latestReport.metrics.test_coverage || 0
+                            latestReport.metrics.consistency || 0,
+                            latestReport.metrics.accuracy || 0,
+                            latestReport.metrics.overall || 0
                         ],
                         fill: true,
                         backgroundColor: 'rgba(59, 130, 246, 0.2)',
