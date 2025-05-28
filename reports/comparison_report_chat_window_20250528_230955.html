@@ -1,0 +1,1917 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="referrer" content="origin">
+            <title>StudioAssist Comparison Report - chat_window</title>
+            <!-- Add Tippy.js and its dependencies -->
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    margin: 0;
+                    padding: 0;
+                    background: #f5f5f5;
+                }
+                .header {
+                    background: #fff;
+                    padding: 20px;
+                    border-bottom: 1px solid #dee2e6;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    position: sticky;
+                    top: 0;
+                    z-index: 100;
+                }
+                .header-content {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    padding: 10px 20px;
+                }
+                .logo {
+                    height: 32px;
+                    width: auto;
+                    margin-right: 15px;
+                }
+                .header-title {
+                    font-size: 1.5em;
+                    color: #333;
+                    margin: 0;
+                    flex: 1;
+                }
+                .container {
+                    max-width: 1200px;
+                    margin: 20px auto;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                h1, h2 {
+                    color: #333;
+                    border-bottom: 2px solid #eee;
+                    padding-bottom: 10px;
+                }
+                .summary-box {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                    margin: 10px 0;
+                }
+                .metric {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 5px 0;
+                    padding: 5px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                .metric-label {
+                    font-weight: bold;
+                }
+                .score {
+                    padding: 3px 8px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                }
+                .good { background: #d4edda; color: #155724; }
+                .warning { background: #fff3cd; color: #856404; }
+                .poor { background: #f8d7da; color: #721c24; }
+                .comparison-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    background: white;
+                }
+                .comparison-table th,
+                .comparison-table td {
+                    padding: 12px 15px;
+                    text-align: left;
+                    border: 1px solid #e2e8f0;
+                }
+                .comparison-table th {
+                    background-color: #f8fafc;
+                    font-weight: 600;
+                    color: #1a202c;
+                }
+                .comparison-table tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                .comparison-table tr:hover {
+                    background-color: #edf2f7;
+                }
+                .comparison-table td.positive {
+                    color: #059669;
+                    font-weight: 600;
+                }
+                .comparison-table td.negative {
+                    color: #dc2626;
+                    font-weight: 600;
+                }
+                .timestamp {
+                    color: #6c757d;
+                    font-size: 0.9em;
+                }
+                .decision {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 4px;
+                }
+                .decision.promote { background: #d4edda; color: #155724; }
+                .decision.keep { background: #f8d7da; color: #721c24; }
+                .decision.testing { background: #fff3cd; color: #856404; }
+                .insights li {
+                    margin-bottom: 8px;
+                }
+                .json-view {
+                    font-family: monospace;
+                    white-space: pre;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 4px;
+                    max-height: 400px;
+                    overflow: auto;
+                    display: none;
+                }
+                .json-container {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 0 0 4px 4px;
+                    padding: 15px;
+                    height: 400px; /* Increased height for better visibility */
+                    min-height: 400px; /* Ensure minimum height */
+                    max-height: 400px; /* Ensure maximum height */
+                    overflow: auto; /* Always show scrollbar when needed */
+                    position: relative;
+                }
+                .json-tree {
+                    height: 100%;
+                    overflow: auto;
+                    padding-right: 10px;
+                }
+                .json-tree .hidden {
+                    display: none;
+                }
+                .json-tree .expanded {
+                    display: block;
+                }
+                /* Ensure long content wraps and scrolls */
+                .json-tree .json-string,
+                .json-tree .json-key,
+                .json-tree .preview {
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                /* Make indent consistent */
+                .json-tree .indent {
+                    margin-left: 20px;
+                    padding-left: 10px;
+                    border-left: 1px dotted #ddd;
+                }
+                /* Custom scrollbar styling for JSON containers */
+                .json-container::-webkit-scrollbar,
+                .json-tree::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .json-container::-webkit-scrollbar-track,
+                .json-tree::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .json-container::-webkit-scrollbar-thumb,
+                .json-tree::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+                .json-container::-webkit-scrollbar-thumb:hover,
+                .json-tree::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+                .json-comparison {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                    overflow-x: auto;
+                }
+                .json-column {
+                    background: #ffffff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                    min-width: 400px;
+                }
+                .json-column h3 {
+                    margin-top: 0;
+                    color: #007bff;
+                    border-bottom: 2px solid #dee2e6;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                .json-preview {
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                    font-size: 13px;
+                    line-height: 1.5;
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 4px;
+                    overflow-x: auto;
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .summary-insights {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 20px;
+                    margin: 20px 0;
+                }
+                .summary-insights h3 {
+                    color: #007bff;
+                    margin-top: 0;
+                }
+                .insights-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+                .insight-card {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                }
+                .insight-card h4 {
+                    margin-top: 0;
+                    color: #495057;
+                    border-bottom: 2px solid #dee2e6;
+                    padding-bottom: 8px;
+                    margin-bottom: 12px;
+                }
+                .insight-list {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                .insight-list li {
+                    margin-bottom: 8px;
+                    padding-left: 20px;
+                    position: relative;
+                }
+                .insight-list li:before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: #007bff;
+                }
+                @media (max-width: 1200px) {
+                    .json-comparison {
+                        grid-template-columns: 1fr;
+                    }
+                    .json-column {
+                        min-width: 100%;
+                    }
+                }
+                .detailed-insights {
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                    white-space: pre-wrap;
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                    line-height: 1.5;
+                    overflow-x: auto;
+                    margin: 20px 0;
+                }
+                .insights-section {
+                    margin: 20px 0;
+                }
+                .insights-section h2 {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                    border-bottom: 2px solid #eee;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                .insights-content {
+                    font-family: Arial, sans-serif;
+                    white-space: pre-wrap;
+                    line-height: 1.5;
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                    overflow-x: auto;
+                }
+                .metrics-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+                .metrics-column {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    padding: 20px;
+                }
+                .metrics-column h3 {
+                    color: #007bff;
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #eee;
+                }
+                @media (max-width: 768px) {
+                    .metrics-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                /* JSON Tree View Styles */
+                .json-tree {
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    margin: 10px 0;
+                }
+                .json-tree .collapsible {
+                    cursor: pointer;
+                    user-select: none;
+                }
+                .json-tree .collapsible::before {
+                    content: '▶';
+                    display: inline-block;
+                    margin-right: 5px;
+                    font-size: 10px;
+                    transition: transform 0.2s;
+                }
+                .json-tree .expanded::before {
+                    transform: rotate(90deg);
+                }
+                .json-tree .json-key {
+                    color: #881391;
+                    font-weight: bold;
+                }
+                .json-tree .json-string {
+                    color: #268bd2;
+                }
+                .json-tree .json-number {
+                    color: #b58900;
+                }
+                .json-tree .json-boolean {
+                    color: #b58900;
+                }
+                .json-tree .json-null {
+                    color: #808080;
+                }
+                .json-tree .bracket {
+                    color: #333;
+                }
+                .json-tree .hidden {
+                    display: none;
+                }
+                .json-tree .indent {
+                    margin-left: 20px;
+                }
+                .json-tree .preview {
+                    color: #666;
+                    font-style: italic;
+                }
+                .json-container {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 0 0 4px 4px;
+                    padding: 15px;
+                    height: 400px; /* Increased height for better visibility */
+                    min-height: 400px; /* Ensure minimum height */
+                    max-height: 400px; /* Ensure maximum height */
+                    overflow: auto; /* Always show scrollbar when needed */
+                    position: relative;
+                }
+                .json-tree {
+                    height: 100%;
+                    overflow: auto;
+                    padding-right: 10px;
+                }
+                .json-comparison {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    max-width: 100%;
+                    overflow: hidden;
+                }
+                /* Ensure long content wraps and scrolls */
+                .json-tree .json-string,
+                .json-tree .json-key,
+                .json-tree .preview {
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                /* Make indent consistent */
+                .json-tree .indent {
+                    margin-left: 20px;
+                    padding-left: 10px;
+                    border-left: 1px dotted #ddd;
+                }
+                /* Custom scrollbar styling */
+                .json-tree::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .json-tree::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .json-tree::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+                .json-tree::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+                /* Ensure content doesn't overflow horizontally */
+                @media screen and (max-width: 1200px) {
+                    .json-comparison {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                .config-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+                .config-item {
+                    background: #fff;
+                    padding: 15px;
+                    border-radius: 4px;
+                    border: 1px solid #dee2e6;
+                }
+                .config-item h3 {
+                    margin: 0 0 10px 0;
+                    color: #007bff;
+                    font-size: 1.1em;
+                }
+                .footer {
+                    background: #333;
+                    color: #fff;
+                    padding: 20px;
+                    margin-top: 40px;
+                    text-align: center;
+                }
+                .footer p {
+                    margin: 5px 0;
+                    font-size: 0.9em;
+                }
+                @media (max-width: 768px) {
+                    .config-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                .dataset-header {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-bottom: none;
+                    border-radius: 4px 4px 0 0;
+                    padding: 12px 15px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1;
+                }
+                .dataset-header h3 {
+                    font-family: Arial, sans-serif;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #333;
+                    margin: 0;
+                }
+                .dataset-header .file-info {
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 4px;
+                    font-family: monospace;
+                }
+                /* Comparison Table Styles */
+                .comparison-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    background: white;
+                }
+                .comparison-table th,
+                .comparison-table td {
+                    padding: 12px 15px;
+                    text-align: left;
+                    border: 1px solid #e2e8f0;
+                }
+                .comparison-table th {
+                    background-color: #f8fafc;
+                    font-weight: 600;
+                    color: #1a202c;
+                }
+                .comparison-table tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                .comparison-table tr:hover {
+                    background-color: #edf2f7;
+                }
+                .comparison-table td.positive {
+                    color: #059669;
+                    font-weight: 600;
+                }
+                .comparison-table td.negative {
+                    color: #dc2626;
+                    font-weight: 600;
+                }
+                .tooltip-trigger {
+                    border-bottom: 1px dotted #718096;
+                    cursor: help;
+                    padding: 2px 4px;
+                    border-radius: 4px;
+                    background-color: #f8f9fa;
+                    transition: background-color 0.2s;
+                }
+                .tooltip-trigger:hover {
+                    background-color: #e9ecef;
+                }
+                /* Tippy Theme Customization */
+                .tippy-box[data-theme~='custom'] {
+                    background-color: #ffffff;
+                    color: #1a202c;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    font-size: 14px;
+                    padding: 8px 12px;
+                    max-width: 300px;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow::before {
+                    border-top-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow::before {
+                    border-bottom-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='left'] > .tippy-arrow::before {
+                    border-left-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='right'] > .tippy-arrow::before {
+                    border-right-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'] .tippy-content {
+                    padding: 8px 12px;
+                    line-height: 1.5;
+                }
+                /* Dataset Header Styles */
+            </style>
+            <script>
+                function toggleJson(id) {
+                    const element = document.getElementById(id);
+                    if (element.style.display === 'none') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                }
+
+                // Initialize tooltips with enhanced configuration
+                document.addEventListener('DOMContentLoaded', function() {
+                    tippy('.tooltip-trigger', {
+                        theme: 'custom',
+                        placement: 'top',
+                        arrow: true,
+                        duration: [200, 150],
+                        animation: 'shift-away',
+                        interactive: true,
+                        maxWidth: 300,
+                        appendTo: document.body
+                    });
+                });
+
+                function formatJSON(obj, level = 0) {
+                    const indent = '  '.repeat(level);
+                    
+                    if (obj === null) return '<span class="json-null">null</span>';
+                    if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
+                    if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+                    if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
+                    
+                    if (Array.isArray(obj)) {
+                        if (obj.length === 0) return '[]';
+                        
+                        const preview = obj.length > 3 
+                            ? `Array(${obj.length})` 
+                            : obj.slice(0, 3).map(item => {
+                                if (typeof item === 'object' && item !== null) return '{ ... }';
+                                return JSON.stringify(item);
+                              }).join(', ');
+                        
+                        const id = 'array_' + Math.random().toString(36).substr(2, 9);
+                        return `
+                            <div class="collapsible" onclick="toggleNode(this, '${id}')">
+                                <span class="bracket">[</span><span class="preview">${preview}</span><span class="bracket">]</span>
+                            </div>
+                            <div id="${id}" class="hidden indent">
+                                ${obj.map((item, index) => `${formatJSON(item, level + 1)}${index < obj.length - 1 ? ',' : ''}`).join('<br>')}
+                            </div>
+                        `;
+                    }
+                    
+                    if (typeof obj === 'object') {
+                        const keys = Object.keys(obj);
+                        if (keys.length === 0) return '{}';
+                        
+                        const preview = keys.length > 3 
+                            ? `Object {${keys.length} properties}` 
+                            : `{${keys.slice(0, 3).map(k => ` ${k}: ...`).join(',')} }`;
+                        
+                        const id = 'obj_' + Math.random().toString(36).substr(2, 9);
+                        return `
+                            <div class="collapsible" onclick="toggleNode(this, '${id}')">
+                                <span class="bracket">{</span><span class="preview">${preview}</span><span class="bracket">}</span>
+                            </div>
+                            <div id="${id}" class="hidden indent">
+                                ${Object.entries(obj).map(([key, value], index) => `
+                                    <span class="json-key">"${key}"</span>: ${formatJSON(value, level + 1)}${index < keys.length - 1 ? ',' : ''}
+                                `).join('<br>')}
+                            </div>
+                        `;
+                    }
+                    
+                    return String(obj);
+                }
+
+                function toggleNode(element, id) {
+                    element.classList.toggle('expanded');
+                    const content = document.getElementById(id);
+                    content.classList.toggle('hidden');
+                    
+                    // Find the closest json-container and adjust its height
+                    const container = element.closest('.json-container');
+                    if (container) {
+                        if (content.classList.contains('hidden')) {
+                            container.style.height = '50px'; // Collapsed height
+                        } else {
+                            container.style.height = Math.min(content.scrollHeight + 30, 200) + 'px'; // Expanded height
+                        }
+                    }
+                }
+
+                window.onload = function() {
+                    // Format baseline data
+                    const baselineData = JSON.parse(document.getElementById('baseline-data').textContent);
+                    document.getElementById('baseline-json').innerHTML = formatJSON(baselineData);
+                    
+                    // Format target data
+                    const targetData = JSON.parse(document.getElementById('target-data').textContent);
+                    document.getElementById('target-json').innerHTML = formatJSON(targetData);
+                    
+                    // Set initial collapsed state
+                    document.querySelectorAll('.json-container').forEach(container => {
+                        container.style.height = '50px';
+                    });
+                }
+            </script>
+        </head>
+        <body>
+            <header class="header">
+                <div class="header-content">
+                    <img 
+                        src="https://katalon.com/hubfs/katalon_logo%20(1).svg" 
+                        alt="Katalon Logo" 
+                        class="logo"
+                    >
+                    <h1 class="header-title">StudioAssist Comparison Report - chat_window</h1>
+                </div>
+            </header>
+            <div class="container">
+                <p class="timestamp">Generated on: 2025-05-28 23:09:55</p>
+                
+                <div class="summary-box">
+                    <h2>Test Information</h2>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <h3>Feature Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">Feature:</span>
+                                <span>chat_window</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Test Mode:</span>
+                                <span>consistency</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Katalon Version:</span>
+                                <span>10.2.0</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>User Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">User ID:</span>
+                                <span>chau.duong@katalon.com</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">User ID (Numeric):</span>
+                                <span>12539647</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Organization Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">Account ID:</span>
+                                <span>1410137</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Organization ID:</span>
+                                <span>1666289</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-box">
+                    <h2>Test Configuration</h2>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <h3>Baseline (LL1)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>katalon_ai</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gpt-4o-mini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Description:</span>
+                                <span>Baseline Model</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Target (LL2)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>personal_openai</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gpt-4o-mini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Description:</span>
+                                <span>Target Model</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Evaluation (LL3)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Provider:</span>
+                                <span>gemini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gemini-2.0-flash</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>evaluation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📑 Dataset Summary</h2>
+                    <div class="insights-content">📌 Baseline (LL1) results: 5
+🎯 Target (LL2) results: 5
+</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📊 Detailed Scores</h2>
+                    <div class="metrics-grid">
+                        <div class="metrics-column">
+                            <h3>🎯 Consistency Metrics</h3>
+                            <div class="insights-content">🟢 Output Stability: 0.90
+🟢 Behavior Consistency: 0.95
+🟢 Style Consistency: 0.90</div>
+                        </div>
+                        <div class="metrics-column">
+                            <h3>✅ Accuracy Metrics</h3>
+                            <div class="insights-content">🟢 Functional Correctness: 0.95
+🟢 Code Quality: 0.90
+🟢 Test Coverage: 0.85</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚡ Performance Analysis</h2>
+                    <div class="insights-content">⏱️ Baseline Avg Time: 10.009s
+⏱️ Target Avg Time: 10.637s
+🔴 Time Difference: +0.628s</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>🔬 Detailed Analysis</h2>
+                    <div class="insights-content">• LL2 consistently provides more detailed explanations and includes more specific Katalon keywords in its responses.
+• LL2's responses are generally better structured and easier to follow than LL1's.
+• LL1 failed to provide a response for chat_004, while LL2 provided a comprehensive answer.
+• LL2 uses gpt-4o-mini, while LL1 uses an older LLM.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>✨ Improvements</h2>
+                    <div class="insights-content">✅ LL2 demonstrates improved completeness and accuracy in its responses compared to LL1, particularly in providing step-by-step instructions and code examples.
+✅ LL2 successfully addresses all prompts, whereas LL1 failed to respond to one prompt.
+✅ LL2's responses are more consistently formatted and structured, making them easier to read and understand.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚠️ Regressions</h2>
+                    <div class="insights-content">❌ LL2's average response time is slightly higher than LL1's (10.64s vs 10.01s), indicating a potential performance regression.
+❌ While LL2's responses are generally more complete, some of the suggestions for improvement from the LL3 evaluation are similar across both LLMs, suggesting that neither LLM fully addresses these areas.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚠️ Concerns</h2>
+                    <div class="insights-content">⚠️ The slightly increased response time of LL2 needs to be monitored to ensure it doesn't become a significant bottleneck.
+⚠️ Both LLMs could benefit from more comprehensive test coverage, particularly in handling edge cases and complex scenarios.
+⚠️ The reliance on external LLMs introduces a dependency that could be affected by API changes or service outages.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>💡 Recommendations</h2>
+                    <div class="insights-content">1. Monitor LL2's response time and optimize API calls or implement caching if necessary.
+2. Expand the test dataset to include more complex scenarios and edge cases to improve test coverage for both LLMs.
+3. Incorporate the suggestions from the LL3 evaluations into both LLMs to further improve the quality and completeness of their responses.
+4. Implement robust error handling and fallback mechanisms to mitigate the risk of API failures or service outages from external LLMs.
+5. Consider adding more visual aids, such as screenshots, to the step-by-step guides provided by both LLMs.
+6. Explore the possibility of fine-tuning a smaller, more efficient LLM specifically for Katalon Studio's StudioAssist feature to reduce response times and dependency on external services.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>🎯 Final Assessment</h2>
+                    <div class="insights-content">🚀 Decision: PROMOTE_LL2
+💪 Confidence Level: High</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📝 Detailed Explanation</h2>
+                    <div class="insights-content">LL2 demonstrates significant improvements over LL1 in terms of completeness, accuracy, and response structure. While there is a slight increase in response time, the benefits of the improved quality and reliability of the responses outweigh this minor performance regression. The fact that LL2 successfully answered all prompts, while LL1 failed on one, is a critical factor in recommending its promotion. The suggestions for improvement are aimed at further enhancing LL2's performance and mitigating potential risks associated with external LLM dependencies.</div>
+                </div>
+
+                <!-- Criteria Comparison Table -->
+                <div class="summary-box">
+                    <h2>🎯 Criteria Comparison</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Criteria</th>
+                                <th>LL1 Score</th>
+                                <th>LL2 Score</th>
+                                <th>Difference</th>
+                                <th>Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td>
+                                    <span class="tooltip-trigger" data-tippy-content="Would this answer help a Katalon user?">
+                                        Helpfulness
+                                        <span style="color: #718096; font-size: 12px;">ℹ️</span>
+                                    </span>
+                                </td>
+                                <td>9.50</td>
+                                <td>9.20</td>
+                                <td class="negative">
+                                    -0.30
+                                </td>
+                                <td>Decline in helpfulness (-0.30)</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <span class="tooltip-trigger" data-tippy-content="Is the information provided accurate?">
+                                        Accuracy
+                                        <span style="color: #718096; font-size: 12px;">ℹ️</span>
+                                    </span>
+                                </td>
+                                <td>9.75</td>
+                                <td>9.80</td>
+                                <td class="positive">
+                                    0.05
+                                </td>
+                                <td>Minimal change in accuracy</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <span class="tooltip-trigger" data-tippy-content="Is the answer relevant to the question?">
+                                        Relevance
+                                        <span style="color: #718096; font-size: 12px;">ℹ️</span>
+                                    </span>
+                                </td>
+                                <td>10.00</td>
+                                <td>10.00</td>
+                                <td class="negative">
+                                    0.00
+                                </td>
+                                <td>Minimal change in relevance</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>
+                                    <span class="tooltip-trigger" data-tippy-content="Does it fully answer the question?">
+                                        Completeness
+                                        <span style="color: #718096; font-size: 12px;">ℹ️</span>
+                                    </span>
+                                </td>
+                                <td>8.50</td>
+                                <td>8.40</td>
+                                <td class="negative">
+                                    -0.10
+                                </td>
+                                <td>Minimal change in completeness</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="summary-box">
+                    <h2>Dataset Comparison</h2>
+                    <div class="json-comparison">
+                        <div class="dataset-section">
+                            <div class="dataset-header">
+                                <h3>Baseline Dataset</h3>
+                            </div>
+                            <div class="json-container">
+                                <script type="application/json" id="baseline-data">{
+  "metadata": {
+    "feature": "chat_window",
+    "llm_version": "LL1",
+    "creation_timestamp": "2025-05-28T23:07:22.576537",
+    "total_results": 5,
+    "dataset_type": "baseline",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-28T23:07:48.821908",
+      "original_baseline_file": "poc_data/chat_window/studioassist_chat_window_baseline_raw_ll1_20250528_230722_4047a66e.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "chat_001",
+      "feature": "chat_window",
+      "prompt": "I'm new to Katalon Studio. Can you provide a step-by-step guide on how to create a simple test case that verifies the title of a webpage?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_002",
+      "feature": "chat_window",
+      "prompt": "What are the best practices for using data-driven testing in Katalon Studio, and how can I efficiently manage large datasets for my tests?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_003",
+      "feature": "chat_window",
+      "prompt": "My Katalon Studio tests are failing with a 'NoSuchElementException'. How can I troubleshoot this issue and identify the root cause? What are some common reasons for this error?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_004",
+      "feature": "chat_window",
+      "prompt": "How can I integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (CI/CD)? Please provide details on setting up the integration and configuring the build process.",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_005",
+      "feature": "chat_window",
+      "prompt": "I want to use custom keywords in Katalon Studio. Can you explain how to create and implement custom keywords, including how to pass parameters and handle return values?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    }
+  ],
+  "results": {
+    "chat_001": {
+      "input_id": "chat_001",
+      "feature": "chat_window",
+      "user_input": "I'm new to Katalon Studio. Can you provide a step-by-step guide on how to create a simple test case that verifies the title of a webpage?",
+      "api_input": {
+        "prompt": "I'm new to Katalon Studio. Can you provide a step-by-step guide on how to create a simple test case that verifies the title of a webpage?",
+        "chatJobId": "9dea67d9-6200-4bd1-8b0c-e08c14f38e5e",
+        "api_type": "katalon_ai_chat"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "Here's a step-by-step guide on how to create a simple test case in Katalon Studio that verifies the title of a webpage:\n\n### Step 1: Create a New Test Case  \n1. Launch Katalon Studio.  \n2. On the left panel, right-click on the **Test Cases** folder.  \n3. Select **New** > **Test Case**.  \n4. Give your test case a name (e.g., `VerifyPageTitle`) and click **OK**.\n\n### Step 2: Define Your Test Case  \n1. Open the newly created test case. You will be in the Test Case editor.  \n2. In the editor, you will see both the **Script** and **Manual** tabs. You can use either, but we'll proceed with the **Script** tab for this example.\n\n### Step 3: Set Up WebDriver  \n1. Before interacting with the webpage, minimize your test case code to ensure Katalon can control the browser:\n   ```groovy\n   import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n   ```\n\n### Step 4: Open Web Browser  \n1. Add the following command to open a web browser and navigate to your desired URL:\n   ```groovy\n   WebUI.openBrowser('https://www.example.com')\n   ```\n\n### Step 5: Verify Page Title  \n1. To verify the title of the webpage, add the command that checks the title using the following syntax:\n   ```groovy\n   WebUI.verifyTitle('Expected Title')\n   ```\n   Make sure to replace `Expected Title` with the actual title you expect the webpage to have.\n\n### Step 6: Close the Browser  \n1. Finally, add a command to close the browser after the verification is done:\n   ```groovy\n   WebUI.closeBrowser()\n   ```\n\n### Example Complete Script  \nPutting it all together, your complete test case should look like this:\n```groovy\nimport com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\nWebUI.openBrowser('https://www.example.com')\nWebUI.verifyTitle('Expected Title')\nWebUI.closeBrowser()\n```  \n\n### Step 7: Execute the Test Case  \n1. Save your test case.  \n2. Click on the **Run** button (or **Ctrl + R**) to execute the test case. \n3. Check the results in the Katalon Studio console to see if the title verification passed or failed.",
+      "gui_output": "Response shown in StudioAssist chat window",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T23:06:41.838034",
+      "response_time": 14.315513134002686,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 9,
+          "completeness": 8,
+          "helpfulness": 9
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about creating a simple test case to verify a webpage title.",
+          "accuracy": "The steps are generally accurate. However, Step 3 is misleading and unnecessary. Minimizing the test case code doesn't ensure Katalon can control the browser. The import statement is correct and necessary, but the explanation is incorrect. Also, the example script is missing the import statement.",
+          "completeness": "The guide covers the basic steps, but could benefit from mentioning how to handle test failures and how to view detailed reports. It also doesn't mention the importance of setting up the environment (e.g., browser drivers) if it's a fresh Katalon installation.",
+          "helpfulness": "The guide is helpful for a beginner, providing a clear sequence of actions to create and run a basic test case. The inclusion of example code is beneficial."
+        },
+        "overall_assessment": "The response is a good starting point for a new Katalon Studio user. It provides a step-by-step guide with example code. However, the explanation in Step 3 is incorrect and the completeness could be improved by addressing error handling and environment setup.",
+        "overall_score": 8,
+        "suggestions": [
+          "Correct the explanation in Step 3 to accurately describe the purpose of the import statement.",
+          "Include the import statement in the example script.",
+          "Add a section on how to handle test failures (e.g., using `assert` or `verify` with error messages).",
+          "Briefly mention the importance of setting up browser drivers if it's a fresh Katalon installation.",
+          "Add a sentence or two about viewing detailed reports after test execution.",
+          "Consider adding a screenshot or two to visually guide the user through the steps."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:07:27.324953"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_002": {
+      "input_id": "chat_002",
+      "feature": "chat_window",
+      "user_input": "What are the best practices for using data-driven testing in Katalon Studio, and how can I efficiently manage large datasets for my tests?",
+      "api_input": {
+        "prompt": "What are the best practices for using data-driven testing in Katalon Studio, and how can I efficiently manage large datasets for my tests?",
+        "chatJobId": "3b5440d0-21ad-45a9-87e0-1076194d6fe5",
+        "api_type": "katalon_ai_chat"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "### Best Practices for Data-Driven Testing in Katalon Studio\n\n1. **Use Built-in Data Files**: Leverage Katalon\u2019s built-in support for data files (Excel, CSV, etc.). Store your test data in these formats for easy configuration and reuse across multiple test cases.\n\n2. **Organize Your Data**: Structure data logically; for example, group related data into separate files or sections within the same file. This helps maintain clarity and efficiency in managing test data.\n\n3. **Limit the Size of Data Sets**: While Katalon can handle large datasets, test performance can decline. Aim for a balance by splitting large datasets into smaller, more manageable chunks if needed.\n\n4. **Parameterize Your Test Cases**: Use the data binding features in Katalon Studio to parameterize your test scripts. This enables the same test case to run with different sets of data without duplication.\n\n5. **Use Custom Keywords for Complex Data Handling**: If your dataset handling is complex, create custom keywords to simplify your test cases and improve readability.\n\n6. **Log Results and Data Usage**: Utilize logging within your test cases to track which data sets were used and their corresponding results. This aids in troubleshooting and understanding test outcomes.\n\n7. **Utilize the Data Test Results**: Make sure to analyze the results from your data-driven tests effectively. You can export the results to external files for reporting purposes. \n\n### Efficient Management of Large Datasets\n\n- **Remote Data Sources**: If your datasets are extremely large, consider using remote databases or cloud storage. Katalon's database connectivity can allow retrieving data on demand.\n- **Filtering and Conditions**: Use filters to load only necessary data for specific tests, reducing the overhead in processing unnecessary records.\n- **Batch Processing**: For massive datasets, consider dividing tests into batches. Execute smaller subsets of tests, allowing for easier result analysis and minimizing resource consumption.\n- **Data Grouping**: Group related test data together to reduce redundancy and enhance clarity. This also makes it easier to update data when needed.\n\nBy following these best practices, you can optimize your data-driven testing process in Katalon Studio, ensuring that your tests are efficient and effective.",
+      "gui_output": "Response shown in StudioAssist chat window",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T23:06:52.539487",
+      "response_time": 9.69926404953003,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 8,
+          "helpfulness": 9
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about data-driven testing best practices and large dataset management in Katalon Studio.",
+          "accuracy": "All the information provided is accurate and reflects established best practices for data-driven testing in Katalon.",
+          "completeness": "The answer covers a good range of best practices and techniques for managing large datasets. It could be improved by providing specific examples of how to implement some of the suggestions, such as filtering or batch processing.",
+          "helpfulness": "The answer is very helpful, providing actionable advice that a Katalon user can immediately apply to their testing process."
+        },
+        "overall_assessment": "Overall, this is a very good and helpful response. It accurately and relevantly addresses the user's question, providing practical advice for data-driven testing in Katalon Studio. The suggestions for managing large datasets are particularly useful.",
+        "overall_score": 9,
+        "suggestions": [
+          "Provide specific code examples or snippets to illustrate how to implement filtering, batch processing, or custom keywords for data handling.",
+          "Elaborate on the types of remote databases or cloud storage that are compatible with Katalon Studio and provide links to relevant documentation.",
+          "Add a section on data masking or anonymization techniques for sensitive data used in testing.",
+          "Mention the use of Katalon's 'Test Suite Collection' feature for running tests in batches."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:07:32.525237"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_003": {
+      "input_id": "chat_003",
+      "feature": "chat_window",
+      "user_input": "My Katalon Studio tests are failing with a 'NoSuchElementException'. How can I troubleshoot this issue and identify the root cause? What are some common reasons for this error?",
+      "api_input": {
+        "prompt": "My Katalon Studio tests are failing with a 'NoSuchElementException'. How can I troubleshoot this issue and identify the root cause? What are some common reasons for this error?",
+        "chatJobId": "41a7ae0a-4e2e-42a9-bf38-33be709ecadc",
+        "api_type": "katalon_ai_chat"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "When encountering a `NoSuchElementException` in Katalon Studio, it indicates that your test automation script is attempting to interact with a web element that cannot be found in the DOM at runtime. Here are some steps to troubleshoot this issue and common reasons behind it:\n\n### Troubleshooting Steps:\n1. **Check Object Repository:**  \n   - Ensure the element you are trying to interact with is correctly defined in the Object Repository. Double-check the locator strategy (e.g., ID, XPath, CSS Selector).\n\n2. **Verify Element Presence:**  \n   - Use the Katalon Spy Web to verify if the element is present visually and can be captured correctly.\n\n3. **Wait for Element:**  \n   - Use Katalon\u2019s built-in wait keywords, like `waitForElementVisible`, `waitForElementClickable`, or `waitForElementPresent`, to handle dynamic loading of elements. This allows your script to wait until the element appears in the DOM.\n   ```groovy\n   WebUI.waitForElementVisible(findTestObject('your/test/object'), 30)\n   ```\n\n4. **Timing Issues:**  \n   - Check for any timing issues where the script might be executing before the element is loaded completely. Implement appropriate waits, like implicit wait or specific explicit waits defined in your script.\n\n5. **Page Timing:**  \n   - Ensure that you are on the correct page when the action is performed. Check for any redirections or navigation issues that may occur before the element access.\n\n6. **Browser Compatibility:**  \n   - Sometimes, the web application behaves differently on different browsers. Make sure to test the same script on supported browsers.\n\n7. **Debugging:**  \n   - Utilize Katalon\u2019s debugging feature to step through the code and inspect if the element is indeed present in the DOM at the time of execution.\n\n### Common Reasons for NoSuchElementException:\n- **Incorrect Locator:** The XPath, ID, or CSS Selector is incorrect or outdated.\n- **Element Removed from DOM:** The element might have been removed or changed dynamically by JavaScript after your script starts executing.\n- **Element Hidden or Not Enabled:** The element is present but not visible or enabled to be interacted with.\n- **Page Load Issues:** The page has not loaded completely before the interaction.\n- **Frames or Iframes:** If the element is within a frame or iframe, ensure your script switches to the correct frame before trying to access the element.\n\nBy following these steps, you can troubleshoot the `NoSuchElementException` effectively. If you continue to experience challenges, consider checking the [Katalon Documentation](https://docs.katalon.com) for more detailed guidance on handling exceptions and debugging your tests.",
+      "gui_output": "Response shown in StudioAssist chat window",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T23:07:05.231660",
+      "response_time": 11.689929008483887,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 9,
+          "helpfulness": 10
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about NoSuchElementException in Katalon Studio.",
+          "accuracy": "All the information provided is accurate and reflects best practices for troubleshooting this common error.",
+          "completeness": "The answer is quite complete, covering various troubleshooting steps and common reasons. It could benefit from a more detailed example of handling iframes.",
+          "helpfulness": "The answer is very helpful, providing actionable steps and clear explanations. The code snippet is a great addition."
+        },
+        "overall_assessment": "The StudioAssist output is excellent. It provides a comprehensive and accurate guide to troubleshooting NoSuchElementException in Katalon Studio. The troubleshooting steps are well-organized and the common reasons are clearly explained. The inclusion of a code snippet enhances the answer's practicality.",
+        "overall_score": 9.5,
+        "suggestions": [
+          "Add a more detailed example of how to handle elements within iframes, including the `WebUI.switchToFrame` keyword.",
+          "Consider adding a section on using Katalon's built-in 'Highlight' keyword to visually identify the element in the browser during debugging.",
+          "Mention the importance of checking the element's attributes (e.g., `style='display: none;'`) to determine if it's hidden using CSS."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:07:36.679969"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_004": {
+      "input_id": "chat_004",
+      "feature": "chat_window",
+      "user_input": "How can I integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (CI/CD)? Please provide details on setting up the integration and configuring the build process.",
+      "api_input": {
+        "prompt": "How can I integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (CI/CD)? Please provide details on setting up the integration and configuring the build process.",
+        "chatJobId": "fe21a9c3-a893-4be3-80ea-2fd3dc4c20b4",
+        "api_type": "katalon_ai_chat"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "",
+      "gui_output": "Response shown in StudioAssist chat window",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T23:07:09.742568",
+      "response_time": 3.5090389251708984,
+      "ll3_evaluation": null,
+      "human_validation": null,
+      "error": null
+    },
+    "chat_005": {
+      "input_id": "chat_005",
+      "feature": "chat_window",
+      "user_input": "I want to use custom keywords in Katalon Studio. Can you explain how to create and implement custom keywords, including how to pass parameters and handle return values?",
+      "api_input": {
+        "prompt": "I want to use custom keywords in Katalon Studio. Can you explain how to create and implement custom keywords, including how to pass parameters and handle return values?",
+        "chatJobId": "96f62639-a4de-4dc1-8b44-2a37018ea202",
+        "api_type": "katalon_ai_chat"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "To create and implement custom keywords in Katalon Studio, follow these steps:\n\n### Step 1: Create a Custom Keywords Folder  \n1. Open Katalon Studio.  \n2. In the **Test Explorer** view, right-click on the **Keywords** folder.  \n3. Select **New > Package** to create a new package (e.g., `com.example.keywords`).  \n\n### Step 2: Create a New Keyword Class  \n1. Right-click on the newly created package.  \n2. Select **New > Keyword**.  \n3. Name your keyword class (e.g., `ExampleKeywords`).  \n\n### Step 3: Implement Your Custom Keyword  \nIn the class, you can define methods (keywords) with parameters and return values. Here\u2019s an example:\n\n```groovy\npackage com.example.keywords\n\nimport com.kms.katalon.core.annotation.Keyword\n\nclass ExampleKeywords {\n\n    @Keyword\n    def addNumbers(int a, int b) {\n        return a + b\n    }\n}\n```\n\n### Explanation:\n- **@Keyword**: This annotation marks the method as a keyword that you can use in your test cases.\n- **Parameters**: In the method `addNumbers`, we defined two integer parameters `a` and `b`.\n- **Return Value**: The method returns the sum of the two numbers. \n\n### Step 4: Call Your Custom Keyword in Test Cases  \n1. Open the **Test Cases** folder.  \n2. Create or open an existing test case.  \n3. Call the custom keyword:\n\n```groovy\nimport com.example.keywords.ExampleKeywords\n\nExampleKeywords example = new ExampleKeywords()\nint result = example.addNumbers(5, 7)\nprintln('The result is: ' + result)\n```\n\n### Notes:\n- You can pass any type of parameters and customize the return type based on your needs.\n- Ensure to import your custom keyword class in the test case where you plan to use it.  \n\nFor detailed information and more examples, check the [Katalon Documentation](https://docs.katalon.com/katalon-studio/docs/custom-keywords.html).",
+      "gui_output": "Response shown in StudioAssist chat window",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T23:07:21.574487",
+      "response_time": 10.829852104187012,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 9,
+          "helpfulness": 10
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about creating and implementing custom keywords in Katalon Studio.",
+          "accuracy": "The steps and code examples provided are accurate and reflect the correct way to create and use custom keywords in Katalon Studio.",
+          "completeness": "The answer covers the essential steps: creating the folder structure, creating the keyword class, implementing the keyword with parameters and return values, and calling the keyword in a test case. It could benefit from a more complex example showcasing error handling or more diverse data types.",
+          "helpfulness": "The step-by-step instructions and code examples make it easy for a Katalon user to understand and implement custom keywords. The inclusion of the Katalon Documentation link is also very helpful."
+        },
+        "overall_assessment": "The response is excellent. It provides a clear, accurate, and helpful guide to creating and implementing custom keywords in Katalon Studio. The step-by-step instructions and code examples are well-written and easy to follow. The inclusion of the Katalon Documentation link is a valuable addition.",
+        "overall_score": 9.5,
+        "suggestions": [
+          "Add a more complex example demonstrating error handling within the custom keyword (e.g., try-catch blocks).",
+          "Include an example showcasing the use of different data types for parameters and return values (e.g., String, List, Map).",
+          "Mention the importance of proper naming conventions for keywords and packages.",
+          "Briefly explain how to debug custom keywords if issues arise."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:07:47.811560"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 4,
+      "evaluation_errors": 1,
+      "start_time": "2025-05-28T23:07:22.586881",
+      "end_time": "2025-05-28T23:07:48.813002"
+    },
+    "diversity_analysis": {
+      "total_inputs": 5,
+      "unique_patterns": 5,
+      "prompt_length_stats": {
+        "min": 137,
+        "max": 195,
+        "mean": 162.8,
+        "median": 168,
+        "std_dev": 25.09382394136055
+      },
+      "pattern_categories": {
+        "testing": 3,
+        "web_automation": 1,
+        "data_driven": 1,
+        "custom_keywords": 1
+      },
+      "complexity_distribution": {
+        "low": 5,
+        "medium": 0,
+        "high": 0
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 5,
+      "output_length_stats": {
+        "min": 0,
+        "max": 2662,
+        "mean": 1760.2,
+        "median": 2034,
+        "std_dev": 1036.1173678691039
+      },
+      "keyword_usage": {
+        "WebUI": 9,
+        "TestObject": 1,
+        "@Keyword": 2
+      },
+      "error_patterns": {
+        "exception_handling": 1
+      },
+      "response_time_analysis": {
+        "min": 3.5090389251708984,
+        "max": 14.315513134002686,
+        "mean": 10.008719444274902,
+        "median": 10.829852104187012,
+        "percentile_95": 14.315513134002686
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "relevance": {
+          "description": "Is the answer relevant to the question?",
+          "count": 4,
+          "mean": 10,
+          "median": 10.0,
+          "std_dev": 0.0,
+          "min": 10,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "accuracy": {
+          "description": "Is the information provided accurate?",
+          "count": 4,
+          "mean": 9.75,
+          "median": 10.0,
+          "std_dev": 0.5,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "completeness": {
+          "description": "Does it fully answer the question?",
+          "count": 4,
+          "mean": 8.5,
+          "median": 8.5,
+          "std_dev": 0.5773502691896257,
+          "min": 8,
+          "max": 9,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "helpfulness": {
+          "description": "Would this answer help a Katalon user?",
+          "count": 4,
+          "mean": 9.5,
+          "median": 9.5,
+          "std_dev": 0.5773502691896257,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 9.0,
+        "median": 9.25,
+        "std_dev": 0.7071067811865476,
+        "min": 8,
+        "max": 9.5,
+        "meets_requirements_percentage": 80.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 0,
+        "6-8": 0,
+        "8-10": 4
+      },
+      "correlation_analysis": {
+        "relevance_vs_accuracy": 0.0,
+        "relevance_vs_completeness": 0.0,
+        "relevance_vs_helpfulness": 0.0,
+        "accuracy_vs_completeness": 0.5773502691896258,
+        "accuracy_vs_helpfulness": 0.5773502691896258,
+        "completeness_vs_helpfulness": 1.0
+      },
+      "improvement_areas": []
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "completeness": 2,
+        "accuracy": 5,
+        "clarity": 2,
+        "best_practices": 4,
+        "error_handling": 4
+      },
+      "suggestion_frequency": {
+        "Correct the explanation in Step 3 to accurately describe the purpose of the import statement.": 1,
+        "Include the import statement in the example script.": 1,
+        "Add a section on how to handle test failures (e.g., using `assert` or `verify` with error messages).": 1,
+        "Briefly mention the importance of setting up browser drivers if it's a fresh Katalon installation.": 1,
+        "Add a sentence or two about viewing detailed reports after test execution.": 1,
+        "Consider adding a screenshot or two to visually guide the user through the steps.": 1,
+        "Provide specific code examples or snippets to illustrate how to implement filtering, batch processing, or custom keywords for data handling.": 1,
+        "Elaborate on the types of remote databases or cloud storage that are compatible with Katalon Studio and provide links to relevant documentation.": 1,
+        "Add a section on data masking or anonymization techniques for sensitive data used in testing.": 1,
+        "Mention the use of Katalon's 'Test Suite Collection' feature for running tests in batches.": 1
+      },
+      "feedback_sentiment": {
+        "positive": 4,
+        "neutral": 0,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Limited test coverage: Consider increasing the number of test patterns for more comprehensive evaluation.",
+      "Low complexity bias: Most test inputs are simple. Add more complex scenarios for thorough testing.",
+      "High average response time (10.01s): Consider optimizing API calls or implementing caching.",
+      "Excellent overall performance: The current configuration is producing high-quality outputs.",
+      "Strong correlation between completeness_vs_helpfulness (1.00): These criteria are closely related."
+    ]
+  }
+}</script>
+                                <div id="baseline-json" class="json-tree"></div>
+                            </div>
+                        </div>
+                        <div class="dataset-section">
+                            <div class="dataset-header">
+                                <h3>Target Dataset</h3>
+                            </div>
+                            <div class="json-container">
+                                <script type="application/json" id="target-data">{
+  "metadata": {
+    "feature": "chat_window",
+    "llm_version": "LL2",
+    "creation_timestamp": "2025-05-28T23:08:59.225548",
+    "total_results": 5,
+    "dataset_type": "target",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-28T23:09:23.015926",
+      "original_baseline_file": "poc_data/chat_window/studioassist_chat_window_target_raw_ll2_20250528_230859_f35b3cad.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "chat_001",
+      "feature": "chat_window",
+      "prompt": "I'm new to Katalon Studio. Can you provide a step-by-step guide on how to create a simple test case that verifies the title of a webpage?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_002",
+      "feature": "chat_window",
+      "prompt": "What are the best practices for using data-driven testing in Katalon Studio, and how can I efficiently manage large datasets for my tests?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_003",
+      "feature": "chat_window",
+      "prompt": "My Katalon Studio tests are failing with a 'NoSuchElementException'. How can I troubleshoot this issue and identify the root cause? What are some common reasons for this error?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_004",
+      "feature": "chat_window",
+      "prompt": "How can I integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (CI/CD)? Please provide details on setting up the integration and configuring the build process.",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    },
+    {
+      "input_id": "chat_005",
+      "feature": "chat_window",
+      "prompt": "I want to use custom keywords in Katalon Studio. Can you explain how to create and implement custom keywords, including how to pass parameters and handle return values?",
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "chat-window"
+    }
+  ],
+  "results": {
+    "chat_001": {
+      "input_id": "chat_001",
+      "feature": "chat_window",
+      "user_input": "I'm new to Katalon Studio. Can you provide a step-by-step guide on how to create a simple test case that verifies the title of a webpage?",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "I'm new to Katalon Studio. Can you provide a step-by-step guide on how to create a simple test case ...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "Here\u2019s a step-by-step guide on how to create a simple test case in Katalon Studio to verify the title of a webpage:\n\n### Step 1: Create a New Test Case\n1. Open Katalon Studio.\n2. In the left sidebar, navigate to the **Test Cases** folder.\n3. Right-click on the **Test Cases** folder and select **New** > **Test Case**.\n4. Name your test case (e.g., `VerifyWebPageTitle`) and click **OK**.\n\n### Step 2: Open the Test Case\n1. Double click on the newly created test case to open it in the editor.\n\n### Step 3: Add a Web Action to Open the Browser\n1. In the test case editor, you will see a script area. You can switch to the **Manual** view if you prefer.\n2. Add the following built-in keyword to open the desired webpage:\n   ```groovy\n   WebUI.openBrowser('') // Leave URL empty for now\n   WebUI.navigateToUrl('http://example.com') // Replace with the URL you want to test\n   ```\n\n### Step 4: Verify the Page Title\n1. Add another line to verify if the title of the webpage matches the expected title:\n   ```groovy\n   WebUI.verifyEqual(WebUI.getWindowTitle(), 'Expected Title') // Replace 'Expected Title' with the actual title\n   ```\n\n### Step 5: Close the Browser\n1. Finally, do not forget to close the browser after the test case execution:\n   ```groovy\n   WebUI.closeBrowser()\n   ```\n\n### Step 6: Run the Test Case\n1. Click the **Run** button (green play button) at the top of the Katalon Studio.\n2. Select **Run with:** and choose a browser (e.g., Chrome, Firefox, etc.).\n3. Katalon Studio will execute the test case in the specified browser and verify the title of the webpage.\n\n### Additional Tips\n- Ensure you have the necessary Katalon Studio plugins and browser drivers installed for the browsers you want to test with.\n- You can modify the URLs and expected titles based on your testing needs.",
+      "gui_output": "Output displayed in Katalon Studio chat_window interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T23:08:10.517426",
+      "response_time": 9.486881732940674,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 9,
+          "helpfulness": 9
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about creating a test case to verify a webpage title.",
+          "accuracy": "The steps and code snippets provided are accurate and will work as described in Katalon Studio.",
+          "completeness": "The guide covers all the essential steps, from creating the test case to running it. It could benefit from mentioning how to view the test results in more detail.",
+          "helpfulness": "The guide is very helpful for a beginner, providing clear instructions and code examples. The 'Additional Tips' section is also a nice touch."
+        },
+        "overall_assessment": "Overall, this is a very good and helpful response. It provides a clear and accurate step-by-step guide for a beginner to create a simple test case in Katalon Studio. The code snippets are correct, and the instructions are easy to follow.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add a step or expand on Step 6 to explain how to view the test results (e.g., in the 'Log Viewer' tab).",
+          "Consider adding a screenshot or two to visually guide the user through the process, especially for steps like creating a new test case or finding the 'Run' button.",
+          "Mention the importance of using descriptive names for test cases and test objects for better maintainability."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:09:03.554701"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_002": {
+      "input_id": "chat_002",
+      "feature": "chat_window",
+      "user_input": "What are the best practices for using data-driven testing in Katalon Studio, and how can I efficiently manage large datasets for my tests?",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "What are the best practices for using data-driven testing in Katalon Studio, and how can I efficient...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "When utilizing data-driven testing in Katalon Studio, it's essential to follow best practices to ensure efficiency and maintainability: \n\n1. **Use External Data Sources**: Instead of hard-coding data, use external data files like Excel, CSV, or databases. This makes it easier to manage and update your test data without modifying your test scripts.\n\n2. **Data File Organization**: Organize your data files clearly by categorizing based on use cases or test scenarios. This structure helps in easy location and maintenance of test data.\n\n3. **Parameterization**: Use parameterized test cases to introduce variability in tests. Define variables that reference data from your data files and ensure your test cases are reusable with different datasets.\n\n4. **Avoid Redundancy**: Keep your test data minimal and relevant. Avoid duplication by only including unique records necessary for your test scenarios.\n\n5. **Use Katalon Studio's Built-in Keywords**: Leverage built-in keywords such as `Datafile` for reading from data files and `DataBinding` to bind data to your test cases efficiently.\n\n6. **Implement Validation Checks**: After processing data-driven tests, validate the outputs. This ensures that your tests not only operate on data but also produce expected results.\n\n7. **Batch Processing**: If your dataset is large, consider implementing batch processing to handle a manageable amount of data for each test iteration.\n\n8. **Logging and Reporting**: Utilize logging for data-driven tests to track which records pass or fail. This is essential for troubleshooting issues in large datasets.\n\n9. **Utilize Katalon TestOps**: Integrate with Katalon TestOps for advanced analytics and test management, enabling better oversight of test performance against your data-driven tests.\n\nBy following these best practices, you can efficiently manage large datasets in your Katalon Studio tests, ensuring robustness and reliability in your test automation efforts.",
+      "gui_output": "Output displayed in Katalon Studio chat_window interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T23:08:20.434850",
+      "response_time": 8.915480136871338,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 8,
+          "helpfulness": 9
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about data-driven testing best practices and large dataset management in Katalon Studio.",
+          "accuracy": "All the information provided is accurate and reflects best practices for data-driven testing in Katalon Studio.",
+          "completeness": "The answer covers a good range of best practices, but could benefit from more specific examples or deeper dives into certain areas like database connections or advanced data binding techniques. It also lacks specific code examples.",
+          "helpfulness": "The answer is very helpful, providing actionable advice for users looking to implement or improve their data-driven testing strategies in Katalon Studio."
+        },
+        "overall_assessment": "The response is a well-structured and accurate overview of best practices for data-driven testing in Katalon Studio. It effectively addresses the user's question and provides valuable guidance. While comprehensive, it could benefit from more concrete examples and a deeper exploration of advanced techniques.",
+        "overall_score": 9,
+        "suggestions": [
+          "Include code snippets or examples to illustrate how to use Katalon Studio's built-in keywords for data-driven testing.",
+          "Provide more detail on how to connect to and query databases within Katalon Studio for data-driven testing.",
+          "Expand on advanced data binding techniques, such as using Groovy scripting to manipulate data before it's used in tests.",
+          "Add a section on data masking or anonymization for sensitive data used in testing.",
+          "Elaborate on different data file formats and their pros and cons (e.g., Excel vs. CSV vs. database).",
+          "Provide guidance on how to handle data dependencies between test cases."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:09:08.259223"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_003": {
+      "input_id": "chat_003",
+      "feature": "chat_window",
+      "user_input": "My Katalon Studio tests are failing with a 'NoSuchElementException'. How can I troubleshoot this issue and identify the root cause? What are some common reasons for this error?",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "My Katalon Studio tests are failing with a 'NoSuchElementException'. How can I troubleshoot this iss...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "To troubleshoot the 'NoSuchElementException' error in your Katalon Studio tests, you can follow these steps:\n\n1. **Verify Element Identifiers**: Ensure that the locators (XPath, CSS selectors, etc.) used to identify the elements are correct. You can use the built-in Spy Web or Spy Mobile tool to confirm that the elements are correctly captured.\n\n2. **Wait for Elements to Load**: Sometimes, the element might not be interactable because it is not yet present in the DOM. Utilize Katalon\u2019s wait keywords like `WebUI.waitForElementPresent()` or `WebUI.waitForElementVisible()` to ensure the element is ready for interaction.\n\n3. **Check Visibility**: Ensure that the element is not hidden or disabled. You can use `WebUI.verifyElementVisible()` to check its visibility.\n\n4. **Page State**: Confirm that the correct page is loaded before your test attempts to interact with elements. You can use `WebUI.verifyElementPresent()` to affirm that the relevant page has loaded.\n\n5. **Dynamic Elements**: If the application has dynamic elements that change based on certain interactions or timing, consider adding appropriate waits or revising your locator strategy to be more resilient to such changes.\n\n6. **Frame or Window Context**: If the element is nested within a frame or an iframe, ensure that you have switched to the correct context using `WebUI.switchToFrame()` before attempting to locate the element.\n\n7. **Debugging**: Use Katalon's built-in debugging tools to step through your test script. This will help you observe the application state at runtime, making it easier to pinpoint where the failure occurs.\n\n8. **Check Application Logs**: Sometimes, application logs can provide insights into why certain elements are not accessible. Monitoring the logs during test execution might highlight underlying issues on the application side.\n\nBy following these steps, you should be able to identify and mitigate the cause of the 'NoSuchElementException'.",
+      "gui_output": "Output displayed in Katalon Studio chat_window interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T23:08:32.563240",
+      "response_time": 11.127471923828125,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 8,
+          "helpfulness": 9
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about troubleshooting 'NoSuchElementException' in Katalon Studio.",
+          "accuracy": "All the suggestions provided are accurate and represent common causes and solutions for this error.",
+          "completeness": "The answer covers most of the common scenarios leading to 'NoSuchElementException'. It could be improved by adding a section on handling shadow DOM elements.",
+          "helpfulness": "The step-by-step approach and specific Katalon keywords make this answer very helpful for users of all skill levels."
+        },
+        "overall_assessment": "The response is excellent and provides a comprehensive guide to troubleshooting 'NoSuchElementException' errors in Katalon Studio. The suggestions are practical and actionable, making it a valuable resource for users facing this issue.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add a section on handling elements within Shadow DOM. Explain how to use `WebUI.executeJavaScript()` or other techniques to access and interact with elements inside a shadow DOM.",
+          "Consider adding a brief explanation of what 'NoSuchElementException' means at a fundamental level (i.e., the WebDriver cannot find the element based on the provided locator).",
+          "Mention the importance of using explicit waits over implicit waits for better control and predictability."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:09:12.334606"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_004": {
+      "input_id": "chat_004",
+      "feature": "chat_window",
+      "user_input": "How can I integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (CI/CD)? Please provide details on setting up the integration and configuring the build process.",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "How can I integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "To integrate Katalon Studio with Jenkins for continuous integration and continuous delivery (CI/CD), follow these steps:\n\n### Prerequisites:\n1. **Jenkins Installed**: Ensure you have Jenkins installed and running.\n2. **Katalon Studio**: Have Katalon Studio installed on the machine where Jenkins is running or on agents connected to Jenkins.\n3. **Katalon Runtime Engine (KRE)**: Make sure KRE is set up for running Katalon tests via command line.\n\n### Step-by-Step Integration:\n\n#### 1. Configure Jenkins:\n   - **Install Plugins**: Ensure the necessary plugins (e.g., Katalon, Git) are installed in Jenkins. Go to **Manage Jenkins > Manage Plugins** and install any required plugins.\n   - **Create a New Job**: Click on **New Item** in Jenkins to create a new job.\n   - **Source Code Management**: If your test scripts are in a repository, choose Git and enter the repository URL.\n\n#### 2. Configure Build Steps:\n   - Go to the **Build** section of the job configuration.\n   - Add a new build step using the **Execute Shell** option (for Unix) or **Execute Windows batch command** (for Windows).\n   - Enter the command to run Katalon tests. The basic command structure is:\n     ```\n     /path/to/katalon/Katalon -noSplash -runMode=console -projectPath=\"/path/to/your/project\" -retry=0 -testSuitePath=\"Test Suites/YourTestSuite\" -executionProfile=\"default\" -browserType=\"Chrome\"\n     ```\n   - You can customize paths, test suite names, execution profiles, and browser types as per your project.\n\n#### 3. Post-Build Actions:\n   - To get reports, add post-build actions such as **Publish Katalon Reports**. If you have the Katalon Report plugin installed, configure it to publish test results.\n\n#### 4. Save and Run the Job:\n   - Save the configurations, and click **Build Now** to run the job. Monitor the console output for any errors or issues.\n\n### Additional Tips:\n- Make sure Katalon is exposed in the system's PATH if you want to run it directly by the executable name.\n- Set up Jenkins credentials if needed for private repositories.\n\nThis setup provides a framework for running your Katalon tests automatically with Jenkins as part of your CI/CD pipeline.",
+      "gui_output": "Output displayed in Katalon Studio chat_window interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T23:08:45.229317",
+      "response_time": 11.663345098495483,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 9,
+          "completeness": 8,
+          "helpfulness": 9
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about integrating Katalon Studio with Jenkins for CI/CD.",
+          "accuracy": "The information provided is generally accurate. The command-line example is correct. However, it could benefit from mentioning the Katalon API key requirement for KRE execution.",
+          "completeness": "The answer covers the basic steps for integration, including prerequisites, Jenkins configuration, build steps, and post-build actions. It could be more complete by including information on handling different environments, parameterizing the Katalon command, and more detailed reporting options.",
+          "helpfulness": "The answer is helpful as it provides a step-by-step guide to integrating Katalon Studio with Jenkins. The command-line example is particularly useful. The additional tips are also relevant."
+        },
+        "overall_assessment": "The response provides a good starting point for integrating Katalon Studio with Jenkins. It covers the essential steps and provides a useful command-line example. However, it could be improved by adding more details on advanced configurations and best practices.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add information about the Katalon API key requirement for KRE execution.",
+          "Include details on how to handle different environments (e.g., using Jenkins parameters to specify different execution profiles).",
+          "Provide more information on advanced reporting options, such as integrating with other reporting tools or using custom reports.",
+          "Suggest using environment variables for sensitive information like API keys or passwords.",
+          "Mention the possibility of using the Katalon Jenkins plugin (if available and recommended) for easier integration.",
+          "Add a section on troubleshooting common issues, such as incorrect paths or missing dependencies."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:09:17.051970"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "chat_005": {
+      "input_id": "chat_005",
+      "feature": "chat_window",
+      "user_input": "I want to use custom keywords in Katalon Studio. Can you explain how to create and implement custom keywords, including how to pass parameters and handle return values?",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "I want to use custom keywords in Katalon Studio. Can you explain how to create and implement custom ...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "chat",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "To create and implement custom keywords in Katalon Studio, you can follow these steps:\n\n### Step 1: Create a Custom Keyword Class\n1. Open Katalon Studio and navigate to the **Keywords** folder in the **Test Explorer**.\n2. Right-click on the **Keywords** folder and select **New > Keyword**.\n3. In the dialog that appears, enter the name for your new keyword class (e.g., `MyCustomKeywords`) and click **OK**.\n\n### Step 2: Define Your Custom Keywords\n1. Katalon will generate a new Groovy class file for you. Open this file to define your custom keywords.\n2. Create your keyword methods within this class. Each method acts as a keyword. Here\u2019s an example:\n   ```groovy\n   package mykeywords\n\n   import com.kms.katalon.core.annotation.Keyword\n   import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n\n   class MyCustomKeywords {\n       @Keyword\n       def add(int a, int b) {\n           return a + b\n       }\n       \n       @Keyword\n       def printMessage(String message) {\n           println(message)\n       }\n   }\n   ```\n3. In this example, we have defined two keywords - `add` which takes two integer parameters and returns their sum, and `printMessage` which takes a string and prints it.\n\n### Step 3: Use Your Custom Keywords in Tests\n1. Now that you\u2019ve defined your custom keywords, you can use them in your test cases.\n2. In your test case, import the keyword class and call the keywords like this:\n   ```groovy\n   import mykeywords.MyCustomKeywords as myKeywords\n\n   int sum = myKeywords.add(5, 10)\n   myKeywords.printMessage('The sum is: ' + sum)\n   ```\n\n### Step 4: Parameter Passing and Return Values\n- Parameters in your custom keywords are defined just like in regular methods by specifying their types. When you call the keyword in test cases, you can pass parameters accordingly.\n- Each keyword can return a value. If your keyword provides a return value, you can assign it to a variable when calling that keyword, as shown above with the `sum` variable.\n\n### Conclusion\nBy following these steps, you can create and implement custom keywords in Katalon Studio, pass parameters, and handle return values efficiently. Refer to the [Katalon Documentation on Custom Keywords](https://docs.katalon.com/katalon-studio/docs/creating-and-using-custom-keywords.html) for more details and advanced features.",
+      "gui_output": "Output displayed in Katalon Studio chat_window interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T23:08:58.222642",
+      "response_time": 11.990882158279419,
+      "ll3_evaluation": {
+        "scores": {
+          "relevance": 10,
+          "accuracy": 10,
+          "completeness": 9,
+          "helpfulness": 10
+        },
+        "feedback": {
+          "relevance": "The answer directly addresses the user's question about creating and implementing custom keywords in Katalon Studio.",
+          "accuracy": "The steps provided are accurate and reflect the correct process for creating and using custom keywords in Katalon Studio.",
+          "completeness": "The answer covers the essential aspects of creating, defining, and using custom keywords, including parameter passing and return values. It could benefit from a more detailed example of handling different data types for parameters and return values.",
+          "helpfulness": "The step-by-step instructions and code examples make it easy for a Katalon user to understand and implement custom keywords."
+        },
+        "overall_assessment": "The response is excellent. It provides a clear, concise, and accurate explanation of how to create and implement custom keywords in Katalon Studio. The code examples are helpful, and the inclusion of a link to the Katalon documentation is a nice touch.",
+        "overall_score": 9.7,
+        "suggestions": [
+          "Add an example demonstrating how to handle different data types (e.g., List, Map, custom objects) for parameters and return values.",
+          "Briefly mention the importance of proper error handling within custom keywords.",
+          "Consider adding a small section on how to organize custom keywords into different packages for better maintainability."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T23:09:22.010925"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 5,
+      "evaluation_errors": 0,
+      "start_time": "2025-05-28T23:08:59.236031",
+      "end_time": "2025-05-28T23:09:23.012151"
+    },
+    "diversity_analysis": {
+      "total_inputs": 5,
+      "unique_patterns": 5,
+      "prompt_length_stats": {
+        "min": 137,
+        "max": 195,
+        "mean": 162.8,
+        "median": 168,
+        "std_dev": 25.09382394136055
+      },
+      "pattern_categories": {
+        "testing": 3,
+        "web_automation": 1,
+        "data_driven": 1,
+        "custom_keywords": 1
+      },
+      "complexity_distribution": {
+        "low": 5,
+        "medium": 0,
+        "high": 0
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 5,
+      "output_length_stats": {
+        "min": 1801,
+        "max": 2329,
+        "mean": 2041.2,
+        "median": 1959,
+        "std_dev": 205.48284599936804
+      },
+      "keyword_usage": {
+        "WebUI": 11,
+        "Mobile": 1,
+        "Windows": 2,
+        "@Keyword": 2
+      },
+      "error_patterns": {
+        "error_handling": 2,
+        "exception_handling": 1
+      },
+      "response_time_analysis": {
+        "min": 8.915480136871338,
+        "max": 11.990882158279419,
+        "mean": 10.636812210083008,
+        "median": 11.127471923828125,
+        "percentile_95": 11.990882158279419
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "relevance": {
+          "description": "Is the answer relevant to the question?",
+          "count": 5,
+          "mean": 10,
+          "median": 10,
+          "std_dev": 0.0,
+          "min": 10,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "accuracy": {
+          "description": "Is the information provided accurate?",
+          "count": 5,
+          "mean": 9.8,
+          "median": 10,
+          "std_dev": 0.4472135954999579,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "completeness": {
+          "description": "Does it fully answer the question?",
+          "count": 5,
+          "mean": 8.4,
+          "median": 8,
+          "std_dev": 0.5477225575051661,
+          "min": 8,
+          "max": 9,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "helpfulness": {
+          "description": "Would this answer help a Katalon user?",
+          "count": 5,
+          "mean": 9.2,
+          "median": 9,
+          "std_dev": 0.4472135954999579,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 9.14,
+        "median": 9,
+        "std_dev": 0.31304951684997023,
+        "min": 9,
+        "max": 9.7,
+        "meets_requirements_percentage": 100.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 0,
+        "6-8": 0,
+        "8-10": 5
+      },
+      "correlation_analysis": {
+        "relevance_vs_accuracy": 0.0,
+        "relevance_vs_completeness": 0.0,
+        "relevance_vs_helpfulness": 0.0,
+        "accuracy_vs_completeness": 0.408248290463863,
+        "accuracy_vs_helpfulness": 0.25,
+        "completeness_vs_helpfulness": 0.6123724356957947
+      },
+      "improvement_areas": []
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "completeness": 1,
+        "accuracy": 5,
+        "clarity": 1,
+        "best_practices": 3,
+        "error_handling": 3
+      },
+      "suggestion_frequency": {
+        "Add a step or expand on Step 6 to explain how to view the test results (e.g., in the 'Log Viewer' tab).": 1,
+        "Consider adding a screenshot or two to visually guide the user through the process, especially for steps like creating a new test case or finding the 'Run' button.": 1,
+        "Mention the importance of using descriptive names for test cases and test objects for better maintainability.": 1,
+        "Include code snippets or examples to illustrate how to use Katalon Studio's built-in keywords for data-driven testing.": 1,
+        "Provide more detail on how to connect to and query databases within Katalon Studio for data-driven testing.": 1,
+        "Expand on advanced data binding techniques, such as using Groovy scripting to manipulate data before it's used in tests.": 1,
+        "Add a section on data masking or anonymization for sensitive data used in testing.": 1,
+        "Elaborate on different data file formats and their pros and cons (e.g., Excel vs. CSV vs. database).": 1,
+        "Provide guidance on how to handle data dependencies between test cases.": 1,
+        "Add a section on handling elements within Shadow DOM. Explain how to use `WebUI.executeJavaScript()` or other techniques to access and interact with elements inside a shadow DOM.": 1
+      },
+      "feedback_sentiment": {
+        "positive": 5,
+        "neutral": 0,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Limited test coverage: Consider increasing the number of test patterns for more comprehensive evaluation.",
+      "Low complexity bias: Most test inputs are simple. Add more complex scenarios for thorough testing.",
+      "High average response time (10.64s): Consider optimizing API calls or implementing caching.",
+      "Excellent overall performance: The current configuration is producing high-quality outputs."
+    ]
+  }
+}</script>
+                                <div id="target-json" class="json-tree"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Generated by Katalon StudioAssist</p>
+                <p>2025-05-28 23:09:55</p>
+                <p>© 2025 Katalon LLC. All rights reserved.</p>
+            </footer>
+        </body>
+        </html>
+        

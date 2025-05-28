@@ -1,0 +1,35 @@
+{
+  "feature": "chat_window",
+  "current_phase": "target_created",
+  "llm_config_state": "ll1_active",
+  "baselines": {
+    "baseline_20250528_230748_5": {
+      "filename": "poc_data/chat_window/studioassist_chat_window_baseline_evaluated_ll1_20250528_230748_582d9c27.json",
+      "inputs_file": "poc_data/chat_window/studioassist_chat_window_mock_inputs_20250528_230627_498c5ed4.json",
+      "num_inputs": 5,
+      "created_at": "2025-05-28T23:07:48.828501",
+      "state": "evaluated",
+      "llm_version": "LL1",
+      "baseline_id": "baseline_20250528_230748_5"
+    }
+  },
+  "target_dataset": {
+    "filename": "poc_data/chat_window/studioassist_chat_window_target_evaluated_ll2_20250528_230923_f36d139f.json",
+    "inputs_file": "poc_data/chat_window/studioassist_chat_window_mock_inputs_20250528_230627_498c5ed4.json",
+    "num_inputs": 5,
+    "created_at": "2025-05-28T23:09:23.026164",
+    "state": "evaluated",
+    "llm_version": "LL2",
+    "test_mode": "consistency",
+    "compared_with_baseline": "baseline_20250528_230748_5",
+    "llm_config": {
+      "type": "personal_openai",
+      "model": "gpt-4o-mini"
+    },
+    "updated_at": "2025-05-28T23:09:23.027047"
+  },
+  "selected_baseline_id": "baseline_20250528_230748_5",
+  "inputs_file": null,
+  "created_at": "2025-05-28T23:07:48.828618",
+  "updated_at": "2025-05-28T23:09:23.027053"
+}
