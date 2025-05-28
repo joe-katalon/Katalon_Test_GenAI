@@ -73,11 +73,25 @@
         // Load and display reports
         async function loadReports() {
             try {
-                // Get the current path and construct the correct URL
-                const basePath = window.location.pathname.split('/').slice(0, -2).join('/');
-                const response = await fetch(`${basePath}/reports_data.json`);
-                if (!response.ok) throw new Error('Failed to load reports data');
+                // Get the repository name from the URL
+                const repoPath = '/Katalon_Test_GenAI';
+                const response = await fetch(`${repoPath}/reports_data.json`);
+                if (!response.ok) {
+                    // Try alternative path if first attempt fails
+                    const altResponse = await fetch(`${repoPath}/reports/reports_data.json`);
+                    if (!altResponse.ok) {
+                        throw new Error('Failed to load reports data from both locations');
+                    }
+                    return await altResponse.json();
+                }
                 const reports = await response.json();
+                
+                // Update URLs to include repository path
+                reports.forEach(report => {
+                    if (!report.url.startsWith('http') && !report.url.startsWith(repoPath)) {
+                        report.url = `${repoPath}/${report.url}`;
+                    }
+                });
                 
                 displayReports(reports);
                 updateCharts(reports);

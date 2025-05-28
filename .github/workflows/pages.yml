@@ -78,8 +78,8 @@ jobs:
       
       - name: Build Pages
         run: |
-          # Create _site directory
-          mkdir -p _site
+          # Create _site directory and subdirectories
+          mkdir -p _site/reports
           
           # Copy index.html to root of _site if it exists
           if [ -f "reports/index.html" ]; then
@@ -88,12 +88,12 @@ jobs:
             cp reports/reports_index.html _site/index.html
           fi
           
-          # Create reports directory in _site and copy all reports
-          mkdir -p _site/reports
+          # Copy all reports to reports directory
           cp -r reports/* _site/reports/ || echo "No reports to copy"
           
-          # Ensure reports_data.json is in the root directory
+          # Ensure reports_data.json is in both locations
           cp reports/reports_data.json _site/
+          cp reports/reports_data.json _site/reports/
           
           # List contents for debugging
           echo "Contents of _site directory:"
