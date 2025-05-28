@@ -1,7 +1,7 @@
 """Prompt generation utilities for Katalon StudioAssist."""
 
 import logging
-from typing import Dict
+from typing import Dict, Any
 
 from constants import FEATURE_CONFIGS  # Changed from ..constants
 
@@ -69,6 +69,98 @@ Return your evaluation in the following JSON format:
 }
 """
         return prompt
+
+    def generate_dataset_comparison_prompt(self, baseline_info: Dict[str, Any], target_info: Dict[str, Any]) -> str:
+        """Generate a prompt for comparing baseline and target datasets.
+        
+        Args:
+            baseline_info: Information about the baseline dataset
+            target_info: Information about the target dataset
+            
+        Returns:
+            A formatted prompt string for dataset comparison
+        """
+        return f"""You are a highly experienced Software Quality Assurance Engineer specializing in evaluating AI model outputs. 
+You are tasked with comparing and analyzing two datasets - a baseline dataset (LL1) and a target dataset (LL2).
+
+Baseline Dataset Information:
+{baseline_info}
+
+Target Dataset Information:
+{target_info}
+
+Please analyze and compare these datasets focusing on:
+
+1. Completeness:
+   - Are all required fields present in both datasets?
+   - Are there any missing or null values?
+   - Compare the overall structure and organization
+
+2. Accuracy:
+   - Are the values in both datasets accurate and valid?
+   - Are there any inconsistencies or anomalies?
+   - Check for data type consistency
+
+3. Consistency:
+   - Are naming conventions consistent?
+   - Is data formatting consistent?
+   - Are there any structural differences?
+
+4. Performance Metrics:
+   - Compare key performance indicators
+   - Analyze any metrics present in both datasets
+   - Identify significant differences in measurements
+
+5. Quality Assessment:
+   - Evaluate the overall quality of both datasets
+   - Identify areas where one dataset performs better
+   - Note any quality-related concerns
+
+Please provide your analysis in the following JSON format:
+{{
+  "completeness_analysis": {{
+    "baseline": {{
+      "missing_fields": [],
+      "null_values": [],
+      "structure_issues": []
+    }},
+    "target": {{
+      "missing_fields": [],
+      "null_values": [],
+      "structure_issues": []
+    }}
+  }},
+  "accuracy_analysis": {{
+    "baseline": {{
+      "invalid_values": [],
+      "anomalies": [],
+      "type_mismatches": []
+    }},
+    "target": {{
+      "invalid_values": [],
+      "anomalies": [],
+      "type_mismatches": []
+    }}
+  }},
+  "consistency_analysis": {{
+    "naming_issues": [],
+    "format_issues": [],
+    "structural_differences": []
+  }},
+  "performance_comparison": {{
+    "baseline_metrics": {{}},
+    "target_metrics": {{}},
+    "significant_differences": []
+  }},
+  "quality_assessment": {{
+    "baseline_strengths": [],
+    "baseline_weaknesses": [],
+    "target_strengths": [],
+    "target_weaknesses": [],
+    "overall_comparison": ""
+  }},
+  "recommendations": []
+}}"""
     
     def _generate_code_prompt(self, num_patterns: int) -> str:
         return f"""

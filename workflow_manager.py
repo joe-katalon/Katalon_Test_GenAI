@@ -8,6 +8,7 @@ from typing import Dict, Optional, List, Tuple  # Add Tuple here
 from dataclasses import dataclass, asdict
 
 from constants import WorkflowStep, DatasetState, LLMConfigState
+from report_generator import ReportGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -34,10 +35,12 @@ class WorkflowState:
 class WorkflowManager:
     """Manages workflow state across multiple execution phases."""
     
-    def __init__(self, state_dir: str = "workflow_states"):
-        """Initialize with state directory path."""
+    def __init__(self, config, state_dir: str = "workflow_states"):
+        """Initialize with state directory path and config."""
         self.state_dir = Path(state_dir)
         self.state_dir.mkdir(exist_ok=True)
+        self.config = config
+        self.report_generator = ReportGenerator(config)
     
     def _get_state_file(self, feature: str) -> Path:
         """Get the state file path for a feature."""
@@ -146,3 +149,58 @@ class WorkflowManager:
             return False, "Target dataset has not been evaluated"
             
         return True, "Ready for comparison"
+        
+    def generate_html_report(self, feature: str, comparison_data: Dict) -> Tuple[bool, str]:
+        """Generate an HTML report for the comparison results.
+        
+        Args:
+            feature: The feature being tested
+            comparison_data: Results from the comparison
+            
+        Returns:
+            Tuple[bool, str]: (success, report_path or error_message)
+        """
+        try:
+            state = self.load_state(feature)
+            if not state:
+                return False, "No workflow state found"
+                
+            baseline_info = state.baselines.get(state.selected_baseline_id)
+            if not baseline_info:
+                return False, "No baseline information found"
+                
+            target_info = state.target_dataset
+            if not target_info:
+                return False, "No target information found"
+            
+            # Ensure baseline_info has llm_config
+            if "llm_config" not in baseline_info:
+                baseline_info["llm_config"] = {
+                    "type": baseline_info.get("llm_version", "LL1"),
+                    "model": baseline_info.get("llm_model", "Unknown")
+                }
+            
+            # Ensure target_info has llm_config
+            if "llm_config" not in target_info:
+                target_info["llm_config"] = {
+                    "type": target_info.get("llm_version", "LL2"),
+                    "model": target_info.get("llm_model", "Unknown")
+                }
+            
+            # Add Katalon version to both info objects
+            baseline_info["katalon_version"] = self.config.katalon_version
+            target_info["katalon_version"] = self.config.katalon_version
+            
+            # Use the instance method of report_generator
+            report_path = self.report_generator.generate_html_report(
+                feature=feature,
+                comparison_data=comparison_data,
+                baseline_info=baseline_info,
+                target_info=target_info
+            )
+            
+            return True, report_path
+            
+        except Exception as e:
+            logger.error(f"Error generating HTML report: {e}")
+            return False, str(e)

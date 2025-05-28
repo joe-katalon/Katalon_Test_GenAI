@@ -5,13 +5,33 @@ import json
 import logging
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
 from dotenv import load_dotenv  # Add this
 from constants import FEATURE_CONFIGS  # Changed from .constants
 
 logger = logging.getLogger(__name__)
 # Load .env file at module level
 load_dotenv()  # This loads .env file into environment variables
+
+def str_to_bool(value: Union[str, bool, int]) -> bool:
+    """Convert string/int/bool to boolean.
+    
+    Args:
+        value: Value to convert to boolean. Can be:
+            - string: 'true', '1', 'yes', 'on' (case insensitive) -> True
+            - int: 1 -> True, 0 -> False
+            - bool: returns as is
+            
+    Returns:
+        bool: The converted boolean value
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        return bool(value)
+    if isinstance(value, str):
+        return str(value).lower() in ('true', '1', 'yes', 'on')
+    return bool(value)  # Handle any other types through standard bool() conversion
 
 @dataclass
 class Config:
@@ -73,38 +93,34 @@ def load_config(feature: Optional[str] = None) -> Config:
         except (json.JSONDecodeError, IOError) as e:
             logger.warning(f"Could not load config file: {e}")
     
-    # Environment variables take precedence
+    # Create a complete dictionary with all values before instantiating Config
     config_data = {
         "katalon_api_url": os.getenv("KATALON_API_URL") or file_config.get("katalon_api_url", ""),
         "katalon_api_key": os.getenv("KATALON_API_KEY") or file_config.get("katalon_api_key", ""),
         "llm3_provider": os.getenv("LLM3_PROVIDER") or file_config.get("llm3_provider", "gemini"),
         "llm3_api_url": os.getenv("LLM3_API_URL") or file_config.get("llm3_api_url", ""),
         "llm3_api_key": os.getenv("LLM3_API_KEY") or file_config.get("llm3_api_key", ""),
-        "llm3_model": os.getenv("LLM3_MODEL") or file_config.get("llm3_model", "gemini-2.0-flash"),
+        "llm3_model": os.getenv("LLM3_MODEL") or file_config.get("llm3_model", "gemini-pro"),
         "user_id": os.getenv("KATALON_USER_ID") or file_config.get("user_id", "anonymous@katalon.com"),
-        
-        # Add these for chat_window
         "account_id": os.getenv("KATALON_ACCOUNT_ID") or file_config.get("account_id", "1410137"),
         "organization_id": os.getenv("KATALON_ORG_ID") or file_config.get("organization_id", "1666289"),
         "user_id_numeric": os.getenv("KATALON_USER_ID_NUMERIC") or file_config.get("user_id_numeric", "12539647"),
-        
         "feature": feature or os.getenv("KATALON_FEATURE") or file_config.get("feature", "generate_code"),
-        "kse_license": os.getenv("KSE_LICENSE", "true").lower() == "true",
+        "kse_license": str_to_bool(os.getenv("KSE_LICENSE", "true")) if os.getenv("KSE_LICENSE") else file_config.get("kse_license", True),
         "default_llm_version": os.getenv("DEFAULT_LLM_VERSION") or file_config.get("default_llm_version", "LL1"),
-        "ll2_enabled": os.getenv("LL2_ENABLED", "false").lower() == "true" or file_config.get("ll2_enabled", False),
-        
-        # LLM configurations
-        "ll1_config_type": os.getenv("LL1_CONFIG_TYPE", "katalon_ai"),
-        "ll1_api_key": os.getenv("LL1_API_KEY", ""),
-        "ll1_model": os.getenv("LL1_MODEL", "gpt-4o-mini"),
-        
-        "ll2_config_type": os.getenv("LL2_CONFIG_TYPE", "personal_openai"),
-        "ll2_api_key": os.getenv("LL2_API_KEY", ""),
-        "ll2_model": os.getenv("LL2_MODEL", "gpt-4o-mini"),
-        
-        "katalon_version": os.getenv("KATALON_VERSION", "10.2.0"),
+        "ll2_enabled": str_to_bool(os.getenv("LL2_ENABLED", "false")) if os.getenv("LL2_ENABLED") else file_config.get("ll2_enabled", False),
+        "ll1_config_type": os.getenv("LL1_CONFIG_TYPE") or file_config.get("ll1_config_type", "katalon_ai"),
+        "ll1_api_key": os.getenv("LL1_API_KEY") or file_config.get("ll1_api_key", ""),
+        "ll1_model": os.getenv("LL1_MODEL") or file_config.get("ll1_model", "gpt-4o-mini"),
+        "ll2_config_type": os.getenv("LL2_CONFIG_TYPE") or file_config.get("ll2_config_type", "personal_openai"),
+        "ll2_api_key": os.getenv("LL2_API_KEY") or file_config.get("ll2_api_key", ""),
+        "ll2_model": os.getenv("LL2_MODEL") or file_config.get("ll2_model", "gpt-4o-mini"),
+        "katalon_version": os.getenv("KATALON_VERSION") or file_config.get("katalon_version", "10.2.0"),
+        "data_dir": file_config.get("data_dir", "poc_data"),
+        "max_concurrent_requests": file_config.get("max_concurrent_requests", 5)
     }
     
+    # Create Config instance with the complete dictionary
     return Config(**config_data)
 
 def setup_logging(level: str = "INFO") -> logging.Logger:

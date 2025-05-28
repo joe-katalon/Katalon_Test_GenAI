@@ -5,10 +5,14 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from pathlib import Path
+import json
+from difflib import SequenceMatcher
+import os
 
 from orchestrator import StudioAssistPoCOrchestrator
 from workflow_manager import WorkflowManager, WorkflowState  # Add this import
 from constants import WorkflowStep, DatasetState, LLMConfigState, TestMode, DatasetType  
+from services.llm_service import LLMService  # Add this import at the top
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +20,8 @@ class PhasedOrchestrator(StudioAssistPoCOrchestrator):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.workflow_manager = WorkflowManager()
+        self.workflow_manager = WorkflowManager(self.config)
+        self.llm_manager = LLMService(self.config)  # Initialize LLM manager
     
     def _display_baseline_options(self, baselines: Dict[str, Dict]) -> None:
         """Display available baselines in a formatted table."""
@@ -51,6 +56,26 @@ class PhasedOrchestrator(StudioAssistPoCOrchestrator):
                     
             except ValueError:
                 print("Invalid input. Please enter a number or 'q' to quit.")
+
+    def _check_baseline_exists(self) -> bool:
+        """Check if baselines exist by verifying both workflow state and files."""
+        # Check workflow state
+        state = self.workflow_manager.load_state(self.feature)
+        if not state or not state.baselines:
+            return False
+            
+        # Verify baseline files exist
+        for baseline_id, baseline_info in state.baselines.items():
+            baseline_file = baseline_info.get('filename')
+            if not baseline_file or not Path(baseline_file).exists():
+                # Remove invalid baseline from state
+                state.baselines.pop(baseline_id)
+                self.workflow_manager.save_state(state)
+                continue
+            return True
+            
+        return False
+
     async def run_phase_1_baseline(self, num_patterns: int = 10,
                                 inputs_file: Optional[str] = None,
                                 skip_evaluation: bool = False) -> Dict:
@@ -63,9 +88,8 @@ class PhasedOrchestrator(StudioAssistPoCOrchestrator):
         logger.info(f"LL1 Model: {self.config.ll1_model}")
         logger.info(f"Katalon Version: {self.config.katalon_version}")
         
-        # Check current state
-        state = self.workflow_manager.load_state(self.feature)
-        if state and state.baselines:  # Changed from state.baseline_dataset
+        # Check if baselines exist
+        if self._check_baseline_exists():
             logger.warning("Baseline(s) already exist for this feature")
             response = input("Create another baseline? (y/N): ")
             if response.lower() != 'y':
@@ -297,71 +321,191 @@ class PhasedOrchestrator(StudioAssistPoCOrchestrator):
         logger.info("="*60)
         logger.info(f"Feature: {self.feature}")
         
-        # Check prerequisites
-        ready, message = self.workflow_manager.check_ready_for_comparison(self.feature)
-        if not ready:
-            logger.error(f"Not ready for Phase 3: {message}")
+        # Check if ready for comparison
+        is_ready, message = self.workflow_manager.check_ready_for_comparison(self.feature)
+        if not is_ready:
+            logger.error(f"Not ready for comparison: {message}")
             return {}
-        
+            
         try:
-            # Get selected baseline and target info
+            # Load workflow state
             state = self.workflow_manager.load_state(self.feature)
-            if not state.selected_baseline_id:
-                logger.error("No baseline was selected in Phase 2")
-                return {}
+            baseline = state.baselines[state.selected_baseline_id]
+            target = state.target_dataset
             
-            baseline_info = state.baselines[state.selected_baseline_id]
-            target_info = state.target_dataset
-            
-            logger.info(f"\nComparing:")
-            logger.info(f"  Baseline (LL1): {baseline_info['filename']}")
+            # Log comparison details
+            logger.info("\nComparing:")
+            logger.info(f"  Baseline (LL1): {baseline['filename']}")
             logger.info(f"  Baseline ID: {state.selected_baseline_id}")
-            logger.info(f"  Target (LL2): {target_info['filename']}")
-            logger.info(f"  Test Mode: {target_info.get('test_mode', 'consistency')}")
+            logger.info(f"  Target (LL2): {target['filename']}")
+            logger.info(f"  Test Mode: {target.get('test_mode', 'unknown')}")
             
-
-            # Run comparison
-            test_mode = TestMode(target_info.get('test_mode', 'consistency'))
-            comparison_result = await self.run_comparison(
-                baseline_info['filename'],
-                target_info['filename'],
-                test_mode
+            # Perform comparison
+            logger.info("\n🔄 Comparing baseline and target datasets")
+            comparison_result = await self.compare_datasets(
+                baseline["filename"],
+                target["filename"]
             )
             
-            # Generate final report
-            final_report = {
+            # Print detailed comparison summary
+            self._print_comparison_summary(comparison_result, baseline, target)
+            
+            # Generate HTML report
+            logger.info("\n📊 Generating comparison report")
+            success, report_path = self.workflow_manager.generate_html_report(
+                self.feature,
+                comparison_result
+            )
+            
+            if success:
+                logger.info("\n" + "="*80)
+                logger.info("📋 COMPARISON REPORT GENERATED")
+                logger.info("="*80)
+                logger.info(f"Report Location: {report_path}")
+                logger.info("="*80)
+            else:
+                logger.warning(f"Failed to generate report: {report_path}")
+            
+            # Save phase summary
+            phase_summary = {
                 "phase": "comparison",
                 "feature": self.feature,
-                "baseline_info": baseline_info,
-                "target_info": target_info,
+                "baseline_id": state.selected_baseline_id,
                 "comparison_result": comparison_result,
-                "recommendation": comparison_result.get("recommendation", {}),
-                "timestamp": datetime.now().isoformat()
+                "report_path": report_path if success else None,
+                "next_steps": [
+                    "1. Review the comparison results and HTML report at:",
+                    f"   {report_path}",
+                    "2. If target performs better, promote it to baseline with:",
+                    f"   python main.py --feature {self.feature} --promote"
+                ]
             }
             
-            report_file = self.file_manager.generate_filename("final_report")
-            self.file_manager.save_json(final_report, report_file)
+            summary_file = self.file_manager.generate_filename("phase3_summary")
+            self.file_manager.save_json(phase_summary, summary_file)
             
             logger.info("\n" + "="*60)
             logger.info("✅ PHASE 3 COMPLETED SUCCESSFULLY")
             logger.info("="*60)
-            logger.info(f"Final report: {report_file}")
             
-            # Print recommendation
-            rec = comparison_result.get("recommendation", {})
-            if rec:
-                logger.info(f"\n📊 RECOMMENDATION: {rec.get('decision', 'N/A')}")
-                logger.info(f"   Confidence: {rec.get('confidence', 'N/A')}")
-                for reason in rec.get('reasons', []):
-                    logger.info(f"   - {reason}")
-            
-            logger.info("="*60 + "\n")
-            
-            return final_report
+            return phase_summary
             
         except Exception as e:
             logger.error(f"Phase 3 failed: {e}")
             raise
+            
+    def _print_comparison_summary(self, comparison_result: Dict, baseline: Dict, target: Dict):
+        """Print detailed comparison summary with emoticons."""
+        metrics = comparison_result.get("metrics", {})
+        raw_eval = comparison_result.get("raw_evaluation", {})
+        
+        logger.info("\n" + "="*80)
+        logger.info("🔍 DATASET COMPARISON SUMMARY 🔍")
+        logger.info("="*80)
+        logger.info(f"\n📊 Feature: {self.feature}")
+        logger.info(f"🔄 Mode: {target.get('test_mode', 'unknown')}")
+        logger.info(f"🕒 Timestamp: {datetime.now().isoformat()}")
+        
+        # Get Katalon Version from config
+        logger.info(f"🔖 Katalon Version: {self.config.katalon_version}")
+        
+        logger.info("\n📑 Dataset Summary:")
+        logger.info(f"  📌 Baseline (LL1) results: {baseline.get('num_inputs', 'unknown')}")
+        logger.info(f"  🎯 Target (LL2) results: {target.get('num_inputs', 'unknown')}")
+        logger.info(f"  🔄 Common inputs: {len(comparison_result.get('detailed_results', []))}")
+        
+        # Detailed Scores
+        logger.info("\n📊 Detailed Scores:")
+        
+        # Consistency Scores
+        consistency_scores = raw_eval.get("consistency_scores", {})
+        logger.info("  🎯 Consistency Metrics:")
+        output_stability = consistency_scores.get('output_stability', 0)
+        behavior_consistency = consistency_scores.get('behavior_consistency', 0)
+        style_consistency = consistency_scores.get('style_consistency', 0)
+        
+        logger.info(f"    {'🟢' if output_stability >= 0.8 else '🟡' if output_stability >= 0.6 else '🔴'} Output Stability: {output_stability:.2f}")
+        logger.info(f"    {'🟢' if behavior_consistency >= 0.8 else '🟡' if behavior_consistency >= 0.6 else '🔴'} Behavior Consistency: {behavior_consistency:.2f}")
+        logger.info(f"    {'🟢' if style_consistency >= 0.8 else '🟡' if style_consistency >= 0.6 else '🔴'} Style Consistency: {style_consistency:.2f}")
+        
+        # Accuracy Scores
+        accuracy_scores = raw_eval.get("accuracy_scores", {})
+        if any(v is not None for v in accuracy_scores.values()):
+            logger.info("  ✅ Accuracy Metrics:")
+            functional = accuracy_scores.get('functional_correctness', 0)
+            code_quality = accuracy_scores.get('code_quality', 0)
+            test_coverage = accuracy_scores.get('test_coverage', 0)
+            
+            logger.info(f"    {'🟢' if functional >= 0.8 else '🟡' if functional >= 0.6 else '🔴'} Functional Correctness: {functional:.2f}")
+            logger.info(f"    {'🟢' if code_quality >= 0.8 else '🟡' if code_quality >= 0.6 else '🔴'} Code Quality: {code_quality:.2f}")
+            logger.info(f"    {'🟢' if test_coverage >= 0.8 else '🟡' if test_coverage >= 0.6 else '🔴'} Test Coverage: {test_coverage:.2f}")
+        
+        # Performance Metrics
+        perf_metrics = raw_eval.get("performance_metrics", {})
+        logger.info("\n⚡ Performance Analysis:")
+        time_diff = perf_metrics.get('time_difference', 0)
+        logger.info(f"  ⏱️ Baseline Avg Time: {perf_metrics.get('baseline_avg_time', 0):.3f}s")
+        logger.info(f"  ⏱️ Target Avg Time: {perf_metrics.get('target_avg_time', 0):.3f}s")
+        logger.info(f"  {'🟢' if time_diff < 0 else '🔴' if time_diff > 0 else '⚪'} Time Difference: {time_diff:+.3f}s")
+        
+        # Analysis Details
+        analysis = raw_eval.get("analysis", {})
+        logger.info("\n🔬 Detailed Analysis:")
+        
+        if analysis.get("key_differences"):
+            logger.info("  📋 Key Differences:")
+            for diff in analysis["key_differences"]:
+                logger.info(f"    • {diff}")
+        
+        if analysis.get("improvements"):
+            logger.info("\n  ✨ Improvements:")
+            for imp in analysis["improvements"]:
+                logger.info(f"    ✅ {imp}")
+        
+        if analysis.get("regressions"):
+            logger.info("\n  ⚠️ Regressions:")
+            for reg in analysis["regressions"]:
+                logger.info(f"    ❌ {reg}")
+        
+        if analysis.get("concerns"):
+            logger.info("\n  ⚠️ Concerns:")
+            for concern in analysis["concerns"]:
+                logger.info(f"    ⚠️ {concern}")
+        
+        # Recommendations
+        if raw_eval.get("recommendations"):
+            logger.info("\n💡 Recommendations:")
+            for i, rec in enumerate(raw_eval["recommendations"], 1):
+                logger.info(f"  {i}. 📝 {rec}")
+        
+        # Final Recommendation and Confidence
+        logger.info("\n🎯 Final Assessment:")
+        final_rec = raw_eval.get('final_recommendation', 'UNKNOWN')
+        confidence = raw_eval.get('confidence_level', 'unknown')
+        
+        rec_emoji = {
+            'PROMOTE_LL2': '🚀',
+            'KEEP_LL1': '🛡️',
+            'FURTHER_TESTING': '🔄',
+            'UNKNOWN': '❓'
+        }
+        
+        conf_emoji = {
+            'High': '💪',
+            'Moderate': '👍',
+            'Low': '🤔',
+            'unknown': '❓'
+        }
+        
+        logger.info(f"  {rec_emoji.get(final_rec, '❓')} Decision: {final_rec}")
+        logger.info(f"  {conf_emoji.get(confidence, '❓')} Confidence Level: {confidence}")
+        
+        # Detailed Explanation
+        if raw_eval.get("detailed_explanation"):
+            logger.info("\n📝 Detailed Explanation:")
+            logger.info(f"  {raw_eval['detailed_explanation']}")
+        
+        logger.info("\n" + "="*80)
     
     def get_workflow_status(self) -> Dict:
         """Get current workflow status."""
@@ -420,3 +564,296 @@ class PhasedOrchestrator(StudioAssistPoCOrchestrator):
             logger.error("Failed to promote target to baseline")
         
         return success
+
+    async def compare_datasets(self, baseline_file: str, target_file: str) -> Dict[str, Any]:
+        """Compare baseline and target datasets using LLM3 for advanced evaluation.
+        
+        Args:
+            baseline_file: Path to baseline dataset JSON
+            target_file: Path to target dataset JSON
+            
+        Returns:
+            Dict containing comparison metrics and detailed results
+        """
+        try:
+            # Load complete datasets
+            baseline_data = self.file_manager.load_json(baseline_file)
+            target_data = self.file_manager.load_json(target_file)
+
+            if not baseline_data or not target_data:
+                raise ValueError("Failed to load comparison datasets")
+            # Get test mode from workflow state
+            state = self.workflow_manager.load_state(self.feature)
+            test_mode = state.target_dataset.get("test_mode", "consistency") if state and state.target_dataset else "consistency"
+            # Prepare comprehensive evaluation prompt for LLM3
+            baseline_json = json.dumps(baseline_data, indent=2)
+            target_json = json.dumps(target_data, indent=2)
+            
+            eval_prompt = f"""
+            You are an expert evaluator comparing two LLM implementations (LL1 vs LL2) of Katalon Studio's StudioAssist feature.
+            Please analyze the complete baseline and target datasets and provide a comprehensive evaluation.
+
+            Context Information:
+            Feature: {self.feature}
+            Test Mode: {test_mode}
+
+            Below are the complete baseline (LL1) and target (LL2) datasets for comparison:
+
+            Baseline Dataset (LL1):
+            {baseline_json}
+
+            Target Dataset (LL2):
+            {target_json}
+
+            Please evaluate based on the following criteria:
+
+            For Consistency Mode:
+            1. Output Stability (0-1): How consistent are the outputs in terms of structure and format?
+            2. Behavior Consistency (0-1): Do both implementations exhibit the same logical behavior?
+            3. Style Consistency (0-1): How well does the target maintain coding style conventions?
+
+            For Accuracy Mode:
+            1. Functional Correctness (0-1): Does the target implementation correctly solve the problem?
+            2. Code Quality (0-1): How well-written, maintainable, and efficient is the code?
+            3. Test Coverage (0-1): How comprehensively does it handle different cases?
+
+            Additional Analysis Required:
+            1. Key Differences:
+               - Identify structural and logical differences
+               - Note any improvements or regressions
+               - Highlight any concerning variations
+
+            2. Performance Analysis:
+               - Compare execution times
+               - Identify performance bottlenecks
+               - Suggest optimizations
+
+            3. Quality Assessment:
+               - Code structure and organization
+               - Error handling and edge cases
+               - Documentation and readability
+
+            4. Recommendations:
+               - Specific improvements needed
+               - Best practices to implement
+               - Risk mitigation strategies
+
+            Please provide:
+            1. Numerical scores for each criterion (0-1 scale)
+            2. Detailed explanations for each score
+            3. Comprehensive analysis of differences
+            4. Specific recommendations for improvement
+            5. Any concerns or potential risks
+            6. Final recommendation: PROMOTE_LL2, KEEP_LL1, or FURTHER_TESTING
+
+            Format your response as a JSON object with the following structure:
+            {{
+                "consistency_scores": {{
+                    "output_stability": float,
+                    "behavior_consistency": float,
+                    "style_consistency": float
+                }},
+                "accuracy_scores": {{
+                    "functional_correctness": float,
+                    "code_quality": float,
+                    "test_coverage": float
+                }},
+                "performance_metrics": {{
+                    "baseline_avg_time": float,
+                    "target_avg_time": float,
+                    "time_difference": float
+                }},
+                "analysis": {{
+                    "key_differences": [string],
+                    "improvements": [string],
+                    "regressions": [string],
+                    "concerns": [string]
+                }},
+                "recommendations": [string],
+                "final_recommendation": string,
+                "confidence_level": string,
+                "detailed_explanation": string
+            }}
+            """
+            
+            # Get LLM3's comprehensive evaluation
+            evaluation = await self.evaluate_with_llm3(eval_prompt)
+            print("\n" + "="*80)
+            print("RAW LLM3 EVALUATION RESPONSE:")
+            print("="*80)
+            print(json.dumps(evaluation, indent=2))
+            print("="*80 + "\n")
+            
+            # Return the evaluation results with complete raw data
+            return {
+                "metrics": {
+                    "consistency_metrics": evaluation.get("consistency_scores", {}),
+                    "accuracy_metrics": evaluation.get("accuracy_scores", {}),
+                    "performance": evaluation.get("performance_metrics", {})
+                },
+                "analysis": evaluation.get("analysis", {}),
+                "recommendations": evaluation.get("recommendations", []),
+                "final_recommendation": evaluation.get("final_recommendation", "FURTHER_TESTING"),
+                "confidence_level": evaluation.get("confidence_level", "low"),
+                "detailed_explanation": evaluation.get("detailed_explanation", ""),
+                "comparison_timestamp": datetime.now().isoformat(),
+                "test_mode": test_mode,
+                "raw_evaluation": evaluation  # Keep the complete raw evaluation
+            }
+            
+        except Exception as e:
+            logger.error(f"Dataset comparison failed: {e}")
+            raise
+
+    async def evaluate_with_llm3(self, prompt: str) -> Dict[str, Any]:
+        """Evaluate outputs using LLM3 for advanced analysis.
+        
+        Args:
+            prompt: The evaluation prompt for LLM3
+            
+        Returns:
+            Dict containing evaluation scores and analysis
+        """
+        try:
+            # Call LLM3 for evaluation with proper JSON schema
+            response = await self.llm_manager.call_llm(
+                prompt,
+                response_format={
+                    "type": "json_object"
+                },
+                expect_json=True
+            )
+            
+            if not response:
+                logger.error("No response from LLM3")
+                return self._get_default_evaluation()
+            
+            # Validate the response has required fields
+            required_fields = [
+                "consistency_scores",
+                "accuracy_scores",
+                "performance_metrics",
+                "analysis",
+                "recommendations",
+                "final_recommendation",
+                "confidence_level",
+                "detailed_explanation"
+            ]
+            
+            missing_fields = [field for field in required_fields if field not in response]
+            if missing_fields:
+                logger.error(f"Missing required fields in LLM3 response: {missing_fields}")
+                logger.error(f"Raw response: {response}")
+                return self._get_default_evaluation()
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"LLM3 evaluation failed: {e}")
+            logger.error(f"Prompt: {prompt}")
+            return self._get_default_evaluation()
+    
+    def _get_default_evaluation(self) -> Dict[str, Any]:
+        """Return default evaluation structure with zero scores."""
+        return {
+            "consistency_scores": {
+                "output_stability": 0.0,
+                "behavior_consistency": 0.0,
+                "style_consistency": 0.0
+            },
+            "accuracy_scores": {
+                "functional_correctness": 0.0,
+                "code_quality": 0.0,
+                "test_coverage": 0.0
+            },
+            "performance_metrics": {
+                "baseline_avg_time": 0.0,
+                "target_avg_time": 0.0,
+                "time_difference": 0.0
+            },
+            "analysis": {
+                "key_differences": ["Evaluation failed"],
+                "improvements": [],
+                "regressions": [],
+                "concerns": ["LLM3 evaluation failed"]
+            },
+            "recommendations": ["Unable to provide recommendations due to evaluation failure"],
+            "final_recommendation": "FURTHER_TESTING",
+            "confidence_level": "low",
+            "detailed_explanation": "LLM3 evaluation failed"
+        }
+    
+    def _generate_comparison_notes(self, similarity: float, baseline_quality: float, target_quality: float) -> str:
+        """Generate human-readable notes about the comparison."""
+        quality_diff = target_quality - baseline_quality
+        
+        if similarity >= 0.9:
+            if quality_diff > 0:
+                return "Outputs are highly similar with improved quality"
+            elif quality_diff < 0:
+                return "Outputs are highly similar but quality decreased"
+            return "Outputs are highly similar with equivalent quality"
+            
+        elif similarity >= 0.7:
+            if quality_diff > 0:
+                return "Moderate differences but improved quality"
+            elif quality_diff < 0:
+                return "Moderate differences with decreased quality"
+            return "Moderate differences with equivalent quality"
+            
+        else:
+            if quality_diff > 0:
+                return "Significant differences but potentially better approach"
+            elif quality_diff < 0:
+                return "Significant differences with quality concerns"
+            return "Significant differences detected"
+    
+    def _generate_recommendations(self, metrics: Dict[str, float]) -> List[str]:
+        """Generate recommendations based on comparison metrics."""
+        recommendations = []
+        
+        # Quality comparison
+        quality_diff = metrics["quality_diff"]
+        if quality_diff > 0.5:
+            recommendations.append(
+                "Target implementation shows significant quality improvement. Consider promoting to baseline."
+            )
+        elif quality_diff < -0.5:
+            recommendations.append(
+                "Target implementation shows quality regression. Review before promotion."
+            )
+        
+        # Similarity analysis
+        if metrics["overall_similarity"] < 0.7:
+            if metrics["target_quality"] > metrics["baseline_quality"]:
+                recommendations.append(
+                    "Different approach detected but quality metrics are improved. Review changes."
+                )
+            else:
+                recommendations.append(
+                    "High output divergence detected. Verify if changes are intentional."
+                )
+        
+        # Performance analysis
+        time_diff = metrics["performance"]["average_time_diff"]
+        if abs(time_diff) > 0.1:  # More than 100ms difference
+            if time_diff > 0:
+                recommendations.append(
+                    f"Target is slower by {time_diff:.2f}s on average. Consider performance optimization."
+                )
+            else:
+                recommendations.append(
+                    f"Target shows {abs(time_diff):.2f}s performance improvement on average."
+                )
+        
+        if not recommendations:
+            if metrics["overall_similarity"] >= 0.9 and abs(quality_diff) < 0.1:
+                recommendations.append(
+                    "Target implementation is equivalent to baseline with no significant changes."
+                )
+            else:
+                recommendations.append(
+                    "Results are within acceptable ranges but could be improved."
+                )
+        
+        return recommendations

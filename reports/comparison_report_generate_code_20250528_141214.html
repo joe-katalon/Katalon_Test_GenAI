@@ -1,0 +1,1759 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="referrer" content="origin">
+            <title>StudioAssist Comparison Report - generate_code</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    margin: 0;
+                    padding: 0;
+                    background: #f5f5f5;
+                }
+                .header {
+                    background: #fff;
+                    padding: 20px;
+                    border-bottom: 1px solid #dee2e6;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    position: sticky;
+                    top: 0;
+                    z-index: 100;
+                }
+                .header-content {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    padding: 10px 20px;
+                }
+                .logo {
+                    height: 32px;
+                    width: auto;
+                    margin-right: 15px;
+                }
+                .header-title {
+                    font-size: 1.5em;
+                    color: #333;
+                    margin: 0;
+                    flex: 1;
+                }
+                .container {
+                    max-width: 1200px;
+                    margin: 20px auto;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                h1, h2 {
+                    color: #333;
+                    border-bottom: 2px solid #eee;
+                    padding-bottom: 10px;
+                }
+                .summary-box {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                    margin: 10px 0;
+                }
+                .metric {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 5px 0;
+                    padding: 5px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                .metric-label {
+                    font-weight: bold;
+                }
+                .score {
+                    padding: 3px 8px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                }
+                .good { background: #d4edda; color: #155724; }
+                .warning { background: #fff3cd; color: #856404; }
+                .poor { background: #f8d7da; color: #721c24; }
+                .comparison-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                }
+                .comparison-table th, .comparison-table td {
+                    padding: 12px;
+                    border: 1px solid #dee2e6;
+                    text-align: left;
+                }
+                .comparison-table th {
+                    background: #f8f9fa;
+                }
+                .timestamp {
+                    color: #6c757d;
+                    font-size: 0.9em;
+                }
+                .decision {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 4px;
+                }
+                .decision.promote { background: #d4edda; color: #155724; }
+                .decision.keep { background: #f8d7da; color: #721c24; }
+                .decision.testing { background: #fff3cd; color: #856404; }
+                .insights li {
+                    margin-bottom: 8px;
+                }
+                .json-view {
+                    font-family: monospace;
+                    white-space: pre;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 4px;
+                    max-height: 400px;
+                    overflow: auto;
+                    display: none;
+                }
+                .json-container {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 0 0 4px 4px;
+                    padding: 15px;
+                    height: 400px; /* Increased height for better visibility */
+                    min-height: 400px; /* Ensure minimum height */
+                    max-height: 400px; /* Ensure maximum height */
+                    overflow: auto; /* Always show scrollbar when needed */
+                    position: relative;
+                }
+                .json-tree {
+                    height: 100%;
+                    overflow: auto;
+                    padding-right: 10px;
+                }
+                .json-tree .hidden {
+                    display: none;
+                }
+                .json-tree .expanded {
+                    display: block;
+                }
+                /* Ensure long content wraps and scrolls */
+                .json-tree .json-string,
+                .json-tree .json-key,
+                .json-tree .preview {
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                /* Make indent consistent */
+                .json-tree .indent {
+                    margin-left: 20px;
+                    padding-left: 10px;
+                    border-left: 1px dotted #ddd;
+                }
+                /* Custom scrollbar styling for JSON containers */
+                .json-container::-webkit-scrollbar,
+                .json-tree::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .json-container::-webkit-scrollbar-track,
+                .json-tree::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .json-container::-webkit-scrollbar-thumb,
+                .json-tree::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+                .json-container::-webkit-scrollbar-thumb:hover,
+                .json-tree::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+                .json-comparison {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                    overflow-x: auto;
+                }
+                .json-column {
+                    background: #ffffff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                    min-width: 400px;
+                }
+                .json-column h3 {
+                    margin-top: 0;
+                    color: #007bff;
+                    border-bottom: 2px solid #dee2e6;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                .json-preview {
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                    font-size: 13px;
+                    line-height: 1.5;
+                    background: #f8f9fa;
+                    padding: 15px;
+                    border-radius: 4px;
+                    overflow-x: auto;
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .summary-insights {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 20px;
+                    margin: 20px 0;
+                }
+                .summary-insights h3 {
+                    color: #007bff;
+                    margin-top: 0;
+                }
+                .insights-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+                .insight-card {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 4px;
+                    padding: 15px;
+                }
+                .insight-card h4 {
+                    margin-top: 0;
+                    color: #495057;
+                    border-bottom: 2px solid #dee2e6;
+                    padding-bottom: 8px;
+                    margin-bottom: 12px;
+                }
+                .insight-list {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                .insight-list li {
+                    margin-bottom: 8px;
+                    padding-left: 20px;
+                    position: relative;
+                }
+                .insight-list li:before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: #007bff;
+                }
+                @media (max-width: 1200px) {
+                    .json-comparison {
+                        grid-template-columns: 1fr;
+                    }
+                    .json-column {
+                        min-width: 100%;
+                    }
+                }
+                .detailed-insights {
+                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+                    white-space: pre-wrap;
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                    line-height: 1.5;
+                    overflow-x: auto;
+                    margin: 20px 0;
+                }
+                .insights-section {
+                    margin: 20px 0;
+                }
+                .insights-section h2 {
+                    font-family: Arial, sans-serif;
+                    color: #333;
+                    border-bottom: 2px solid #eee;
+                    padding-bottom: 10px;
+                    margin-bottom: 15px;
+                }
+                .insights-content {
+                    font-family: Arial, sans-serif;
+                    white-space: pre-wrap;
+                    line-height: 1.5;
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                    overflow-x: auto;
+                }
+                .metrics-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    margin: 20px 0;
+                }
+                .metrics-column {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    padding: 20px;
+                }
+                .metrics-column h3 {
+                    color: #007bff;
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #eee;
+                }
+                @media (max-width: 768px) {
+                    .metrics-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                /* JSON Tree View Styles */
+                .json-tree {
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    margin: 10px 0;
+                }
+                .json-tree .collapsible {
+                    cursor: pointer;
+                    user-select: none;
+                }
+                .json-tree .collapsible::before {
+                    content: '▶';
+                    display: inline-block;
+                    margin-right: 5px;
+                    font-size: 10px;
+                    transition: transform 0.2s;
+                }
+                .json-tree .expanded::before {
+                    transform: rotate(90deg);
+                }
+                .json-tree .json-key {
+                    color: #881391;
+                    font-weight: bold;
+                }
+                .json-tree .json-string {
+                    color: #268bd2;
+                }
+                .json-tree .json-number {
+                    color: #b58900;
+                }
+                .json-tree .json-boolean {
+                    color: #b58900;
+                }
+                .json-tree .json-null {
+                    color: #808080;
+                }
+                .json-tree .bracket {
+                    color: #333;
+                }
+                .json-tree .hidden {
+                    display: none;
+                }
+                .json-tree .indent {
+                    margin-left: 20px;
+                }
+                .json-tree .preview {
+                    color: #666;
+                    font-style: italic;
+                }
+                .json-container {
+                    background: #fff;
+                    border: 1px solid #dee2e6;
+                    border-radius: 0 0 4px 4px;
+                    padding: 15px;
+                    height: 400px; /* Increased height for better visibility */
+                    min-height: 400px; /* Ensure minimum height */
+                    max-height: 400px; /* Ensure maximum height */
+                    overflow: auto; /* Always show scrollbar when needed */
+                    position: relative;
+                }
+                .json-tree {
+                    height: 100%;
+                    overflow: auto;
+                    padding-right: 10px;
+                }
+                .json-comparison {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 20px;
+                    max-width: 100%;
+                    overflow: hidden;
+                }
+                /* Ensure long content wraps and scrolls */
+                .json-tree .json-string,
+                .json-tree .json-key,
+                .json-tree .preview {
+                    word-break: break-all;
+                    white-space: pre-wrap;
+                }
+                /* Make indent consistent */
+                .json-tree .indent {
+                    margin-left: 20px;
+                    padding-left: 10px;
+                    border-left: 1px dotted #ddd;
+                }
+                /* Custom scrollbar styling */
+                .json-tree::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                .json-tree::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }
+                .json-tree::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 4px;
+                }
+                .json-tree::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+                /* Ensure content doesn't overflow horizontally */
+                @media screen and (max-width: 1200px) {
+                    .json-comparison {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                .config-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 15px;
+                    margin-top: 15px;
+                }
+                .config-item {
+                    background: #fff;
+                    padding: 15px;
+                    border-radius: 4px;
+                    border: 1px solid #dee2e6;
+                }
+                .config-item h3 {
+                    margin: 0 0 10px 0;
+                    color: #007bff;
+                    font-size: 1.1em;
+                }
+                .footer {
+                    background: #333;
+                    color: #fff;
+                    padding: 20px;
+                    margin-top: 40px;
+                    text-align: center;
+                }
+                .footer p {
+                    margin: 5px 0;
+                    font-size: 0.9em;
+                }
+                @media (max-width: 768px) {
+                    .config-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+                .dataset-header {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-bottom: none;
+                    border-radius: 4px 4px 0 0;
+                    padding: 12px 15px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1;
+                }
+                .dataset-header h3 {
+                    font-family: Arial, sans-serif;
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #333;
+                    margin: 0;
+                }
+                .dataset-header .file-info {
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 4px;
+                    font-family: monospace;
+                }
+            </style>
+            <script>
+                function toggleJson(id) {
+                    const element = document.getElementById(id);
+                    if (element.style.display === 'none') {
+                        element.style.display = 'block';
+                    } else {
+                        element.style.display = 'none';
+                    }
+                }
+
+                function formatJSON(obj, level = 0) {
+                    const indent = '  '.repeat(level);
+                    
+                    if (obj === null) return '<span class="json-null">null</span>';
+                    if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
+                    if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
+                    if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
+                    
+                    if (Array.isArray(obj)) {
+                        if (obj.length === 0) return '[]';
+                        
+                        const preview = obj.length > 3 
+                            ? `Array(${obj.length})` 
+                            : obj.slice(0, 3).map(item => {
+                                if (typeof item === 'object' && item !== null) return '{ ... }';
+                                return JSON.stringify(item);
+                              }).join(', ');
+                        
+                        const id = 'array_' + Math.random().toString(36).substr(2, 9);
+                        return `
+                            <div class="collapsible" onclick="toggleNode(this, '${id}')">
+                                <span class="bracket">[</span><span class="preview">${preview}</span><span class="bracket">]</span>
+                            </div>
+                            <div id="${id}" class="hidden indent">
+                                ${obj.map((item, index) => `${formatJSON(item, level + 1)}${index < obj.length - 1 ? ',' : ''}`).join('<br>')}
+                            </div>
+                        `;
+                    }
+                    
+                    if (typeof obj === 'object') {
+                        const keys = Object.keys(obj);
+                        if (keys.length === 0) return '{}';
+                        
+                        const preview = keys.length > 3 
+                            ? `Object {${keys.length} properties}` 
+                            : `{${keys.slice(0, 3).map(k => ` ${k}: ...`).join(',')} }`;
+                        
+                        const id = 'obj_' + Math.random().toString(36).substr(2, 9);
+                        return `
+                            <div class="collapsible" onclick="toggleNode(this, '${id}')">
+                                <span class="bracket">{</span><span class="preview">${preview}</span><span class="bracket">}</span>
+                            </div>
+                            <div id="${id}" class="hidden indent">
+                                ${Object.entries(obj).map(([key, value], index) => `
+                                    <span class="json-key">"${key}"</span>: ${formatJSON(value, level + 1)}${index < keys.length - 1 ? ',' : ''}
+                                `).join('<br>')}
+                            </div>
+                        `;
+                    }
+                    
+                    return String(obj);
+                }
+
+                function toggleNode(element, id) {
+                    element.classList.toggle('expanded');
+                    const content = document.getElementById(id);
+                    content.classList.toggle('hidden');
+                    
+                    // Find the closest json-container and adjust its height
+                    const container = element.closest('.json-container');
+                    if (container) {
+                        if (content.classList.contains('hidden')) {
+                            container.style.height = '50px'; // Collapsed height
+                        } else {
+                            container.style.height = Math.min(content.scrollHeight + 30, 200) + 'px'; // Expanded height
+                        }
+                    }
+                }
+
+                window.onload = function() {
+                    // Format baseline data
+                    const baselineData = JSON.parse(document.getElementById('baseline-data').textContent);
+                    document.getElementById('baseline-json').innerHTML = formatJSON(baselineData);
+                    
+                    // Format target data
+                    const targetData = JSON.parse(document.getElementById('target-data').textContent);
+                    document.getElementById('target-json').innerHTML = formatJSON(targetData);
+                    
+                    // Set initial collapsed state
+                    document.querySelectorAll('.json-container').forEach(container => {
+                        container.style.height = '50px';
+                    });
+                }
+            </script>
+        </head>
+        <body>
+            <header class="header">
+                <div class="header-content">
+                    <img 
+                        src="https://katalon.com/hubfs/katalon_logo%20(1).svg" 
+                        alt="Katalon Logo" 
+                        class="logo"
+                    >
+                    <h1 class="header-title">StudioAssist Comparison Report - generate_code</h1>
+                </div>
+            </header>
+            <div class="container">
+                <p class="timestamp">Generated on: 2025-05-28 14:12:14</p>
+                
+                <div class="summary-box">
+                    <h2>Test Information</h2>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <h3>Feature Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">Feature:</span>
+                                <span>generate_code</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Test Mode:</span>
+                                <span>consistency</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Katalon Version:</span>
+                                <span>10.2.0</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>User Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">User ID:</span>
+                                <span>chau.duong@katalon.com</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">User ID (Numeric):</span>
+                                <span>12539647</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Organization Details</h3>
+                            <div class="metric">
+                                <span class="metric-label">Account ID:</span>
+                                <span>1410137</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Organization ID:</span>
+                                <span>1666289</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-box">
+                    <h2>Test Configuration</h2>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <h3>Baseline (LL1)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>katalon_ai</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gpt-4o-mini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Description:</span>
+                                <span>Baseline Model</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Target (LL2)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>personal_openai</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gpt-4o-mini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Description:</span>
+                                <span>Target Model</span>
+                            </div>
+                        </div>
+                        <div class="config-item">
+                            <h3>Evaluation (LL3)</h3>
+                            <div class="metric">
+                                <span class="metric-label">Provider:</span>
+                                <span>gemini</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Model:</span>
+                                <span>gemini-2.0-flash</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Type:</span>
+                                <span>evaluation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📑 Dataset Summary</h2>
+                    <div class="insights-content">📌 Baseline (LL1) results: 5
+🎯 Target (LL2) results: 5
+</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📊 Detailed Scores</h2>
+                    <div class="metrics-grid">
+                        <div class="metrics-column">
+                            <h3>🎯 Consistency Metrics</h3>
+                            <div class="insights-content">🟢 Output Stability: 0.90
+🟢 Behavior Consistency: 0.90
+🟢 Style Consistency: 0.90</div>
+                        </div>
+                        <div class="metrics-column">
+                            <h3>✅ Accuracy Metrics</h3>
+                            <div class="insights-content">🟢 Functional Correctness: 0.95
+🟢 Code Quality: 0.95
+🟢 Test Coverage: 0.85</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚡ Performance Analysis</h2>
+                    <div class="insights-content">⏱️ Baseline Avg Time: 3.347s
+⏱️ Target Avg Time: 3.373s
+🔴 Time Difference: +0.026s</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>🔬 Detailed Analysis</h2>
+                    <div class="insights-content">• LL2 uses more specific object repository paths (e.g., 'Page_Login/input_username' vs 'Object Repository/username').
+• LL2 sometimes uses `WebUI.verifyTextContain` instead of `WebUI.verifyTextPresent` or `WebUI.verifyElementText`.
+• LL2 uses `groovy.util.CsvParser` directly for CSV parsing in gen_code_004, while LL1 uses `findTestData`.
+• LL2 includes logging using `KeywordUtil.logInfo` and `KeywordUtil.logError` in gen_code_004.
+• LL2 uses a parameter in the Test Object for the API URL in gen_code_003, making it more flexible.
+• LL2 includes Groovy code blocks in backticks.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>✨ Improvements</h2>
+                    <div class="insights-content">✅ LL2's use of more specific object repository paths improves code clarity and maintainability.
+✅ LL2's use of parameters in Test Objects for API calls enhances flexibility.
+✅ LL2's inclusion of logging in the data-driven test case (gen_code_004) is a significant improvement.
+✅ LL2's use of `WebUI.verifyTextContain` in gen_code_001 is more robust than `WebUI.verifyTextPresent`.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚠️ Regressions</h2>
+                    <div class="insights-content">❌ LL2's CSV parsing in gen_code_004 using `groovy.util.CsvParser` might be less robust than LL1's `findTestData` if the CSV file is not properly formatted or lacks headers.
+❌ LL2 in gen_code_004 does not log the specific error message when login fails, only that it failed.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>⚠️ Concerns</h2>
+                    <div class="insights-content">⚠️ Both LLMs assume the existence of Test Objects without providing guidance on their creation.
+⚠️ Both LLMs use `WS.verifyElementPropertyValue` for API response verification, which might not be suitable for all JSON structures without further parsing.
+⚠️ LL2's direct CSV parsing could be fragile if the CSV format is inconsistent.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>💡 Recommendations</h2>
+                    <div class="insights-content">1. Provide instructions or code snippets for creating the necessary Test Objects.
+2. Use `JsonSlurper` to parse JSON responses in API tests and use Groovy assertions for verification.
+3. Implement robust error handling with try-catch blocks and detailed logging.
+4. Add checks to ensure CSV files have the expected headers before parsing.
+5. Use explicit waits before interacting with web elements to handle dynamic loading.
+6. In gen_code_004, log the specific error message when login fails.</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>🎯 Final Assessment</h2>
+                    <div class="insights-content">🚀 Decision: PROMOTE_LL2
+💪 Confidence Level: High</div>
+                </div>
+
+                <div class="insights-section">
+                    <h2>📝 Detailed Explanation</h2>
+                    <div class="insights-content">LL2 demonstrates improvements in code clarity, flexibility, and the inclusion of logging. While there are some regressions related to CSV parsing and error message logging, these can be addressed with the recommendations provided. The overall quality and functionality of LL2 are superior to LL1, making it the preferred choice. The performance difference is negligible. LL2's use of more specific object repository paths and parameterized Test Objects for API calls are significant enhancements. The inclusion of logging in the data-driven test case is also a valuable addition. The concerns regarding Test Object creation and JSON parsing are applicable to both LLMs and should be addressed regardless.</div>
+                </div>
+
+                <div class="summary-box">
+                    <h2>Dataset Comparison</h2>
+                    <div class="json-comparison">
+                        <div class="dataset-section">
+                            <div class="dataset-header">
+                                <h3>Baseline Dataset</h3>
+                            </div>
+                            <div class="json-container">
+                                <script type="application/json" id="baseline-data">{
+  "metadata": {
+    "feature": "generate_code",
+    "llm_version": "LL1",
+    "creation_timestamp": "2025-05-28T14:09:50.949182",
+    "total_results": 5,
+    "dataset_type": "baseline",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-28T14:10:12.872908",
+      "original_baseline_file": "poc_data/generate_code/studioassist_generate_code_baseline_raw_ll1_20250528_140950_6e0b2bae.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "prompt": "// Web UI Automation: Login to application and verify successful login\n// * Navigate to 'https://example.com/login'\n// * Set text 'username' to 'demoUser'\n// * Set text 'password' to 'demoPassword'\n// * Click 'loginButton'\n// * Verify element 'homePageTitle' is present\n// * Verify text 'welcomeMessage' contains 'Welcome, demoUser!'",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "prompt": "/* Mobile Testing: Tap on a button and verify text change\n * Tap on 'button_id'\n * Verify text 'text_view_id' equals 'New Text'\n */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "prompt": "// API Testing: Send a GET request and verify the status code and response body\n// * Send GET request to 'https://api.example.com/users/123'\n// * Verify status code is 200\n// * Verify response body contains 'userId': 123\n// * Verify response body contains 'name': 'John Doe'",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "prompt": "// Data-Driven Testing: Read data from CSV and perform login with each set of credentials\n// * Read data from CSV file 'Data Files/login_credentials.csv'\n// * Loop through each row in the CSV file\n//   * Set text 'username' to value from column 'username'\n//   * Set text 'password' to value from column 'password'\n//   * Click 'loginButton'\n//   * Verify element 'homePageTitle' is present\n//   * If login fails, log the error message",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "prompt": "// Custom Keyword Creation: Create a custom keyword to calculate the sum of two numbers\n// * Create a custom keyword named 'calculateSum'\n// * The keyword should accept two integer parameters: 'num1' and 'num2'\n// * The keyword should return the sum of 'num1' and 'num2'\n// * Use the keyword in a test case to verify the result",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    }
+  ],
+  "results": {
+    "gen_code_001": {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "user_input": "// Web UI Automation: Login to application and verify successful login\n// * Navigate to 'https://example.com/login'\n// * Set text 'username' to 'demoUser'\n// * Set text 'password' to 'demoPassword'\n// * Click 'loginButton'\n// * Verify element 'homePageTitle' is present\n// * Verify text 'welcomeMessage' contains 'Welcome, demoUser!'",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "// Web UI Automation: Login to application and verify successful login\n// * Navigate to 'https://example.com/login'\n// * Set text 'username' to 'demoUser'\n// * Set text 'password' to 'demoPassword'\n// * Click 'loginButton'\n// * Verify element 'homePageTitle' is present\n// * Verify text 'welcomeMessage' contains 'Welcome, demoUser!'"
+        },
+        "promptId": "generate-code",
+        "feature": "generate_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Navigate to 'https://example.com/login'\nWebUI.openBrowser('')\nWebUI.navigateToUrl('https://example.com/login')\n// Set text 'username' to 'demoUser'\nWebUI.setText(findTestObject('Object Repository/username'), 'demoUser')\n// Set text 'password' to 'demoPassword'\nWebUI.setText(findTestObject('Object Repository/password'), 'demoPassword')\n// Click 'loginButton'\nWebUI.click(findTestObject('Object Repository/loginButton'))\n// Verify element 'homePageTitle' is present\nWebUI.verifyElementPresent(findTestObject('Object Repository/homePageTitle'), 10)\n// Verify text 'welcomeMessage' contains 'Welcome, demoUser!'\nWebUI.verifyTextPresent('Welcome, demoUser!', false)",
+      "gui_output": "Code generated below prompt in Script editor",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T14:09:32.969738",
+      "response_time": 3.7640247344970703,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 9
+        },
+        "feedback": {
+          "completeness": "The code addresses all requirements from the prompt. It navigates to the login page, enters credentials, clicks the login button, and verifies the presence of the home page title and the welcome message.",
+          "correctness": "The code uses valid Katalon keywords and syntax. `WebUI.openBrowser()`, `WebUI.navigateToUrl()`, `WebUI.setText()`, `WebUI.click()`, `WebUI.verifyElementPresent()`, and `WebUI.verifyTextPresent()` are all correct.",
+          "readability": "The code is well-structured with proper indentation and comments, making it easy to understand.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming the Test Objects are correctly defined in the Object Repository. The `WebUI.openBrowser('')` is a bit odd, as it opens a browser without specifying which one. It would be better to configure the default browser in Katalon settings or specify it explicitly in the code if needed. Also, `WebUI.verifyTextPresent` is not ideal for verifying the welcome message. It checks for the presence of the text anywhere on the page. A more robust approach would be to verify the text within a specific element."
+        },
+        "overall_assessment": "The generated code is generally good and addresses the user's requirements effectively. It uses correct Katalon syntax and is well-structured. However, there are minor improvements that could be made to enhance its robustness and clarity.",
+        "overall_score": 9,
+        "suggestions": [
+          "Consider specifying the browser type when opening the browser, although relying on the default browser setting is also acceptable.",
+          "Instead of `WebUI.verifyTextPresent`, use `WebUI.verifyElementText` or `WebUI.verifyMatch` to verify the welcome message within a specific element. This will make the test more reliable and less prone to false positives.",
+          "Add error handling or logging to improve the robustness of the test."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:09:54.639934"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_002": {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "user_input": "/* Mobile Testing: Tap on a button and verify text change\n * Tap on 'button_id'\n * Verify text 'text_view_id' equals 'New Text'\n */",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "/* Mobile Testing: Tap on a button and verify text change\n * Tap on 'button_id'\n * Verify text 'text_view_id' equals 'New Text'\n */"
+        },
+        "promptId": "generate-code",
+        "feature": "generate_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Tap on 'button_id'\nMobile.tap(findTestObject('Object Repository/button_id'), 10)\n// Verify text 'text_view_id' equals 'New Text'\nMobile.verifyElementText(findTestObject('Object Repository/text_view_id'), 'New Text')",
+      "gui_output": "Code generated below prompt in Script editor",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T14:09:35.596240",
+      "response_time": 1.6249828338623047,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 10,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 10
+        },
+        "feedback": {
+          "completeness": "The code addresses both the tap action and the text verification as requested in the prompt.",
+          "correctness": "The syntax is valid Katalon Studio syntax. `Mobile.tap` and `Mobile.verifyElementText` are correct keywords. The `findTestObject` function is used appropriately.",
+          "readability": "The code is well-structured with comments explaining each step. Indentation is implicit in the single-line statements and is assumed to be correct.",
+          "functionality": "Assuming the Test Objects 'Object Repository/button_id' and 'Object Repository/text_view_id' exist and are correctly defined, the code should execute successfully."
+        },
+        "overall_assessment": "The generated code is excellent. It accurately translates the user's instructions into executable Katalon Studio code. The code is concise, readable, and functional.",
+        "overall_score": 10,
+        "suggestions": [],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:09:58.245657"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_003": {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "user_input": "// API Testing: Send a GET request and verify the status code and response body\n// * Send GET request to 'https://api.example.com/users/123'\n// * Verify status code is 200\n// * Verify response body contains 'userId': 123\n// * Verify response body contains 'name': 'John Doe'",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "// API Testing: Send a GET request and verify the status code and response body\n// * Send GET request to 'https://api.example.com/users/123'\n// * Verify status code is 200\n// * Verify response body contains 'userId': 123\n// * Verify response body contains 'name': 'John Doe'"
+        },
+        "promptId": "generate-code",
+        "feature": "generate_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Send GET request to 'https://api.example.com/users/123'\ndef response = WS.sendRequest(findTestObject('Object Repository/API/GET_User_123'))\n\n// Verify status code is 200\nWS.verifyResponseStatusCode(response, 200)\n\n// Verify response body contains 'userId': 123\nWS.verifyElementPropertyValue(response, 'userId', 123)\n\n// Verify response body contains 'name': 'John Doe'\nWS.verifyElementPropertyValue(response, 'name', 'John Doe')",
+      "gui_output": "Code generated below prompt in Script editor",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T14:09:40.721929",
+      "response_time": 4.1245129108428955,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "correctness": 9,
+          "readability": 10,
+          "functionality": 7
+        },
+        "feedback": {
+          "completeness": "The code addresses all the requirements specified in the prompt. However, it assumes the existence of a Test Object 'Object Repository/API/GET_User_123'. This is not ideal as the code should ideally create the Test Object or at least provide instructions on how to create it.",
+          "correctness": "The syntax is valid and uses proper Katalon keywords. `WS.sendRequest`, `WS.verifyResponseStatusCode`, and `WS.verifyElementPropertyValue` are all correct Katalon commands. However, `WS.verifyElementPropertyValue` might not work as expected depending on the response format (e.g., JSON).",
+          "readability": "The code is well-structured with proper indentation and comments, making it easy to understand.",
+          "functionality": "The code would likely execute successfully in Katalon Studio, assuming the Test Object 'Object Repository/API/GET_User_123' exists and is configured correctly. However, the `WS.verifyElementPropertyValue` method might not work directly for JSON responses. It's more suited for XML. For JSON, you'd typically need to parse the JSON response and then verify the values."
+        },
+        "overall_assessment": "The generated code is a good starting point for API testing in Katalon Studio. It correctly implements the basic steps of sending a GET request and verifying the status code. However, it needs improvement in handling JSON responses and providing more context on creating the required Test Object.",
+        "overall_score": 8,
+        "suggestions": [
+          "Provide instructions or code to create the Test Object 'Object Repository/API/GET_User_123'.",
+          "Use JSONSlurper to parse the JSON response and then verify the values using Groovy assertions.",
+          "Consider adding error handling (e.g., try-catch block) to handle potential exceptions during the API call.",
+          "Add logging to provide more detailed information about the test execution."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:10:02.928339"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_004": {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "user_input": "// Data-Driven Testing: Read data from CSV and perform login with each set of credentials\n// * Read data from CSV file 'Data Files/login_credentials.csv'\n// * Loop through each row in the CSV file\n//   * Set text 'username' to value from column 'username'\n//   * Set text 'password' to value from column 'password'\n//   * Click 'loginButton'\n//   * Verify element 'homePageTitle' is present\n//   * If login fails, log the error message",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "// Data-Driven Testing: Read data from CSV and perform login with each set of credentials\n// * Read data from CSV file 'Data Files/login_credentials.csv'\n// * Loop through each row in the CSV file\n//   * Set text 'username' to value from column 'username'\n//   * Set text 'password' to value from column 'password'\n//   * Click 'loginButton'\n//   * Verify element 'homePageTitle' is present\n//   * If login fails, log the error message"
+        },
+        "promptId": "generate-code",
+        "feature": "generate_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Read data from CSV file 'Data Files/login_credentials.csv'\ndef testData = findTestData('Data Files/login_credentials.csv')\n\n// Loop through each row in the CSV file\nfor (def index = 1; index <= testData.getRowNumbers(); index++) {\n    // Set text 'username' to value from column 'username'\n    WebUI.setText(findTestObject('Object Repository/username'), testData.getValue('username', index))\n    \n    // Set text 'password' to value from column 'password'\n    WebUI.setText(findTestObject('Object Repository/password'), testData.getValue('password', index))\n    \n    // Click 'loginButton'\n    WebUI.click(findTestObject('Object Repository/loginButton'))\n    \n    // Verify element 'homePageTitle' is present\n    boolean isLoginSuccessful = WebUI.verifyElementPresent(findTestObject('Object Repository/homePageTitle'), 5, FailureHandling.OPTIONAL)\n    \n    // If login fails, log the error message\n    if (!isLoginSuccessful) {\n        String errorMessage = WebUI.getText(findTestObject('Object Repository/errorMessage'), FailureHandling.OPTIONAL)\n        WebUI.comment(\"Login failed for user '${testData.getValue('username', index)}'. Error: ${errorMessage}\")\n    }\n}",
+      "gui_output": "Code generated below prompt in Script editor",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T14:09:45.937262",
+      "response_time": 4.212348222732544,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 9,
+          "readability": 9,
+          "functionality": 8
+        },
+        "feedback": {
+          "completeness": "The code addresses almost all requirements. It reads data from the CSV, loops through rows, sets username and password, clicks the login button, and verifies the home page title. It also includes error logging. However, it doesn't reset the state after a failed login, which might affect subsequent login attempts.",
+          "correctness": "The code uses correct Katalon keywords and syntax. `findTestData`, `WebUI.setText`, `WebUI.click`, `WebUI.verifyElementPresent`, and `WebUI.comment` are all used correctly. The loop structure is also valid.",
+          "readability": "The code is well-structured with proper indentation and comments, making it easy to understand.",
+          "functionality": "The code should execute successfully in Katalon Studio. However, the error handling relies on an 'errorMessage' object, which might not always be present or contain the correct error message. Also, after a failed login, the username and password fields are not cleared, which could lead to incorrect login attempts in the next iteration. The `FailureHandling.OPTIONAL` is correctly used to prevent the script from stopping on element not found exceptions."
+        },
+        "overall_assessment": "The generated code is a good starting point for data-driven login testing in Katalon Studio. It covers most of the requirements and is generally well-written. However, it could benefit from improved error handling and state management after failed login attempts.",
+        "overall_score": 8.75,
+        "suggestions": [
+          "Add code to clear the username and password fields after a failed login attempt using `WebUI.clearText()`.",
+          "Improve error handling by checking for the existence of the 'errorMessage' object before attempting to retrieve its text. Consider using a try-catch block to handle potential exceptions during error message retrieval.",
+          "Consider adding a more robust verification mechanism for successful login, such as verifying the presence of a specific element or text on the home page, rather than just checking for the presence of the 'homePageTitle' element.",
+          "Add logging for successful logins to provide a complete audit trail.",
+          "Consider adding a delay after the click event to allow the page to load before verifying the element."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:10:08.358825"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_005": {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "user_input": "// Custom Keyword Creation: Create a custom keyword to calculate the sum of two numbers\n// * Create a custom keyword named 'calculateSum'\n// * The keyword should accept two integer parameters: 'num1' and 'num2'\n// * The keyword should return the sum of 'num1' and 'num2'\n// * Use the keyword in a test case to verify the result",
+      "api_input": {
+        "id": "studio-g4",
+        "inputParameters": {
+          "user_input": "// Custom Keyword Creation: Create a custom keyword to calculate the sum of two numbers\n// * Create a custom keyword named 'calculateSum'\n// * The keyword should accept two integer parameters: 'num1' and 'num2'\n// * The keyword should return the sum of 'num1' and 'num2'\n// * Use the keyword in a test case to verify the result"
+        },
+        "promptId": "generate-code",
+        "feature": "generate_code"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "/ *\n * Calculate the sum of two integers\n *\n * @param num1 First integer\n * @param num2 Second integer\n * @return Sum of num1 and num2\n * /\nimport com.kms.katalon.core.annotation.Keyword\n\nclass CustomMathKeywords {\n    @Keyword\n    def calculateSum(int num1, int num2) {\n        // Return the sum of num1 and num2\n        return num1 + num2\n    }\n}\n\n// Use the custom keyword in a test case to verify the result\n// Calculate the sum of 5 and 7 using the custom keyword\nint result = CustomKeywords.'CustomMathKeywords.calculateSum'(5, 7)\n// Verify that the result is 12\nassert result == 12 : \"Sum calculation failed, expected 12 but got \" + result",
+      "gui_output": "Code generated below prompt in Script editor",
+      "llm_version": "LL1",
+      "timestamp": "2025-05-28T14:09:49.945968",
+      "response_time": 3.006795644760132,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 10,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 10
+        },
+        "feedback": {
+          "completeness": "The code addresses all requirements from the prompt, including creating the custom keyword, accepting parameters, returning the sum, and using it in a test case with verification.",
+          "correctness": "The syntax is valid Groovy and uses the `@Keyword` annotation correctly. The assertion is also correctly implemented.",
+          "readability": "The code is well-structured with proper indentation and comments. The Javadoc-style comments at the beginning of the method are excellent.",
+          "functionality": "The code will execute successfully in Katalon Studio. The custom keyword is defined correctly, and the test case snippet will correctly call and verify the keyword's output."
+        },
+        "overall_assessment": "The generated code is excellent. It's complete, correct, readable, and functional. It perfectly addresses the user's prompt and provides a good example of how to create and use custom keywords in Katalon Studio.",
+        "overall_score": 10,
+        "suggestions": [],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:10:11.864993"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 5,
+      "evaluation_errors": 0,
+      "start_time": "2025-05-28T14:09:50.960138",
+      "end_time": "2025-05-28T14:10:12.866097"
+    },
+    "diversity_analysis": {
+      "total_inputs": 5,
+      "unique_patterns": 5,
+      "prompt_length_stats": {
+        "min": 131,
+        "max": 435,
+        "mean": 300,
+        "median": 327,
+        "std_dev": 110.99549540409286
+      },
+      "pattern_categories": {
+        "testing": 5,
+        "web_automation": 1,
+        "mobile_testing": 2,
+        "api_testing": 1,
+        "data_driven": 1,
+        "custom_keywords": 1
+      },
+      "complexity_distribution": {
+        "low": 1,
+        "medium": 4,
+        "high": 0
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 5,
+      "output_length_stats": {
+        "min": 218,
+        "max": 1171,
+        "mean": 626.2,
+        "median": 646,
+        "std_dev": 354.76569732712323
+      },
+      "keyword_usage": {
+        "WebUI": 13,
+        "TestObject": 12,
+        "Mobile": 2,
+        "WS": 4,
+        "@Keyword": 1
+      },
+      "error_patterns": {
+        "error_handling": 1
+      },
+      "response_time_analysis": {
+        "min": 1.6249828338623047,
+        "max": 4.212348222732544,
+        "mean": 3.346532869338989,
+        "median": 3.7640247344970703,
+        "percentile_95": 4.212348222732544
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "completeness": {
+          "description": "Does the code address all requirements from the prompt?",
+          "count": 5,
+          "mean": 9.2,
+          "median": 9,
+          "std_dev": 0.8366600265340756,
+          "min": 8,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "correctness": {
+          "description": "Is the syntax valid and does it use proper Katalon keywords?",
+          "count": 5,
+          "mean": 9.6,
+          "median": 10,
+          "std_dev": 0.5477225575051661,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "readability": {
+          "description": "Is the code well-structured with proper indentation and comments?",
+          "count": 5,
+          "mean": 9.8,
+          "median": 10,
+          "std_dev": 0.4472135954999579,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "functionality": {
+          "description": "Would this code execute successfully in Katalon Studio?",
+          "count": 5,
+          "mean": 8.8,
+          "median": 9,
+          "std_dev": 1.3038404810405297,
+          "min": 7,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 1,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 9.15,
+        "median": 9,
+        "std_dev": 0.8587782018658834,
+        "min": 8,
+        "max": 10,
+        "meets_requirements_percentage": 100.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 0,
+        "6-8": 0,
+        "8-10": 5
+      },
+      "correlation_analysis": {
+        "completeness_vs_correctness": 0.7637626158259732,
+        "completeness_vs_readability": 0.13363062095621225,
+        "completeness_vs_functionality": 0.9625334218796219,
+        "correctness_vs_readability": 0.6123724356957946,
+        "correctness_vs_functionality": 0.9101820546182061,
+        "readability_vs_functionality": 0.34299717028501764
+      },
+      "improvement_areas": []
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "accuracy": 12,
+        "clarity": 1,
+        "error_handling": 2
+      },
+      "suggestion_frequency": {
+        "Consider specifying the browser type when opening the browser, although relying on the default browser setting is also acceptable.": 1,
+        "Instead of `WebUI.verifyTextPresent`, use `WebUI.verifyElementText` or `WebUI.verifyMatch` to verify the welcome message within a specific element. This will make the test more reliable and less prone to false positives.": 1,
+        "Add error handling or logging to improve the robustness of the test.": 1,
+        "Provide instructions or code to create the Test Object 'Object Repository/API/GET_User_123'.": 1,
+        "Use JSONSlurper to parse the JSON response and then verify the values using Groovy assertions.": 1,
+        "Consider adding error handling (e.g., try-catch block) to handle potential exceptions during the API call.": 1,
+        "Add logging to provide more detailed information about the test execution.": 1,
+        "Add code to clear the username and password fields after a failed login attempt using `WebUI.clearText()`.": 1,
+        "Improve error handling by checking for the existence of the 'errorMessage' object before attempting to retrieve its text. Consider using a try-catch block to handle potential exceptions during error message retrieval.": 1,
+        "Consider adding a more robust verification mechanism for successful login, such as verifying the presence of a specific element or text on the home page, rather than just checking for the presence of the 'homePageTitle' element.": 1
+      },
+      "feedback_sentiment": {
+        "positive": 5,
+        "neutral": 0,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Limited test coverage: Consider increasing the number of test patterns for more comprehensive evaluation.",
+      "Excellent overall performance: The current configuration is producing high-quality outputs.",
+      "Strong correlation between completeness_vs_correctness (0.76): These criteria are closely related.",
+      "Strong correlation between completeness_vs_functionality (0.96): These criteria are closely related.",
+      "Strong correlation between correctness_vs_functionality (0.91): These criteria are closely related."
+    ]
+  }
+}</script>
+                                <div id="baseline-json" class="json-tree"></div>
+                            </div>
+                        </div>
+                        <div class="dataset-section">
+                            <div class="dataset-header">
+                                <h3>Target Dataset</h3>
+                            </div>
+                            <div class="json-container">
+                                <script type="application/json" id="target-data">{
+  "metadata": {
+    "feature": "generate_code",
+    "llm_version": "LL2",
+    "creation_timestamp": "2025-05-28T14:11:37.410994",
+    "total_results": 5,
+    "dataset_type": "target",
+    "evaluation_metadata": {
+      "evaluator_model": "gemini-2.0-flash",
+      "evaluation_timestamp": "2025-05-28T14:11:59.406361",
+      "original_baseline_file": "poc_data/generate_code/studioassist_generate_code_target_raw_ll2_20250528_141137_18b1f60c.json"
+    }
+  },
+  "inputs": [
+    {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "prompt": "// Web UI Automation: Login to application and verify successful login\n// * Navigate to 'https://example.com/login'\n// * Set text 'username' to 'demoUser'\n// * Set text 'password' to 'demoPassword'\n// * Click 'loginButton'\n// * Verify element 'homePageTitle' is present\n// * Verify text 'welcomeMessage' contains 'Welcome, demoUser!'",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "prompt": "/* Mobile Testing: Tap on a button and verify text change\n * Tap on 'button_id'\n * Verify text 'text_view_id' equals 'New Text'\n */",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "prompt": "// API Testing: Send a GET request and verify the status code and response body\n// * Send GET request to 'https://api.example.com/users/123'\n// * Verify status code is 200\n// * Verify response body contains 'userId': 123\n// * Verify response body contains 'name': 'John Doe'",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "prompt": "// Data-Driven Testing: Read data from CSV and perform login with each set of credentials\n// * Read data from CSV file 'Data Files/login_credentials.csv'\n// * Loop through each row in the CSV file\n//   * Set text 'username' to value from column 'username'\n//   * Set text 'password' to value from column 'password'\n//   * Click 'loginButton'\n//   * Verify element 'homePageTitle' is present\n//   * If login fails, log the error message",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    },
+    {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "prompt": "// Custom Keyword Creation: Create a custom keyword to calculate the sum of two numbers\n// * Create a custom keyword named 'calculateSum'\n// * The keyword should accept two integer parameters: 'num1' and 'num2'\n// * The keyword should return the sum of 'num1' and 'num2'\n// * Use the keyword in a test case to verify the result",
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "prompt_id": "generate-code"
+    }
+  ],
+  "results": {
+    "gen_code_001": {
+      "input_id": "gen_code_001",
+      "feature": "generate_code",
+      "user_input": "// Web UI Automation: Login to application and verify successful login\n// * Navigate to 'https://example.com/login'\n// * Set text 'username' to 'demoUser'\n// * Set text 'password' to 'demoPassword'\n// * Click 'loginButton'\n// * Verify element 'homePageTitle' is present\n// * Verify text 'welcomeMessage' contains 'Welcome, demoUser!'",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Web UI Automation: Login to application and verify successful login\n// * Navigate to 'https://exa...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Open the specified URL\nWebUI.openBrowser('https://example.com/login')\n// Set the text for the username field\nWebUI.setText(findTestObject('Page_Login/input_username'), 'demoUser')\n// Set the text for the password field\nWebUI.setText(findTestObject('Page_Login/input_password'), 'demoPassword')\n// Click the login button\nWebUI.click(findTestObject('Page_Login/button_loginButton'))\n// Verify that the home page title element is present\nWebUI.verifyElementPresent(findTestObject('Page_Home/label_homePageTitle'), 10)\n// Verify that the welcome message contains the expected text\nWebUI.verifyTextContain(findTestObject('Page_Home/label_welcomeMessage'), 'Welcome, demoUser!')",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T14:11:19.308735",
+      "response_time": 3.773735284805298,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 10,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 9
+        },
+        "feedback": {
+          "completeness": "The code covers all the steps outlined in the user input, including navigation, setting text, clicking, and verification.",
+          "correctness": "The code uses correct Katalon keywords like `WebUI.openBrowser`, `WebUI.setText`, `WebUI.click`, `WebUI.verifyElementPresent`, and `WebUI.verifyTextContain`. The syntax is valid.",
+          "readability": "The code is well-structured with proper indentation and comments explaining each step. This makes it easy to understand the purpose of each line.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming the Test Objects ('Page_Login/input_username', etc.) are correctly defined and point to the correct elements on the webpage. The `verifyElementPresent` function includes a timeout, which is good practice. However, the success of `verifyTextContain` depends on the exact text of the `welcomeMessage` element. If there are extra spaces or other characters, the verification might fail."
+        },
+        "overall_assessment": "The generated code is excellent and effectively translates the user's requirements into a functional Katalon Studio script. The code is complete, correct, readable, and likely functional. The use of Test Objects is appropriate and promotes maintainability.",
+        "overall_score": 9.7,
+        "suggestions": [
+          "Consider adding error handling or logging to the script for better debugging and reporting.",
+          "Explore using regular expressions in `WebUI.verifyTextContain` for more flexible text verification, especially if the welcome message format might change slightly.",
+          "Add explicit waits before interacting with elements if the application is slow to load or if elements are dynamically rendered."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:11:40.603981"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_002": {
+      "input_id": "gen_code_002",
+      "feature": "generate_code",
+      "user_input": "/* Mobile Testing: Tap on a button and verify text change\n * Tap on 'button_id'\n * Verify text 'text_view_id' equals 'New Text'\n */",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "/* Mobile Testing: Tap on a button and verify text change\n * Tap on 'button_id'\n * Verify text 'text...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Tap on the button with the specified ID\nMobile.tap(findTestObject('button_id'), 0)  \n// Verify that the text of the text view has changed to 'New Text'\nMobile.verifyElementText(findTestObject('text_view_id'), 'New Text')  ",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T14:11:22.123855",
+      "response_time": 1.8128867149353027,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 10,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 10
+        },
+        "feedback": {
+          "completeness": "The code addresses all requirements from the prompt, tapping the button and verifying the text.",
+          "correctness": "The syntax is valid and uses the correct Katalon keywords (Mobile.tap, Mobile.verifyElementText, findTestObject).",
+          "readability": "The code is well-structured with proper indentation and comments explaining each step.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming the Test Objects 'button_id' and 'text_view_id' are correctly defined."
+        },
+        "overall_assessment": "The generated code is excellent. It accurately translates the user's instructions into executable Katalon code. The code is clean, readable, and functional.",
+        "overall_score": 10,
+        "suggestions": [],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:11:43.689008"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_003": {
+      "input_id": "gen_code_003",
+      "feature": "generate_code",
+      "user_input": "// API Testing: Send a GET request and verify the status code and response body\n// * Send GET request to 'https://api.example.com/users/123'\n// * Verify status code is 200\n// * Verify response body contains 'userId': 123\n// * Verify response body contains 'name': 'John Doe'",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// API Testing: Send a GET request and verify the status code and response body\n// * Send GET reques...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Send a GET request to the specified URL\ndef response = WS.sendRequest(findTestObject('API_Testing/GET_User_Request', [('apiUrl') : 'https://api.example.com/users/123'])) \n\n// Verify that the status code of the response is 200\nWS.verifyResponseStatusCode(response, 200) \n\n// Verify that the response body contains 'userId': 123\nWS.verifyElementPropertyValue(response, 'userId', 123) \n\n// Verify that the response body contains 'name': 'John Doe'\nWS.verifyElementPropertyValue(response, 'name', 'John Doe') ",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T14:11:26.780345",
+      "response_time": 3.6548280715942383,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 8,
+          "correctness": 9,
+          "readability": 10,
+          "functionality": 7
+        },
+        "feedback": {
+          "completeness": "The code addresses all the requirements specified in the prompt. However, it assumes the existence of a Test Object named 'API_Testing/GET_User_Request' which needs to be pre-created and configured with the API URL as a variable. This is not explicitly stated or handled in the generated code.",
+          "correctness": "The syntax is generally correct and uses appropriate Katalon keywords like `WS.sendRequest`, `WS.verifyResponseStatusCode`, and `WS.verifyElementPropertyValue`. The use of a Test Object with a variable is a standard practice in Katalon.",
+          "readability": "The code is well-structured, properly indented, and includes comments that clearly explain each step. This makes the code easy to understand and maintain.",
+          "functionality": "The code will likely execute successfully in Katalon Studio, *assuming* the Test Object 'API_Testing/GET_User_Request' exists and is correctly configured. However, `WS.verifyElementPropertyValue` is designed for XML or JSON responses. If the API returns plain text, this method will not work as expected. Also, it assumes the response body directly contains the key-value pairs. If the response is a nested JSON, the path to the elements needs to be specified."
+        },
+        "overall_assessment": "The generated code is a good starting point for API testing in Katalon Studio. It correctly implements the core logic of sending a GET request and verifying the status code and response body. However, it relies on a pre-existing Test Object and makes assumptions about the response format, which could lead to errors if not handled properly. The code could be improved by providing more robust error handling and by explicitly handling different response formats.",
+        "overall_score": 8,
+        "suggestions": [
+          "Add a check to ensure the Test Object 'API_Testing/GET_User_Request' exists before sending the request.",
+          "Include error handling (try-catch block) to gracefully handle potential exceptions during the API call.",
+          "Consider using `JsonSlurper` to parse the JSON response and then use Groovy's `assert` statements for more flexible verification, especially for nested JSON structures.",
+          "Provide alternative verification methods for different response formats (e.g., plain text, XML).",
+          "Instead of hardcoding the API URL in the Test Object, consider passing it directly to the `WS.sendRequest` method for more flexibility."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:11:49.590669"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_004": {
+      "input_id": "gen_code_004",
+      "feature": "generate_code",
+      "user_input": "// Data-Driven Testing: Read data from CSV and perform login with each set of credentials\n// * Read data from CSV file 'Data Files/login_credentials.csv'\n// * Loop through each row in the CSV file\n//   * Set text 'username' to value from column 'username'\n//   * Set text 'password' to value from column 'password'\n//   * Click 'loginButton'\n//   * Verify element 'homePageTitle' is present\n//   * If login fails, log the error message",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Data-Driven Testing: Read data from CSV and perform login with each set of credentials\n// * Read ...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "// Read data from CSV file\ndef csvData = new groovy.util.CsvParser().parse(new File('Data Files/login_credentials.csv'))\n\n// Loop through each row in the CSV file\ncsvData.each { row -> \n    // Set text 'username' to value from column 'username'\n    KeywordUtil.logInfo(\"Logging in with username: \" + row.username) // Log the username for info\n    WebUI.setText(findTestObject('Input Fields/username'), row.username) // Set username text field with value from CSV\n\n    // Set text 'password' to value from column 'password'\n    WebUI.setText(findTestObject('Input Fields/password'), row.password) // Set password text field with value from CSV\n\n    // Click 'loginButton'\n    WebUI.click(findTestObject('Buttons/loginButton')) // Click the login button\n    \n    // Verify element 'homePageTitle' is present\n    if(WebUI.verifyElementPresent(findTestObject('Pages/homePageTitle'), 5)) { // Check if home page title is present\n        KeywordUtil.logInfo(\"Login successful for username: \" + row.username) // Log successful login\n    } else {\n        KeywordUtil.logError(\"Login failed for username: \" + row.username) // Log error for failed login\n    }\n}",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T14:11:32.931468",
+      "response_time": 5.149120092391968,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 9,
+          "readability": 10,
+          "functionality": 8
+        },
+        "feedback": {
+          "completeness": "The code addresses almost all requirements. It reads data from the CSV, loops through rows, sets username and password, clicks the login button, and verifies the presence of the home page title. It also logs success or failure. However, it doesn't explicitly log the error message if the login fails, as requested in the prompt.",
+          "correctness": "The code uses correct Katalon keywords and Groovy syntax. `WebUI.setText`, `WebUI.click`, `WebUI.verifyElementPresent`, and `KeywordUtil.logInfo/logError` are all used correctly. The CSV parsing also appears correct.",
+          "readability": "The code is very readable. It has good indentation and helpful comments explaining each step.",
+          "functionality": "The code should execute successfully in Katalon Studio, assuming the Test Objects ('Input Fields/username', 'Input Fields/password', 'Buttons/loginButton', 'Pages/homePageTitle') are correctly defined. However, the CSV parsing might throw an error if the CSV file doesn't have headers named 'username' and 'password'. Also, the absence of error message logging in the failure case reduces the functionality score."
+        },
+        "overall_assessment": "Overall, the generated code is very good. It effectively implements data-driven testing using a CSV file. The code is well-structured, readable, and mostly complete. The main area for improvement is handling and logging the error message when login fails.",
+        "overall_score": 9,
+        "suggestions": [
+          "Add error handling to capture and log the error message when login fails. This might involve using `try-catch` blocks around the login process and logging the exception message.",
+          "Consider adding a check to ensure the CSV file has the expected headers ('username' and 'password') before proceeding with the loop. This can prevent unexpected errors.",
+          "Add a timeout parameter to `WebUI.click` to prevent the test from hanging if the login button is not clickable immediately.",
+          "Consider adding a wait statement before verifying the element 'homePageTitle' to ensure the page has fully loaded after login."
+        ],
+        "meets_requirements": false,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:11:54.248946"
+      },
+      "human_validation": null,
+      "error": null
+    },
+    "gen_code_005": {
+      "input_id": "gen_code_005",
+      "feature": "generate_code",
+      "user_input": "// Custom Keyword Creation: Create a custom keyword to calculate the sum of two numbers\n// * Create a custom keyword named 'calculateSum'\n// * The keyword should accept two integer parameters: 'num1' and 'num2'\n// * The keyword should return the sum of 'num1' and 'num2'\n// * Use the keyword in a test case to verify the result",
+      "api_input": {
+        "model": "gpt-4o-mini",
+        "prompt": "// Custom Keyword Creation: Create a custom keyword to calculate the sum of two numbers\n// * Create ...",
+        "llm_type": "personal_openai",
+        "api_url": "https://api.openai.com/v1/chat/completions"
+      },
+      "config": {
+        "mode": "script",
+        "katalon_version": "10.2.0"
+      },
+      "api_output": "```groovy\n// The purpose of the keyword is to calculate the sum of two integer numbers\n@Keyword\ndef calculateSum(int num1, int num2) {\n    return num1 + num2  // This line returns the sum of num1 and num2\n}\n\n// Using the custom keyword to calculate the sum of two numbers and verify it\ndef result = CustomKeywords.'calculateSum'(5, 10)  // Call the custom keyword with parameters 5 and 10\nWebUI.verifyEqual(result, 15)  // Verify that the result is equal to 15\n```",
+      "gui_output": "Output displayed in Katalon Studio generate_code interface",
+      "llm_version": "LL2",
+      "timestamp": "2025-05-28T14:11:36.408899",
+      "response_time": 2.4751131534576416,
+      "ll3_evaluation": {
+        "scores": {
+          "completeness": 9,
+          "correctness": 10,
+          "readability": 10,
+          "functionality": 10
+        },
+        "feedback": {
+          "completeness": "The code addresses all requirements of the prompt. It creates the custom keyword, accepts the specified parameters, returns the sum, and uses it in a test case to verify the result.",
+          "correctness": "The code is syntactically correct Groovy code and uses the `@Keyword` annotation appropriately. The `WebUI.verifyEqual` keyword is also used correctly.",
+          "readability": "The code is well-structured, properly indented, and includes helpful comments explaining the purpose of each section.",
+          "functionality": "The code will execute successfully in Katalon Studio. The custom keyword will be created and the test case will verify the sum of the two numbers."
+        },
+        "overall_assessment": "The generated code is excellent. It accurately translates the user's instructions into functional and readable Katalon Studio code. The code is well-structured and easy to understand. The use of comments enhances readability and maintainability.",
+        "overall_score": 10,
+        "suggestions": [
+          "While not strictly necessary, consider adding a more descriptive comment block at the beginning of the keyword definition, outlining its purpose, parameters, and return value. This is good practice for more complex keywords.",
+          "For more robust testing, consider adding more test cases with different input values to the verification section."
+        ],
+        "meets_requirements": true,
+        "evaluator_model": "gemini-2.0-flash",
+        "evaluation_timestamp": "2025-05-28T14:11:58.400490"
+      },
+      "human_validation": null,
+      "error": null
+    }
+  },
+  "comprehensive_analysis": {
+    "summary": {
+      "total_evaluated": 5,
+      "evaluation_errors": 0,
+      "start_time": "2025-05-28T14:11:37.429166",
+      "end_time": "2025-05-28T14:11:59.401933"
+    },
+    "diversity_analysis": {
+      "total_inputs": 5,
+      "unique_patterns": 5,
+      "prompt_length_stats": {
+        "min": 131,
+        "max": 435,
+        "mean": 300,
+        "median": 327,
+        "std_dev": 110.99549540409286
+      },
+      "pattern_categories": {
+        "testing": 5,
+        "web_automation": 1,
+        "mobile_testing": 2,
+        "api_testing": 1,
+        "data_driven": 1,
+        "custom_keywords": 1
+      },
+      "complexity_distribution": {
+        "low": 1,
+        "medium": 4,
+        "high": 0
+      }
+    },
+    "quality_analysis": {
+      "total_outputs": 5,
+      "output_length_stats": {
+        "min": 225,
+        "max": 1151,
+        "mean": 604.6,
+        "median": 508,
+        "std_dev": 345.21920572297245
+      },
+      "keyword_usage": {
+        "WebUI": 11,
+        "TestObject": 12,
+        "Mobile": 2,
+        "WS": 4,
+        "KeywordUtil": 3,
+        "@Keyword": 1
+      },
+      "error_patterns": {
+        "error_handling": 1
+      },
+      "response_time_analysis": {
+        "min": 1.8128867149353027,
+        "max": 5.149120092391968,
+        "mean": 3.3731366634368896,
+        "median": 3.6548280715942383,
+        "percentile_95": 5.149120092391968
+      }
+    },
+    "score_analysis": {
+      "criteria_analysis": {
+        "completeness": {
+          "description": "Does the code address all requirements from the prompt?",
+          "count": 5,
+          "mean": 9.2,
+          "median": 9,
+          "std_dev": 0.8366600265340756,
+          "min": 8,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "correctness": {
+          "description": "Is the syntax valid and does it use proper Katalon keywords?",
+          "count": 5,
+          "mean": 9.6,
+          "median": 10,
+          "std_dev": 0.5477225575051661,
+          "min": 9,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "readability": {
+          "description": "Is the code well-structured with proper indentation and comments?",
+          "count": 5,
+          "mean": 10,
+          "median": 10,
+          "std_dev": 0.0,
+          "min": 10,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 5,
+            "good (6-8)": 0,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        },
+        "functionality": {
+          "description": "Would this code execute successfully in Katalon Studio?",
+          "count": 5,
+          "mean": 8.8,
+          "median": 9,
+          "std_dev": 1.3038404810405297,
+          "min": 7,
+          "max": 10,
+          "distribution": {
+            "excellent (8-10)": 4,
+            "good (6-8)": 1,
+            "fair (4-6)": 0,
+            "poor (0-4)": 0
+          }
+        }
+      },
+      "overall_statistics": {
+        "mean": 9.34,
+        "median": 9.7,
+        "std_dev": 0.8532291603080616,
+        "min": 8,
+        "max": 10,
+        "meets_requirements_percentage": 80.0
+      },
+      "score_distribution": {
+        "0-2": 0,
+        "2-4": 0,
+        "4-6": 0,
+        "6-8": 0,
+        "8-10": 5
+      },
+      "correlation_analysis": {
+        "completeness_vs_correctness": 0.7637626158259732,
+        "completeness_vs_readability": 0.0,
+        "completeness_vs_functionality": 0.7333587976225691,
+        "correctness_vs_readability": 0.0,
+        "correctness_vs_functionality": 0.9101820546182061,
+        "readability_vs_functionality": 0.0
+      },
+      "improvement_areas": []
+    },
+    "feedback_analysis": {
+      "common_feedback_themes": {
+        "accuracy": 10,
+        "clarity": 2,
+        "best_practices": 2,
+        "error_handling": 4
+      },
+      "suggestion_frequency": {
+        "Consider adding error handling or logging to the script for better debugging and reporting.": 1,
+        "Explore using regular expressions in `WebUI.verifyTextContain` for more flexible text verification, especially if the welcome message format might change slightly.": 1,
+        "Add explicit waits before interacting with elements if the application is slow to load or if elements are dynamically rendered.": 1,
+        "Add a check to ensure the Test Object 'API_Testing/GET_User_Request' exists before sending the request.": 1,
+        "Include error handling (try-catch block) to gracefully handle potential exceptions during the API call.": 1,
+        "Consider using `JsonSlurper` to parse the JSON response and then use Groovy's `assert` statements for more flexible verification, especially for nested JSON structures.": 1,
+        "Provide alternative verification methods for different response formats (e.g., plain text, XML).": 1,
+        "Instead of hardcoding the API URL in the Test Object, consider passing it directly to the `WS.sendRequest` method for more flexibility.": 1,
+        "Add error handling to capture and log the error message when login fails. This might involve using `try-catch` blocks around the login process and logging the exception message.": 1,
+        "Consider adding a check to ensure the CSV file has the expected headers ('username' and 'password') before proceeding with the loop. This can prevent unexpected errors.": 1
+      },
+      "feedback_sentiment": {
+        "positive": 5,
+        "neutral": 0,
+        "negative": 0
+      }
+    },
+    "insights": [
+      "Limited test coverage: Consider increasing the number of test patterns for more comprehensive evaluation.",
+      "Excellent overall performance: The current configuration is producing high-quality outputs.",
+      "Strong correlation between completeness_vs_correctness (0.76): These criteria are closely related.",
+      "Strong correlation between completeness_vs_functionality (0.73): These criteria are closely related.",
+      "Strong correlation between correctness_vs_functionality (0.91): These criteria are closely related."
+    ]
+  }
+}</script>
+                                <div id="target-json" class="json-tree"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Generated by Katalon StudioAssist</p>
+                <p>2025-05-28 14:12:14</p>
+                <p>© 2025 Katalon LLC. All rights reserved.</p>
+            </footer>
+        </body>
+        </html>
+        

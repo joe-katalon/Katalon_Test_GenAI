@@ -3,42 +3,42 @@
   "current_phase": "target_created",
   "llm_config_state": "ll1_active",
   "baselines": {
-    "baseline_20250527_151723_10": {
-      "filename": "poc_data/generate_code/studioassist_generate_code_baseline_evaluated_ll1_20250527_151723_5a298b8b.json",
-      "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250527_151554_c3194bc9.json",
-      "num_inputs": 10,
-      "created_at": "2025-05-27T15:17:23.433206",
+    "baseline_20250528_141012_5": {
+      "filename": "poc_data/generate_code/studioassist_generate_code_baseline_evaluated_ll1_20250528_141012_b98c2f58.json",
+      "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250528_140929_16d200b2.json",
+      "num_inputs": 5,
+      "created_at": "2025-05-28T14:10:12.890641",
       "state": "evaluated",
       "llm_version": "LL1",
-      "baseline_id": "baseline_20250527_151723_10"
+      "baseline_id": "baseline_20250528_141012_5"
     },
-    "baseline_20250527_173414_10": {
-      "filename": "poc_data/generate_code/studioassist_generate_code_baseline_evaluated_ll1_20250527_173414_3ba64f38.json",
-      "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250527_173256_2f920e29.json",
-      "num_inputs": 10,
-      "created_at": "2025-05-27T17:34:14.464240",
+    "baseline_20250528_143906_20": {
+      "filename": "poc_data/generate_code/studioassist_generate_code_baseline_evaluated_ll1_20250528_143906_9402ab57.json",
+      "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250528_143614_8ba77277.json",
+      "num_inputs": 20,
+      "created_at": "2025-05-28T14:39:06.704430",
       "state": "evaluated",
       "llm_version": "LL1",
-      "baseline_id": "baseline_20250527_173414_10"
+      "baseline_id": "baseline_20250528_143906_20"
     }
   },
   "target_dataset": {
-    "filename": "poc_data/generate_code/studioassist_generate_code_target_evaluated_ll2_20250527_182526_9f9b04de.json",
-    "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250527_151554_c3194bc9.json",
-    "num_inputs": 10,
-    "created_at": "2025-05-27T18:25:26.165838",
+    "filename": "poc_data/generate_code/studioassist_generate_code_target_evaluated_ll2_20250528_144224_5c2d2fc8.json",
+    "inputs_file": "poc_data/generate_code/studioassist_generate_code_mock_inputs_20250528_143614_8ba77277.json",
+    "num_inputs": 20,
+    "created_at": "2025-05-28T14:42:24.748757",
     "state": "evaluated",
     "llm_version": "LL2",
     "test_mode": "consistency",
-    "compared_with_baseline": "baseline_20250527_151723_10",
+    "compared_with_baseline": "baseline_20250528_143906_20",
     "llm_config": {
       "type": "personal_openai",
       "model": "gpt-4o-mini"
     },
-    "updated_at": "2025-05-27T18:25:26.166628"
+    "updated_at": "2025-05-28T14:42:24.749640"
   },
-  "selected_baseline_id": "baseline_20250527_151723_10",
+  "selected_baseline_id": "baseline_20250528_143906_20",
   "inputs_file": null,
   "created_at": "2025-05-27T15:17:23.433754",
-  "updated_at": "2025-05-27T18:25:26.166632"
+  "updated_at": "2025-05-28T14:42:24.749646"
 }
