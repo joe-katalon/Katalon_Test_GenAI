@@ -188,6 +188,97 @@ class ReportGenerator:
                     target_dataset = json.load(f)
             except Exception as e:
                 print(f"Warning: Could not load target dataset file {target_file}: {e}")
+
+        # Extract scores from datasets
+        def get_scores(dataset):
+            if not dataset:
+                return {}
+            scores = {}
+            
+            # If dataset is a string, try to parse it
+            if isinstance(dataset, str):
+                try:
+                    dataset = json.loads(dataset)
+                except json.JSONDecodeError as e:
+                    print(f"Warning: Could not parse dataset JSON: {e}")
+                    return {}
+
+            # Ensure dataset is a list
+            if isinstance(dataset, dict):
+                dataset = [dataset]
+            elif not isinstance(dataset, list):
+                print(f"Warning: Dataset is not a list or dict, got {type(dataset)}")
+                return {}
+
+            for entry in dataset:
+                # If entry is a string, try to parse it
+                if isinstance(entry, str):
+                    try:
+                        entry = json.loads(entry)
+                    except json.JSONDecodeError as e:
+                        print(f"Warning: Could not parse entry JSON: {e}")
+                        continue
+
+                # Navigate to criteria_analysis
+                try:
+                    criteria_analysis = entry.get("comprehensive_analysis", {}).get("score_analysis", {}).get("criteria_analysis", {})
+                    
+                    # Iterate through all criteria in the analysis
+                    for criterion, data in criteria_analysis.items():
+                        if isinstance(data, dict):  # Ensure we have a valid data object
+                            scores[criterion] = {
+                                'score': data.get("mean", 0),  # Get the mean score
+                                'description': data.get("description", f"Analysis of {criterion}")
+                            }
+                    break  # Just get the first entry with scores
+                except (KeyError, AttributeError) as e:
+                    print(f"Warning: Error accessing criteria_analysis: {e}")
+                    continue
+                    
+            return scores
+
+        baseline_scores = get_scores(baseline_dataset)
+        target_scores = get_scores(target_dataset)
+
+        # Calculate differences and analysis
+        def calculate_score_comparison():
+            comparison = {}
+            
+            # Get all unique criteria from both datasets
+            all_criteria = set(baseline_scores.keys()) | set(target_scores.keys())
+            
+            for criterion in all_criteria:
+                score_key = f'{criterion}_scores'
+                baseline_data = baseline_scores.get(criterion, {})
+                target_data = target_scores.get(criterion, {})
+                
+                # Get scores with proper fallback
+                ll1_score = baseline_data.get('score', 'N/A')
+                ll2_score = target_data.get('score', 'N/A')
+                
+                comparison[score_key] = {
+                    'll1': ll1_score,
+                    'll2': ll2_score,
+                    'difference': 0,
+                    'analysis': 'No significant change',
+                    'description': baseline_data.get('description') or target_data.get('description') or f"Analysis of {criterion}"
+                }
+                
+                # Calculate difference if both scores are numeric
+                if isinstance(ll1_score, (int, float)) and isinstance(ll2_score, (int, float)):
+                    diff = ll2_score - ll1_score
+                    comparison[score_key]['difference'] = round(diff, 2)
+                    
+                    if diff > 0.1:
+                        comparison[score_key]['analysis'] = f'Significant improvement in {criterion} (+{diff:.2f})'
+                    elif diff < -0.1:
+                        comparison[score_key]['analysis'] = f'Decline in {criterion} ({diff:.2f})'
+                    else:
+                        comparison[score_key]['analysis'] = f'Minimal change in {criterion}'
+
+            return comparison
+
+        score_comparison = calculate_score_comparison()
         
         # Format JSON data for display - use full dataset content
         baseline_json = json.dumps(baseline_dataset if baseline_dataset else {"error": "Could not load baseline dataset", "file": baseline_file}, indent=2)
@@ -230,7 +321,8 @@ class ReportGenerator:
             "detailed_results": comparison_data.get("detailed_results", []),
             "llm_configs": llm_configs,
             "baseline_file": baseline_file,
-            "target_file": target_file
+            "target_file": target_file,
+            "raw_eval": score_comparison  # Use our calculated scores instead
         }
         
         # Generate report
@@ -243,6 +335,10 @@ class ReportGenerator:
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta name="referrer" content="origin">
             <title>StudioAssist Comparison Report - {{ feature }}</title>
+            <!-- Add Tippy.js and its dependencies -->
+            <script src="https://unpkg.com/@popperjs/core@2"></script>
+            <script src="https://unpkg.com/tippy.js@6"></script>
+            <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light.css">
             <style>
                 body {
                     font-family: Arial, sans-serif;
@@ -321,14 +417,32 @@ class ReportGenerator:
                     width: 100%;
                     border-collapse: collapse;
                     margin: 20px 0;
+                    background: white;
                 }
-                .comparison-table th, .comparison-table td {
-                    padding: 12px;
-                    border: 1px solid #dee2e6;
+                .comparison-table th,
+                .comparison-table td {
+                    padding: 12px 15px;
                     text-align: left;
+                    border: 1px solid #e2e8f0;
                 }
                 .comparison-table th {
-                    background: #f8f9fa;
+                    background-color: #f8fafc;
+                    font-weight: 600;
+                    color: #1a202c;
+                }
+                .comparison-table tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                .comparison-table tr:hover {
+                    background-color: #edf2f7;
+                }
+                .comparison-table td.positive {
+                    color: #059669;
+                    font-weight: 600;
+                }
+                .comparison-table td.negative {
+                    color: #dc2626;
+                    font-weight: 600;
                 }
                 .timestamp {
                     color: #6c757d;
@@ -717,6 +831,77 @@ class ReportGenerator:
                     margin-top: 4px;
                     font-family: monospace;
                 }
+                /* Comparison Table Styles */
+                .comparison-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    background: white;
+                }
+                .comparison-table th,
+                .comparison-table td {
+                    padding: 12px 15px;
+                    text-align: left;
+                    border: 1px solid #e2e8f0;
+                }
+                .comparison-table th {
+                    background-color: #f8fafc;
+                    font-weight: 600;
+                    color: #1a202c;
+                }
+                .comparison-table tr:nth-child(even) {
+                    background-color: #f8fafc;
+                }
+                .comparison-table tr:hover {
+                    background-color: #edf2f7;
+                }
+                .comparison-table td.positive {
+                    color: #059669;
+                    font-weight: 600;
+                }
+                .comparison-table td.negative {
+                    color: #dc2626;
+                    font-weight: 600;
+                }
+                .tooltip-trigger {
+                    border-bottom: 1px dotted #718096;
+                    cursor: help;
+                    padding: 2px 4px;
+                    border-radius: 4px;
+                    background-color: #f8f9fa;
+                    transition: background-color 0.2s;
+                }
+                .tooltip-trigger:hover {
+                    background-color: #e9ecef;
+                }
+                /* Tippy Theme Customization */
+                .tippy-box[data-theme~='custom'] {
+                    background-color: #ffffff;
+                    color: #1a202c;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                    font-size: 14px;
+                    padding: 8px 12px;
+                    max-width: 300px;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow::before {
+                    border-top-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='bottom'] > .tippy-arrow::before {
+                    border-bottom-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='left'] > .tippy-arrow::before {
+                    border-left-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'][data-placement^='right'] > .tippy-arrow::before {
+                    border-right-color: #ffffff;
+                }
+                .tippy-box[data-theme~='custom'] .tippy-content {
+                    padding: 8px 12px;
+                    line-height: 1.5;
+                }
+                /* Dataset Header Styles */
             </style>
             <script>
                 function toggleJson(id) {
@@ -727,6 +912,20 @@ class ReportGenerator:
                         element.style.display = 'none';
                     }
                 }
+
+                // Initialize tooltips with enhanced configuration
+                document.addEventListener('DOMContentLoaded', function() {
+                    tippy('.tooltip-trigger', {
+                        theme: 'custom',
+                        placement: 'top',
+                        arrow: true,
+                        duration: [200, 150],
+                        animation: 'shift-away',
+                        interactive: true,
+                        maxWidth: 300,
+                        appendTo: document.body
+                    });
+                });
 
                 function formatJSON(obj, level = 0) {
                     const indent = '  '.repeat(level);
@@ -978,6 +1177,40 @@ class ReportGenerator:
                 <div class="insights-section">
                     <h2>📝 Detailed Explanation</h2>
                     <div class="insights-content">{{ report_data.detailed_explanation }}</div>
+                </div>
+
+                <!-- Criteria Comparison Table -->
+                <div class="summary-box">
+                    <h2>🎯 Criteria Comparison</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Criteria</th>
+                                <th>LL1 Score</th>
+                                <th>LL2 Score</th>
+                                <th>Difference</th>
+                                <th>Analysis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for criterion, data in raw_eval.items() %}
+                            <tr>
+                                <td>
+                                    <span class="tooltip-trigger" data-tippy-content="{{ data.description }}">
+                                        {{ criterion | replace('_scores', '') | title }}
+                                        <span style="color: #718096; font-size: 12px;">ℹ️</span>
+                                    </span>
+                                </td>
+                                <td>{{ "%.2f"|format(data.ll1) if data.ll1 != 'N/A' else 'N/A' }}</td>
+                                <td>{{ "%.2f"|format(data.ll2) if data.ll2 != 'N/A' else 'N/A' }}</td>
+                                <td class="{% if data.difference > 0 %}positive{% else %}negative{% endif %}">
+                                    {{ "%.2f"|format(data.difference) }}
+                                </td>
+                                <td>{{ data.analysis }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="summary-box">
