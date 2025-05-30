@@ -21,7 +21,7 @@ Copy code
 # List available features
 python main.py --list-features
 
-# Check current status
+# Check current status 
 python main.py --feature generate_code --status
 Phase-by-Phase Workflow
 Phase 1: Create Baseline(s) with LL1
